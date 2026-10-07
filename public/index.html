@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bloom Conference 2026 Registration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Bloom Conference 2026</p>
+          <h1>Registration</h1>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel panel--primary">
+          <div class="panel-header">
+            <h2>Choose your registration</h2>
+          </div>
+
+          <div class="mode-toggle" role="tablist" aria-label="Registration type">
+            <button class="mode-btn is-active" type="button" data-mode="adult">Adult 13+</button>
+            <button class="mode-btn" type="button" data-mode="kids">Kids 5-12</button>
+          </div>
+
+          <form id="registrationForm" novalidate>
+            <div id="adultFields" class="form-section is-visible">
+              <div class="field-row">
+                <label>
+                  <span>Full name</span>
+                  <input type="text" name="fullName" placeholder="Jane Doe" />
+                </label>
+                <label>
+                  <span>Phone number</span>
+                  <input type="tel" name="phoneNumber" placeholder="+60123456789" />
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>
+                  <span>Email address</span>
+                  <input type="email" name="emailAddress" placeholder="jane@example.com" />
+                </label>
+                <label>
+                  <span>Church plant</span>
+                  <select name="churchPlant">
+                    <option value="">Select a church plant</option>
+                    <option value="Bloom City">Bloom City</option>
+                    <option value="City Lights">City Lights</option>
+                    <option value="New Horizon">New Horizon</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>
+                  <span>Homes code</span>
+                  <input type="text" name="homesCode" placeholder="BC-H01" />
+                </label>
+                <label>
+                  <span>Workshop track</span>
+                  <input type="text" name="workshopTrack" placeholder="Leadership & discipleship" />
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label class="full-width">
+                  <span>Remarks</span>
+                  <textarea name="remarks" rows="3" placeholder="Optional notes"></textarea>
+                </label>
+              </div>
+            </div>
+
+            <div id="kidsFields" class="form-section">
+              <div class="field-row">
+                <label>
+                  <span>Parent / guardian name</span>
+                  <input type="text" name="parentName" placeholder="John Doe" />
+                </label>
+                <label>
+                  <span>Parent phone</span>
+                  <input type="tel" name="parentPhone" placeholder="+60123456789" />
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>
+                  <span>Parent email</span>
+                  <input type="email" name="parentEmail" placeholder="parent@example.com" />
+                </label>
+                <label>
+                  <span>Parent relationship</span>
+                  <input type="text" name="parentRelationship" placeholder="Father" />
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>
+                  <span>Parent homes code</span>
+                  <input type="text" name="parentHomesCode" placeholder="BC-H01" />
+                </label>
+                <label>
+                  <span>Payment amount</span>
+                  <input type="number" name="paymentAmount" min="0" step="1" placeholder="30" />
+                </label>
+              </div>
+
+              <div class="child-block">
+                <h3>Child details</h3>
+                <div class="field-row">
+                  <label>
+                    <span>Child name</span>
+                    <input type="text" name="childName" placeholder="John Doe Jr." />
+                  </label>
+                  <label>
+                    <span>Date of birth</span>
+                    <input type="date" name="childDob" />
+                  </label>
+                </div>
+
+                <div class="field-row">
+                  <label>
+                    <span>Gender</span>
+                    <select name="childGender">
+                      <option value="">Select</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Church plant</span>
+                    <select name="childChurchPlant">
+                      <option value="">Select a church plant</option>
+                      <option value="Bloom City">Bloom City</option>
+                      <option value="City Lights">City Lights</option>
+                      <option value="New Horizon">New Horizon</option>
+                    </select>
+                  </label>
+                </div>
+
+                <label class="full-width">
+                  <span>Allergies / notes</span>
+                  <textarea name="childAllergies" rows="2" placeholder="Optional details"></textarea>
+                </label>
+              </div>
+            </div>
+
+            <div class="status-box" id="statusBox" aria-live="polite"></div>
+
+            <div class="submit-row">
+              <button type="submit" class="primary-btn">Submit registration</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="panel panel--secondary">
+          <div class="panel-header">
+            <h2>Event information</h2>
+          </div>
+
+          <ul class="info-list">
+            <li><strong>Date:</strong> 12–14 September 2026</li>
+            <li><strong>Venue:</strong> Bloom Convention Centre</li>
+            <li><strong>Theme:</strong> Generations in Grace</li>
+            <li><strong>Access:</strong> Registration closes 7 days before the event</li>
+          </ul>
+        </aside>
+      </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

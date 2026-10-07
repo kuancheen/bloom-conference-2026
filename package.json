@@ -1,0 +1,12 @@
+{
+  "name": "bloom-conference-2026",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve public",
+    "check": "node --check public/app.js"
+  },
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}

@@ -1,0 +1,6 @@
+# Environment configuration template
+# Copy this file to `public/config.js` and replace the placeholder values.
+
+window.APP_CONFIG = {
+  googleScriptUrl: "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
+};
