@@ -23,20 +23,25 @@ This repo is a starter project for a public-safe registration app. The initial s
 - [x] Add `backend/Code.gs` as a secure backend template
 - [x] Add `README.md` with setup instructions
 - [x] Keep deployment URLs and sheet IDs out of source control
+- [x] Add `implementation_plan.md`, `walkthrough.md`, `new_conversation.md`
 - [ ] Confirm repo is public in GitHub settings
 - [ ] Review repository for accidental exposure of real IDs in commit history
 
 ---
 
-## Priority 2 — Frontend Registration Flow
-- [ ] Build a polished landing registration page
-- [ ] Add adult registration form with validation
-- [ ] Add kids registration form with validation
-- [ ] Add dynamic switch between Adult and Kids modes
+## Priority 2 — Frontend Registration Flow & Validation
+- [x] Build a polished landing registration page
+- [x] Add adult registration form layout
+- [x] Add kids registration form layout
+- [x] Add dynamic switch between Adult and Kids modes
+- [ ] **Add production-ready validation** (email format, required fields, phone format)
+- [ ] **Add real-time validation feedback on blur/change**
+- [ ] **Add field-level error states with styled messages**
+- [ ] **Implement form state preservation across mode switches**
 - [ ] Implement error banners and success states
 - [ ] Add support for multiple children in Kids mode
 - [ ] Add file upload for payment receipt in Kids mode
-- [ ] Add local draft persistence (optional)
+- [ ] Add local draft persistence (localStorage)
 
 ---
 
@@ -52,13 +57,16 @@ This repo is a starter project for a public-safe registration app. The initial s
 
 ---
 
-## Priority 4 — Admin & Dashboard
-- [ ] Create dashboard for number of signups
-- [ ] Create registrant directory view
-- [ ] Add church plant and homes filters
-- [ ] Add counts by adults and kids
-- [ ] Add timeline chart for registrations over time
-- [ ] Add basic export or reporting support
+## Priority 4 — Admin Dashboard & Analytics
+- [ ] **Create admin index page (`admin/index.html`)**
+- [ ] **Add dashboard statistics (total, adults, kids counts)**
+- [ ] **Build registration timeline chart**
+- [ ] **Add church plant distribution view**
+- [ ] **Add registrant directory with filtering**
+- [ ] **Add search by name, email, homes code**
+- [ ] **Create real-time data refresh from Google Sheets**
+- [ ] Add export registrations to CSV
+- [ ] Add registration status indicators (pending, confirmed, etc.)
 
 ---
 
@@ -72,8 +80,8 @@ This repo is a starter project for a public-safe registration app. The initial s
 ---
 
 ## Priority 6 — Production Readiness
-- [ ] Validate all required fields
-- [ ] Validate email format
+- [x] Validate all required fields
+- [x] Validate email format
 - [ ] Validate payment upload requirements
 - [ ] Test responsive mobile layout
 - [ ] Test cross-browser behavior
@@ -82,10 +90,18 @@ This repo is a starter project for a public-safe registration app. The initial s
 
 ---
 
+## Priority 7 — Deployment & Documentation
+- [ ] GitHub Pages deployment guide
+- [ ] Google Apps Script deployment guide
+- [ ] Local development setup guide
+- [ ] Production environment setup guide
+
+---
+
 ## Immediate Next Actions
-1. Make the repo public in GitHub settings.
-2. Add architecture documentation (`walkthrough.md`).
-3. Add onboarding/context file (`new_conversation.md`).
-4. Implement robust frontend validation.
-5. Validate the Google Apps Script backend end-to-end.
-6. Test registration data flow and Drive receipt upload.
+1. **Implement production-ready frontend validation** with real-time feedback.
+2. **Create admin dashboard starter** with data visualization.
+3. Make the repo public in GitHub settings.
+4. Validate the Google Apps Script backend end-to-end.
+5. Test registration data flow and Drive receipt upload.
+6. Create deployment guides for GitHub Pages and Apps Script.
