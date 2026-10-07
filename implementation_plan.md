@@ -1,87 +1,91 @@
 # Bloom Conference 2026 — Implementation Plan
 
-## Project Scope
-A secure, multi-file conference registration system with a static frontend and Google Apps Script backend. No secrets committed to source control. Public repository ready for sharing and forking.
+## Mission
+Build a secure, multi-file conference registration system with:
+- a static frontend
+- a Google Apps Script backend
+- public-safe configuration
+- no secret IDs or deployment URLs committed to the repository
 
 ---
 
-## Phase 1: Core Scaffolding & Architecture ✅
-
-- [x] Create private GitHub repository `kuancheen/bloom-conference-2026`
-- [x] Initialize `.gitignore` (exclude `.env`, `node_modules/`, `public/config.js`)
-- [x] Create multi-file frontend structure (`public/index.html`, `styles.css`, `app.js`)
-- [x] Implement registration form with Adult and Kids modes
-- [x] Create Google Apps Script backend template (`backend/Code.gs`)
-- [x] Set up package.json with dev script (`npm run dev`)
-- [x] Create `.env.example` and `public/config.js.example` for safe sharing
+## Current Status
+This repo is a starter project for a public-safe registration app. The initial scaffold is in place, but the following must still be completed before the app is production-ready.
 
 ---
 
-## Phase 2: Repository Visibility & Documentation (IN PROGRESS)
-
-- [ ] Make repository public
-- [ ] Create `implementation_plan.md` (this file)
-- [ ] Create `walkthrough.md` (system architecture & file structure)
-- [ ] Create `new_conversation.md` (agent onboarding guide)
-
----
-
-## Phase 3: Frontend Enhancement
-
-- [ ] Add client-side form validation (email format, required fields)
-- [ ] Implement dynamic error state UI
-- [ ] Add success screen after registration submission
-- [ ] Support multiple children in Kids mode
-- [ ] Add file upload for payment receipt (Kids mode)
-- [ ] Implement auto-save to localStorage for draft preservation
+## Priority 1 — Foundation & Safety
+- [x] Create GitHub repository for the project
+- [x] Create project skeleton and folder structure
+- [x] Add `.gitignore` to exclude `.env`, `node_modules`, and local config
+- [x] Add `public/config.js.example` as a safe config template
+- [x] Add `.env.example` for non-sensitive local configuration
+- [x] Add `backend/Code.gs` as a secure backend template
+- [x] Add `README.md` with setup instructions
+- [x] Keep deployment URLs and sheet IDs out of source control
+- [ ] Confirm repo is public in GitHub settings
+- [ ] Review repository for accidental exposure of real IDs in commit history
 
 ---
 
-## Phase 4: Backend Enhancement
-
-- [ ] Test Apps Script backend deployment workflow
-- [ ] Implement spreadsheet auto-formatting for Adults sheet
-- [ ] Implement spreadsheet auto-formatting for Kids sheet
-- [ ] Add UUID tracking for multi-child registrations
-- [ ] Implement error handling and logging in backend
-- [ ] Set up receipt file uploading to Google Drive
-
----
-
-## Phase 5: Admin & Analytics (Future)
-
-- [ ] Create admin dashboard (`admin/dashboard.html`)
-- [ ] Implement registration statistics view
-- [ ] Add filtering by church plant, homes code, registration type
-- [ ] Export registrations to CSV
-- [ ] Create real-time sync indicators
+## Priority 2 — Frontend Registration Flow
+- [ ] Build a polished landing registration page
+- [ ] Add adult registration form with validation
+- [ ] Add kids registration form with validation
+- [ ] Add dynamic switch between Adult and Kids modes
+- [ ] Implement error banners and success states
+- [ ] Add support for multiple children in Kids mode
+- [ ] Add file upload for payment receipt in Kids mode
+- [ ] Add local draft persistence (optional)
 
 ---
 
-## Phase 6: Deployment & Testing
-
-- [ ] Set up GitHub Pages for frontend hosting
-- [ ] Create deployment guide for Apps Script
-- [ ] Write UAT test plan
-- [ ] Test form submission end-to-end
-- [ ] Test receipt upload workflow
-- [ ] Verify error handling and fallback states
-
----
-
-## Phase 7: Security & Hardening
-
-- [ ] Audit for exposed secrets in git history
-- [ ] Add CORS headers to Apps Script backend
-- [ ] Implement rate limiting on submission endpoint
-- [ ] Add honeypot fields to prevent spam
-- [ ] Document security practices in README
+## Priority 3 — Backend Integration
+- [ ] Create real Google Sheet for adult registrations
+- [ ] Create real Google Sheet for kids registrations
+- [ ] Configure Apps Script deployment URL in frontend
+- [ ] Configure Drive folder ID in backend
+- [ ] Test adult POST submission end-to-end
+- [ ] Test kids POST submission end-to-end
+- [ ] Verify receipt file upload works
+- [ ] Confirm data lands in correct columns and rows
 
 ---
 
-## Priority Tasks (Next Session)
+## Priority 4 — Admin & Dashboard
+- [ ] Create dashboard for number of signups
+- [ ] Create registrant directory view
+- [ ] Add church plant and homes filters
+- [ ] Add counts by adults and kids
+- [ ] Add timeline chart for registrations over time
+- [ ] Add basic export or reporting support
 
-1. **Make repo public** — Update visibility setting
-2. **Finalize documentation artifacts** — Complete walkthrough.md and new_conversation.md
-3. **Test form validation** — Verify all form fields validate correctly
-4. **Test backend submission** — Ensure data flows to Google Sheet correctly
+---
+
+## Priority 5 — Security Hardening
+- [ ] Ensure no real IDs, URLs, or secrets are committed
+- [ ] Add clear deployment documentation for safe setup
+- [ ] Add environment variable guidance for local machine use
+- [ ] Add warnings against committing live config
+- [ ] Add a security checklist for future contributors
+
+---
+
+## Priority 6 — Production Readiness
+- [ ] Validate all required fields
+- [ ] Validate email format
+- [ ] Validate payment upload requirements
+- [ ] Test responsive mobile layout
+- [ ] Test cross-browser behavior
+- [ ] Add accessibility improvements
+- [ ] Final QA pass before launch
+
+---
+
+## Immediate Next Actions
+1. Make the repo public in GitHub settings.
+2. Add architecture documentation (`walkthrough.md`).
+3. Add onboarding/context file (`new_conversation.md`).
+4. Implement robust frontend validation.
+5. Validate the Google Apps Script backend end-to-end.
+6. Test registration data flow and Drive receipt upload.
