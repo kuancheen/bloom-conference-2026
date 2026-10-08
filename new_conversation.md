@@ -1,3 +1,7 @@
+> **NOTE:** This document represents the initial phase built with GitHub Copilot and is now **ARCHIVED/OUTDATED**. The project was completely rebuilt and finalized using Google Antigravity. Please refer to `README.md` for the current, accurate documentation (including the `.htaccess` deployment routing).
+
+> **NOTE:** This document represents the initial phase built with GitHub Copilot and is now **ARCHIVED/OUTDATED**. The project was completely rebuilt and finalized using Google Antigravity. Please refer to `README.md` for the current, accurate documentation (including the  deployment routing).
+
 # New Conversation Guide — Bloom Conference 2026
 
 This guide helps agents and collaborators quickly understand the project scope, structure, and how to contribute effectively.
@@ -202,4 +206,3 @@ When you get stuck, share:
 5. **Pick a Phase 3 task** from `implementation_plan.md` and open an issue
 
 Welcome aboard! 🌸
-
