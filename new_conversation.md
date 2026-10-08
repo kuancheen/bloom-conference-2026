@@ -1,108 +1,205 @@
-# New Conversation / Agent Handoff
+# New Conversation Guide — Bloom Conference 2026
 
-## Project Context
-This repository is a public-safe starter for a conference registration application. It follows a simple architecture:
-- static frontend
-- Google Apps Script backend
-- Google Sheets as the persistence layer
-- optional Google Drive upload for receipt files
-
-The aim is to build a registration system that remains safe to share publicly without exposing Google IDs, scripts, or other sensitive configuration.
+This guide helps agents and collaborators quickly understand the project scope, structure, and how to contribute effectively.
 
 ---
 
-## Repository Status
-The project is in an early but functional starter phase. The repo includes:
-- base frontend scaffolding
-- a mode switch between Adult and Kids registration
-- placeholder configuration files
-- a backend template for Google Apps Script
-- a clean `.gitignore` and example environment files
+## 30-Second Summary
 
-The codebase is intentionally not production complete yet. It should be treated as a reusable starter, not as a final production deployment.
+**Bloom Conference 2026** is a registration system for a church conference with two tracks:
+- Adults submit their info and workshop preferences
+- Parents submit their info + child details for the kids' track
+
+The frontend is a static form (`public/`) that POSTs to a Google Apps Script backend (`backend/`) that writes to Google Sheets. **No secrets are in git** — all configuration is local or environment-based.
 
 ---
 
-## Core Objective
-You are an expert software engineering agent. Your job is to maximize clarity, correctness, and security while remaining efficient and focused.
+## What This Project Is
 
-Use the repo's project artifacts as the single source of truth:
-- `implementation_plan.md` — current checklist of technical work
-- `walkthrough.md` — architecture and system understanding
-- `README.md` — general project overview
+✅ **Static frontend** — vanilla HTML/CSS/JS, no build step  
+✅ **Google Apps Script backend** — serverless, writes to Google Sheets  
+✅ **Public repository** — safe to fork, share, and reuse  
+✅ **Conference-specific** — but structured for easy customization  
 
-Do not rely on chat history as long-term memory. Always read the project docs first.
-
----
-
-## Operating Rules
-1. Read `implementation_plan.md` and `walkthrough.md` before making changes.
-2. Before writing code, update `implementation_plan.md` if scope changes.
-3. Execute work in focused, incremental steps.
-4. Keep file modifications small and intentional.
-5. Never expose real Google IDs, deployment URLs, or secret configuration in source control.
-6. Keep all config values in local files or environment variables.
-7. Prefer security and maintainability over premature complexity.
-8. When features are added, update the architecture docs in the same pass.
+❌ **Not a full SPA** — no React, Vue, or complex bundling  
+❌ **Not a database** — uses Google Sheets as the data store  
+❌ **Not production-ready yet** — still in Phase 2 (documentation)  
 
 ---
 
-## Current Development Focus
-The next priority is to turn the starter into a functional registration flow with:
-- field validation
-- proper success/error states
-- real Google Apps Script submission testing
-- receipt upload flow for kids registrations
-- data verification in Google Sheets
-- future admin dashboard support
+## Quick File Reference
+
+| File | Purpose |
+|------|---------|
+| `public/index.html` | Form layout (Adult & Kids modes) |
+| `public/styles.css` | Design system & responsive layout |
+| `public/app.js` | Form logic, state, submission |
+| `public/config.js.example` | Template for runtime configuration |
+| `backend/Code.gs` | Google Apps Script backend (copy into Apps Script editor) |
+| `implementation_plan.md` | Development roadmap & priorities |
+| `walkthrough.md` | Deep dive into architecture & data flow |
+| `.gitignore` | Excludes secrets (config.js, .env, etc.) |
 
 ---
 
-## File Structure to Know
-```text
-.
-├── README.md
-├── implementation_plan.md
-├── walkthrough.md
-├── new_conversation.md
-├── .gitignore
-├── .env.example
-├── package.json
-├── public/
-│   ├── app.js
-│   ├── config.js.example
-│   ├── index.html
-│   ├── styles.css
-│   └── config.js
-├── backend/
-│   ├── Code.gs
-│   └── README.md
-└── .gitignore
-```
+## Common Tasks
+
+### I want to understand the system
+→ Read `walkthrough.md` (architecture, data flow, file structure)
+
+### I want to add a new form field
+1. Add `<input>` to `public/index.html` (in Adult or Kids section)
+2. Add column header in `backend/Code.gs` (in `doPost()`)
+3. Update `normalizePayload()` in `public/app.js` if special handling needed
+4. Test with `npm run dev` locally, then deploy backend
+
+### I want to style the form
+→ Edit `public/styles.css` — uses CSS variables (`--primary`, `--danger`, etc.) for easy theming
+
+### I want to deploy the backend
+1. Open `backend/README.md` for step-by-step instructions
+2. Copy `backend/Code.gs` into a new Google Apps Script
+3. Set `DRIVE_FOLDER_ID` to your folder ID
+4. Deploy as web app, copy `/exec` URL
+5. Paste URL into `public/config.js`
+
+### I want to add client-side validation
+→ This is a Phase 3 task. See `implementation_plan.md` for scope. Likely needs:
+- Required field checks in form submit handler
+- Email format validation
+- Date validation for kids' DOB
+- Visual error indicators in UI
+
+### I want to customize for a different conference
+→ Editable fields:
+- Event name: `public/index.html` (header, "Bloom Conference 2026")
+- Dates & info: `public/index.html` (info panel, right sidebar)
+- Form fields: `public/index.html` (both form sections)
+- Church plants: `public/index.html` (`<option>` values in selects)
+- Sheet names: `backend/Code.gs` (`getOrCreateSheet()` calls)
+- Styling: `public/styles.css` (CSS variables)
 
 ---
 
-## Security Guardrails
-- Never commit actual spreadsheet IDs.
-- Never commit actual Google Drive folder IDs.
-- Never commit live Apps Script `/exec` URLs.
-- Do not store secrets in public files.
-- Always replace placeholders before deployment.
-- If a secret appears in the repo, remove it immediately and rotate if necessary.
+## Current Status
+
+**Phase 1: Core Scaffolding** ✅ Complete  
+- Frontend form structure, backend template, dev environment
+
+**Phase 2: Repository Visibility & Documentation** 🔄 In Progress  
+- [ ] Make repository public
+- [x] Create `walkthrough.md` ← you're reading related docs
+- [x] Create `new_conversation.md` ← this file
+- [ ] Push to GitHub
+
+**Phase 3: Frontend Enhancement** ⏭️ Next  
+- Client-side validation, success screens, multiple children, file uploads, draft auto-save
 
 ---
 
-## Recommended Workflow
-1. Read docs and confirm state.
-2. Update implementation plan if the scope changes.
-3. Implement the smallest meaningful unit of work.
-4. Confirm it works locally.
-5. Update `walkthrough.md` to reflect the current architecture.
-6. Commit changes with a clean, descriptive message.
+## Before You Start
+
+**Do you have access to:**
+- The Google Sheet where registrations will be stored?
+- A Google Drive folder for receipt uploads (Kids mode)?
+- Ability to create & deploy Google Apps Scripts?
+
+If not, ask Kuan Cheen to set these up.
+
+**Have you configured:**
+- `public/config.js` with your Apps Script deployment URL?
+- `backend/Code.gs` with your Drive folder ID?
+
+If not, follow the backend README.
 
 ---
 
-## Final Guidance
-This project should remain secure, public-safe, and easy to understand for later agents. The repository is a starter template, not a final business-critical deployment. Keep it modular, understandable, and safe.
+## Testing Checklist
 
-The long-term goal is to evolve this into a polished registration system with a working backend integration and a clear admin/reporting layer.
+When you make changes, verify:
+
+- [ ] **Local dev works** — `npm run dev` starts server
+- [ ] **Form renders** — open http://localhost:3000, see form
+- [ ] **Mode toggle works** — switch between Adult & Kids tabs
+- [ ] **Submission (dry run)** — fills form, clicks submit, sees status message
+- [ ] **Error handling** — wrong config URL shows clear error
+- [ ] **Responsive design** — resize browser, layout adapts
+- [ ] **Backend (if deployed)** — data actually appears in Google Sheet
+
+---
+
+## Code Style & Conventions
+
+**JavaScript:**
+- Use `const` by default, `let` if reassignment needed
+- Camel case for variables & functions
+- Descriptive names (`normalizePayload`, not `process`)
+- Comments for non-obvious logic
+
+**HTML:**
+- Semantic tags (`<form>`, `<label>`, `<input>`)
+- Data attributes for JS hooks (`data-mode`, `data-*`)
+- Accessibility: `aria-*` attributes where needed
+
+**CSS:**
+- CSS variables for colors, spacing, sizing
+- Mobile-first responsive design
+- Class names kebab-case (`.mode-btn`, `.field-row`)
+
+**Git:**
+- Commit messages: "Add X feature" or "Fix Y bug"
+- Branch for features: `feature/validation`, `fix/style-issue`
+- PR title: "Phase 3: Add client-side form validation"
+
+---
+
+## Common Gotchas
+
+### 1. "Config URL is not set"
+**Error:** "Please replace the placeholder Google Apps Script URL"  
+**Fix:** Copy `public/config.js.example` to `public/config.js` and fill in your deployment URL
+
+### 2. "Form submits but nothing appears in sheet"
+**Error:** No new rows in Google Sheet  
+**Fix:** Check that `backend/Code.gs` is deployed as a web app with "Anyone" access
+
+### 3. "File uploads fail"
+**Error:** "Upload failed" in sheet, or blank URL  
+**Fix:** Verify `DRIVE_FOLDER_ID` in `backend/Code.gs` is correct and the folder exists
+
+### 4. "Style changes don't apply"
+**Error:** CSS seems cached  
+**Fix:** Hard refresh browser (Ctrl+Shift+R or Cmd+Shift+R)
+
+---
+
+## Asking for Help
+
+When you get stuck, share:
+1. **What you're trying to do** — "I want to add date validation"
+2. **What happened** — "Form submitted but no error message"
+3. **Error message** (if any) — full text from console or status box
+4. **What you've already tried** — "checked config.js, it's set correctly"
+
+---
+
+## Resources
+
+- **Architecture & data flow** → `walkthrough.md`
+- **Development roadmap** → `implementation_plan.md`
+- **Backend setup** → `backend/README.md`
+- **Project overview** → `README.md`
+- **GitHub repo** → https://github.com/kuancheen/bloom-conference-2026
+
+---
+
+## Next Steps
+
+1. **Read** `walkthrough.md` to understand the system
+2. **Set up** locally: `npm install && npm run dev`
+3. **Deploy** the backend (if not already done) — see `backend/README.md`
+4. **Test** form submission end-to-end
+5. **Pick a Phase 3 task** from `implementation_plan.md` and open an issue
+
+Welcome aboard! 🌸
+

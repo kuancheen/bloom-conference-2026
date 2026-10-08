@@ -1,151 +1,306 @@
-# Bloom Conference 2026 — Project Walkthrough
+# Bloom Conference 2026 — System Walkthrough
 
-## Overview
-This project is a public-safe multi-file registration starter for a conference. It uses:
-- a static frontend served from `public/`
-- a Google Apps Script backend bound to a Google Sheet
-- optional receipt uploads to Google Drive
-- a configuration layer that avoids committing live secrets
+## Project Overview
 
-The goal is to keep the repository safe to share publicly while still functioning as a practical registration system.
+A conference registration system for Bloom Conference 2026 with two registration tracks:
+- **Adult 13+** — full participant details, workshop selection
+- **Kids 5-12** — parent/guardian + child details, payment receipt tracking
 
----
+The system uses a **static frontend** (HTML/CSS/JS) connected to a **Google Apps Script backend** that writes registrations to Google Sheets and manages file uploads to Google Drive.
 
-## Architecture at a Glance
-
-**Frontend:**
-- `public/index.html` — page structure and form layout
-- `public/styles.css` — styling for the registration UI
-- `public/app.js` — mode switching, form validation, payload preparation, fetch submission
-- `public/config.js.example` — sample configuration file
-- `public/config.js` — actual runtime config created by the developer; should not be committed
-
-**Backend:**
-- `backend/Code.gs` — Apps Script code that receives POST requests and writes to Google Sheets
-- `backend/README.md` — setup guide for wiring the script to Google Sheets and Drive
-
-**Support:**
-- `.env.example` — example local environment variables
-- `.gitignore` — hides `.env`, `node_modules`, and local runtime secrets
-- `package.json` — local dev script using `npx serve public`
+**Key principle:** No secrets (spreadsheet IDs, deployment URLs, Drive folder IDs) are committed to version control.
 
 ---
 
-## Data Flow
+## Architecture
 
-1. User opens `public/index.html`
-2. The browser loads `public/app.js`
-3. The form switches between Adult and Kids mode
-4. On submit, the frontend prepares a JSON payload
-5. The payload is sent with `fetch()` to the Google Apps Script `/exec` URL
-6. Apps Script parses the payload and writes rows to a Google Sheet
-7. If a receipt file is present, the backend uploads it to a Drive folder
-8. The backend returns a success/error response
-9. The frontend displays the status box
+### Frontend → Backend Flow
 
-Example payload flow:
-```js
-{
-  registrationType: "Adult 13+",
-  fullName: "Jane Doe",
-  phoneNumber: "+60123456789",
-  emailAddress: "jane@example.com",
-  churchPlant: "Bloom City",
-  homesCode: "BC-H01",
-  remarks: "Optional note"
-}
+```
+User fills form
+       ↓
+Client-side validation & state management (app.js)
+       ↓
+Form submission → normalizePayload()
+       ↓
+POST to Google Apps Script /exec URL
+       ↓
+Backend validates, writes to sheet, uploads files
+       ↓
+Response returned to frontend (success or error)
+       ↓
+User sees status message
 ```
 
+### Storage
+
+- **Adults registrations** → `Adults` sheet in Google Sheet
+- **Kids registrations** → `Kids` sheet in Google Sheet
+- **Receipt files** → Google Drive folder (configured via `DRIVE_FOLDER_ID`)
+
 ---
 
-## Repository Structure
+## File Structure
 
-```text
+```
 bloom-conference-2026/
-├── .gitignore
-├── .env.example
-├── README.md
-├── package.json
-├── implementation_plan.md
-├── walkthrough.md
-├── new_conversation.md
-├── public/
-│   ├── app.js
-│   ├── config.js.example
-│   ├── index.html
-│   ├── styles.css
-│   └── config.js   (local file, not meant for public commit)
-├── backend/
-│   ├── Code.gs
-│   └── README.md
-└── .github/        (optional future directory)
+│
+├── public/                          # Frontend (static, public-ready)
+│   ├── index.html                   # Registration form layout
+│   ├── styles.css                   # Design system & responsive layout
+│   ├── app.js                       # Form logic, state, submission
+│   ├── config.js                    # (gitignored) Runtime config with API URL
+│   └── config.js.example            # Template for config.js
+│
+├── backend/                         # Google Apps Script
+│   ├── Code.gs                      # Apps Script backend template
+│   └── README.md                    # Backend setup instructions
+│
+├── .gitignore                       # Excludes config.js, .env, node_modules
+├── .env.example                     # Template for local environment variables
+├── package.json                     # Dev dependencies (serve)
+├── README.md                        # Project overview & setup
+├── implementation_plan.md           # Development roadmap
+└── walkthrough.md                   # This file
 ```
 
 ---
 
-## Current Implementation Notes
+## Component Details
 
-### Frontend
-The frontend currently includes:
-- adult/kids registration mode switching
-- basic form layout
-- placeholder status messaging
-- payload assembly for submission
-- fetch logic to a Google Apps Script deployment URL
+### Frontend: `public/index.html`
 
-### Backend
-The backend template includes:
-- a `doPost(e)` handler
-- automatic creation of `Adults` and `Kids` sheets
-- adult and child registration row writes
-- optional Drive file upload for receipts
-- placeholder `DRIVE_FOLDER_ID` to be replaced before deployment
+**Structure:**
+- **Header** — title, theme info
+- **Mode toggle** — switches between Adult 13+ and Kids 5-12
+- **Adult form section** — name, phone, email, church plant, homes code, workshop track, remarks
+- **Kids form section** — parent details, child details (name, DOB, gender, church plant, allergies)
+- **Status box** — shows submission feedback (success/error)
+- **Submit button** — triggers form validation and submission
+
+**Key features:**
+- Two distinct form sections hidden/shown via CSS
+- Both sections initialize with all fields (no dynamic field addition yet—Phase 3 work)
+- Uses semantic HTML (`<form>`, `<label>`, `<input>`, etc.)
+- Accessibility markers (`aria-live`, `aria-selected`, `role="tablist"`)
+
+### Frontend: `public/styles.css`
+
+**Design system:**
+- **Colors** — CSS variables for consistency (`--primary`, `--danger`, `--success`, etc.)
+- **Typography** — Inter font family, 400–800 weights
+- **Spacing** — 8px base unit, consistent margins & padding
+- **Layout** — Two-column grid (form + info panel) on desktop, single column on mobile
+- **Interactive** — Smooth transitions, focus states, gradient buttons
+
+**Key classes:**
+- `.panel` — card container with shadow & border
+- `.mode-btn` — toggle buttons with active state styling
+- `.field-row` — two-column input grid
+- `.status-box` — feedback messages (success/error/info)
+- `.primary-btn` — submit button with gradient
+
+**Responsive:**
+- Media query at 820px switches to single-column layout
+- Uses `clamp()` for fluid typography
+
+### Frontend: `public/app.js`
+
+**State management:**
+```javascript
+const state = {
+  mode: 'adult'  // 'adult' or 'kids'
+};
+```
+
+**Key functions:**
+
+1. **`setMode(mode)`**
+   - Toggles between Adult and Kids form sections
+   - Updates button active states
+   - Clears previous mode data (form reset handled separately)
+
+2. **`normalizePayload(formData)`**
+   - Converts FormData to JSON object
+   - **Adult mode:** includes all adult fields
+   - **Kids mode:** wraps child data in JSON array, converts payment to number
+
+3. **`submitRegistration(payload)`**
+   - Validates Google Script URL is configured
+   - POSTs to configured endpoint
+   - Returns parsed JSON response
+
+4. **`setStatus(message, type)`**
+   - Updates status box with feedback message
+   - Applies CSS classes for styling (`is-success`, `is-error`)
+   - Used for validation errors and submission feedback
+
+**Event flow:**
+```
+User clicks mode button → setMode() → updates UI
+User fills form & clicks submit → form.addEventListener('submit')
+                                → preventDefault()
+                                → normalizePayload()
+                                → submitRegistration()
+                                → setStatus() with result
+                                → form.reset() on success
+```
+
+**Error handling:**
+- Catches missing/invalid Google Script URL
+- Catches network/response errors
+- Displays human-readable error messages to user
+- Status box persists until new action
+
+### Configuration: `public/config.js.example`
+
+```javascript
+window.APP_CONFIG = {
+  googleScriptUrl: "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
+};
+```
+
+**Setup:**
+1. Copy to `public/config.js` (gitignored)
+2. Replace `YOUR_DEPLOYMENT_ID` with real Apps Script deployment ID
+3. `app.js` reads this at runtime via `getGoogleScriptUrl()`
+
+### Backend: `backend/Code.gs`
+
+**Configuration:**
+```javascript
+var DRIVE_FOLDER_ID = "YOUR_DRIVE_FOLDER_ID";
+```
+
+**Key functions:**
+
+1. **`doGet(e)`** — Returns `{ status: 'ok' }` (health check)
+
+2. **`doPost(e)`** — Main submission handler
+   - Parses JSON POST body
+   - **Adult path:** appends to `Adults` sheet with all fields
+   - **Kids path:** appends to `Kids` sheet, handles file upload, creates UUID for multi-child tracking
+   - Returns `{ result: 'success' }` or `{ result: 'error', error: 'message' }`
+
+3. **`getOrCreateSheet(name)`** — Ensures sheet exists before appending
+
+**Adult sheet columns:**
+```
+Date | Type | Name | Phone | Email | Church Plant | Homes Code | 
+Session 1 Workshop | Session 2 Workshop | Workshop Track | Remarks
+```
+
+**Kids sheet columns:**
+```
+Date | Type | Parent Name | Parent Phone | Parent Email | Parent Relationship | 
+Parent Homes Code | Parent UUID | Child # | Child Name | Child DOB | 
+Child Gender | Child Allergies | Child Church Plant | Payment Amount | 
+Receipt File URL | Remarks
+```
+
+**File upload (Kids mode):**
+- Decodes base64 file data from payload
+- Creates file in configured Drive folder
+- Sets public link sharing (VIEW access)
+- Stores file URL in sheet, or error message if upload fails
 
 ---
 
-## Security Model
-This project intentionally follows a safe public repo model:
-- no hardcoded spreadsheet IDs
-- no hardcoded Drive folder IDs
-- no live Apps Script deployment URLs committed to the repo
-- config values are expected to live locally or in deployment environment variables
+## Data Flow Example
 
-Critical rule:
-- If a real Google ID or script URL is ever added, remove it before pushing to a public repo.
+### Adult Registration
+
+1. User selects "Adult 13+" tab
+2. Fills: name, phone, email, church plant, homes code, workshop track, remarks
+3. Clicks "Submit registration"
+4. `app.js` collects form data: `{ fullName, phoneNumber, emailAddress, ... }`
+5. `normalizePayload()` returns:
+   ```json
+   {
+     "registrationType": "Adult 13+",
+     "fullName": "Jane Doe",
+     "phoneNumber": "+60123456789",
+     ...
+   }
+   ```
+6. `submitRegistration()` POSTs to Apps Script URL
+7. Backend `doPost()` detects `registrationType === 'Adult 13+'`
+8. Appends row to `Adults` sheet
+9. Returns `{ result: 'success' }`
+10. Frontend shows green success message, resets form
+
+### Kids Registration with File Upload
+
+1. User selects "Kids 5-12" tab
+2. Fills: parent name, phone, email, relationship, homes code, payment amount
+3. Fills: child name, DOB, gender, church plant, allergies
+4. Optionally uploads receipt image
+5. Clicks "Submit registration"
+6. `normalizePayload()` returns:
+   ```json
+   {
+     "registrationType": "Acts Kids (5-12)",
+     "parentName": "John Doe",
+     "paymentAmount": 30,
+     "children": "[{\"name\":\"John Jr.\",\"dob\":\"2018-05-15\",...}]",
+     "fileData": "base64encodeddata...",
+     "fileType": "image/jpeg",
+     "fileName": "receipt.jpg"
+   }
+   ```
+7. Backend `doPost()` detects Kids registration
+8. Decodes and uploads file to Drive folder
+9. Generates UUID for parent (`parentUuid`)
+10. Appends row to `Kids` sheet with file URL
+11. Returns `{ result: 'success', fileUrl: '...' }`
+12. Frontend shows success message, resets form
 
 ---
 
-## Local Development
-Run the project locally with:
+## Development Workflow
+
+### Local Setup
+
 ```bash
+# Install dependencies
 npm install
+
+# Start local dev server (serves public/ on http://localhost:3000)
 npm run dev
+
+# Syntax check
+npm run check
 ```
 
-This serves the `public/` directory with a lightweight static server.
+### Backend Deployment
+
+1. Create new Google Apps Script (bound to Google Sheet or standalone)
+2. Copy `backend/Code.gs` into editor
+3. Set `DRIVE_FOLDER_ID` to real value
+4. Deploy as web app: **Deploy** → **New deployment** → **Type: Web app**
+   - Execute as: your account
+   - Who has access: Anyone
+5. Copy generated `/exec` URL
+6. Paste into `public/config.js`
+7. Test with form submission
+
+### Security Checklist
+
+- [ ] `public/config.js` is gitignored (never commit deployment URL)
+- [ ] `.env` is gitignored (never commit Drive folder IDs)
+- [ ] Deployment URL rotated if previously shared publicly
+- [ ] Google Sheet accessible only to authorized users
+- [ ] Drive folder permissions set appropriately
+- [ ] No sensitive values in example files
 
 ---
 
-## Deployment Notes
-The frontend needs a live configuration value:
-- `public/config.js` must be created from `public/config.js.example`
-- the Google Apps Script deployment URL must be added there
+## Next Steps (Phase 3+)
 
-The backend needs:
-- a real Google Drive folder ID
-- a Google Sheet bound to the Apps Script project
-- deployment as a web app
+- **Client-side validation** — email format, required fields, date validation
+- **Dynamic UI states** — loading spinners, disabled buttons, success screen
+- **Multiple children** — add/remove child rows in Kids mode
+- **File uploads** — receipt image picker and preview
+- **LocalStorage** — auto-save draft registrations
+- **Admin dashboard** — view/filter/export registrations
 
----
-
-## Known Risks / Follow-up Work
-- Need end-to-end test of Apps Script connectivity
-- Need validation and UX improvements
-- Need exact admin dashboard logic
-- Need final production styling and QA
-- Need careful audit of all commit history before final public release
-
----
-
-## Summary
-This repo is intended to be a clean, public-safe starter for a conference registration system. The architecture is intentionally simple: a static frontend plus a Google Apps Script backend. The system can be extended into a larger dashboard or admin app without exposing sensitive config values in source control.
