@@ -48,7 +48,12 @@ window.APP_CONFIG = {
 
 ### 3. Deployment
 
-Upload the `public/` folder contents to your web server (e.g. `/bloom2026/`).
+Upload the following files from the `public/` folder to your web server (e.g. into a `/bloom2026/` directory):
+- `index.html`
+- `styles.css`
+- `app.js`
+- `config.js` (with your real Apps Script URL)
+
 It runs independently as a standalone HTML page.
 
 ---
