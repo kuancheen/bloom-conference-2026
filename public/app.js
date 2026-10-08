@@ -1,127 +1,441 @@
-const DEFAULT_GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+/**
+ * Bloom Conference 2026 — Registration Form Logic
+ *
+ * Security model:
+ *  - The Google Apps Script URL is loaded from `config.js` (gitignored).
+ *  - This file contains NO secrets, no IDs, no real URLs.
+ *  - config.js must set: window.APP_CONFIG = { googleScriptUrl: '...' }
+ */
 
-const state = {
-  mode: 'adult'
-};
+/* ─────────────────────────────────────────────────
+   Constants & DOM refs
+───────────────────────────────────────────────── */
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
 
-const modeButtons = document.querySelectorAll('.mode-btn');
-const adultFields = document.getElementById('adultFields');
-const kidsFields = document.getElementById('kidsFields');
-const form = document.getElementById('registrationForm');
-const statusBox = document.getElementById('statusBox');
+const form            = document.getElementById('registrationForm');
+const statusBox       = document.getElementById('statusBox');
+const submitBtn       = document.getElementById('submitBtn');
+const btnSpinner      = document.getElementById('btnSpinner');
+const btnText         = submitBtn.querySelector('.btn-text');
+const successScreen   = document.getElementById('successScreen');
+const registerAnotherBtn = document.getElementById('registerAnotherBtn');
 
+// Church Plant "Others" conditional
+const churchPlantSelect     = document.getElementById('churchPlant');
+const churchPlantOtherGroup = document.getElementById('churchPlantOtherGroup');
+const churchPlantOther      = document.getElementById('churchPlantOther');
+
+// File upload
+const paymentProofInput = document.getElementById('paymentProof');
+const fileUploadZone    = document.getElementById('fileUploadZone');
+const fileUploadUI      = fileUploadZone.querySelector('.file-upload-ui');
+const filePreview       = document.getElementById('filePreview');
+const filePreviewName   = document.getElementById('filePreviewName');
+const fileRemoveBtn     = document.getElementById('fileRemoveBtn');
+
+/* ─────────────────────────────────────────────────
+   Config / backend URL
+───────────────────────────────────────────────── */
 function getGoogleScriptUrl() {
   if (window.APP_CONFIG && window.APP_CONFIG.googleScriptUrl) {
     return window.APP_CONFIG.googleScriptUrl;
   }
-
-  return DEFAULT_GOOGLE_SCRIPT_URL;
+  return null;
 }
 
-function setMode(mode) {
-  state.mode = mode;
+/* ─────────────────────────────────────────────────
+   Church Plant — show/hide "Other" field
+───────────────────────────────────────────────── */
+churchPlantSelect.addEventListener('change', () => {
+  const isOther = churchPlantSelect.value === 'Others';
+  churchPlantOtherGroup.style.display = isOther ? '' : 'none';
+  if (!isOther) {
+    churchPlantOther.value = '';
+    clearFieldError('churchPlantOther');
+  }
+});
 
-  modeButtons.forEach((button) => {
-    const isActive = button.dataset.mode === mode;
-    button.classList.toggle('is-active', isActive);
-    button.setAttribute('aria-selected', String(isActive));
+/* ─────────────────────────────────────────────────
+   File Upload — drag & drop + preview
+───────────────────────────────────────────────── */
+function showFilePreview(file) {
+  fileUploadZone.classList.add('has-file');
+  fileUploadZone.classList.remove('is-invalid');
+  fileUploadUI.style.display = 'none';
+  filePreview.style.display  = 'flex';
+  filePreviewName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+}
+
+function clearFilePreview() {
+  fileUploadZone.classList.remove('has-file', 'is-invalid');
+  fileUploadUI.style.display = '';
+  filePreview.style.display  = 'none';
+  filePreviewName.textContent = '';
+  paymentProofInput.value    = '';
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function validateFile(file) {
+  if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+    return 'Only JPG, PNG, GIF, and PDF files are accepted.';
+  }
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    return `File is too large. Maximum size is ${MAX_FILE_SIZE_MB}MB.`;
+  }
+  return null; // valid
+}
+
+paymentProofInput.addEventListener('change', () => {
+  const file = paymentProofInput.files[0];
+  if (!file) return clearFilePreview();
+
+  const err = validateFile(file);
+  if (err) {
+    showFieldError('paymentProof', err);
+    fileUploadZone.classList.add('is-invalid');
+    clearFilePreview();
+    paymentProofInput.value = '';
+    return;
+  }
+  clearFieldError('paymentProof');
+  showFilePreview(file);
+});
+
+fileRemoveBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  clearFilePreview();
+  clearFieldError('paymentProof');
+});
+
+// Drag & drop
+fileUploadZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  fileUploadZone.classList.add('is-drag-over');
+});
+
+fileUploadZone.addEventListener('dragleave', () => {
+  fileUploadZone.classList.remove('is-drag-over');
+});
+
+fileUploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  fileUploadZone.classList.remove('is-drag-over');
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+
+  // inject into the input
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  paymentProofInput.files = dt.files;
+  paymentProofInput.dispatchEvent(new Event('change'));
+});
+
+/* ─────────────────────────────────────────────────
+   Validation helpers
+───────────────────────────────────────────────── */
+function showFieldError(fieldId, message) {
+  const input = document.getElementById(fieldId) || form.querySelector(`[name="${fieldId}"]`);
+  const errorEl = document.getElementById(`${fieldId}-error`);
+
+  if (input) {
+    input.classList.add('is-invalid');
+    input.setAttribute('aria-invalid', 'true');
+  }
+  if (errorEl) {
+    errorEl.textContent = message;
+    errorEl.classList.add('is-shown');
+  }
+}
+
+function clearFieldError(fieldId) {
+  const input = document.getElementById(fieldId) || form.querySelector(`[name="${fieldId}"]`);
+  const errorEl = document.getElementById(`${fieldId}-error`);
+
+  if (input) {
+    input.classList.remove('is-invalid');
+    input.removeAttribute('aria-invalid');
+  }
+  if (errorEl) {
+    errorEl.textContent = '';
+    errorEl.classList.remove('is-shown');
+  }
+}
+
+function validateForm(formData) {
+  let isValid = true;
+
+  // Clear all errors
+  form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+  form.querySelectorAll('.field-error').forEach(el => {
+    el.textContent = '';
+    el.classList.remove('is-shown');
   });
 
-  adultFields.classList.toggle('is-visible', mode === 'adult');
-  kidsFields.classList.toggle('is-visible', mode === 'kids');
+  // Full name
+  if (!formData.get('fullName')?.trim()) {
+    showFieldError('fullName', 'Please enter your full name.');
+    isValid = false;
+  }
+
+  // Email
+  const email = formData.get('emailAddress')?.trim();
+  if (!email) {
+    showFieldError('emailAddress', 'Please enter your email address.');
+    isValid = false;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showFieldError('emailAddress', 'Please enter a valid email address.');
+    isValid = false;
+  }
+
+  // Phone
+  const phone = formData.get('phoneNumber')?.trim();
+  if (!phone) {
+    showFieldError('phoneNumber', 'Please enter your phone number.');
+    isValid = false;
+  } else if (!/^\+?[\d\s\-()]{7,20}$/.test(phone)) {
+    showFieldError('phoneNumber', 'Please enter a valid phone number (e.g. +60123456789).');
+    isValid = false;
+  }
+
+  // Age Range
+  if (!formData.get('ageRange')) {
+    showFieldError('ageRange', 'Please select your age range.');
+    isValid = false;
+  }
+
+  // Marital Status
+  if (!formData.get('maritalStatus')) {
+    showFieldError('maritalStatus', 'Please select your marital status.');
+    isValid = false;
+  }
+
+  // Church Plant
+  if (!formData.get('churchPlant')) {
+    showFieldError('churchPlant', 'Please select your church plant.');
+    isValid = false;
+  }
+
+  // Church Plant Other
+  if (formData.get('churchPlant') === 'Others' && !formData.get('churchPlantOther')?.trim()) {
+    showFieldError('churchPlantOther', 'Please specify your church / organisation.');
+    isValid = false;
+  }
+
+  // Workshop
+  if (!formData.get('workshop')) {
+    showFieldError('workshop', 'Please select a workshop.');
+    isValid = false;
+  }
+
+  // First Bloom
+  if (!formData.get('firstBloom')) {
+    showFieldError('firstBloom', 'Please indicate if this is your first Bloom Conference.');
+    isValid = false;
+  }
+
+  // Payment proof
+  const file = paymentProofInput.files[0];
+  if (!file) {
+    showFieldError('paymentProof', 'Please upload your proof of payment.');
+    fileUploadZone.classList.add('is-invalid');
+    isValid = false;
+  } else {
+    const fileErr = validateFile(file);
+    if (fileErr) {
+      showFieldError('paymentProof', fileErr);
+      isValid = false;
+    }
+  }
+
+  return isValid;
 }
 
+/* ─────────────────────────────────────────────────
+   File → Base64
+───────────────────────────────────────────────── */
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      // result is "data:image/jpeg;base64,XXXXX"
+      const base64 = reader.result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ─────────────────────────────────────────────────
+   Status message
+───────────────────────────────────────────────── */
 function setStatus(message, type = 'info') {
   statusBox.textContent = message;
-  statusBox.classList.remove('is-error', 'is-success');
-
-  if (type === 'success') {
-    statusBox.classList.add('is-success');
-  }
-
-  if (type === 'error') {
-    statusBox.classList.add('is-error');
+  statusBox.className = `status-box is-visible is-${type}`;
+  if (message) {
+    statusBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
 
-function normalizePayload(formData) {
-  const payload = Object.fromEntries(formData.entries());
-
-  if (state.mode === 'adult') {
-    return {
-      registrationType: 'Adult 13+',
-      ...payload,
-      remarks: payload.remarks || ''
-    };
-  }
-
-  return {
-    registrationType: 'Acts Kids (5-12)',
-    parentName: payload.parentName || '',
-    parentPhone: payload.parentPhone || '',
-    parentEmail: payload.parentEmail || '',
-    parentRelationship: payload.parentRelationship || '',
-    parentHomesCode: payload.parentHomesCode || '',
-    paymentAmount: Number(payload.paymentAmount || 0),
-    children: JSON.stringify([
-      {
-        name: payload.childName || '',
-        dob: payload.childDob || '',
-        gender: payload.childGender || '',
-        allergies: payload.childAllergies || '',
-        plant: payload.childChurchPlant || ''
-      }
-    ]),
-    remarks: payload.remarks || ''
-  };
+function clearStatus() {
+  statusBox.textContent = '';
+  statusBox.className = 'status-box';
 }
 
-async function submitRegistration(payload) {
-  const googleScriptUrl = getGoogleScriptUrl();
-
-  if (!googleScriptUrl || googleScriptUrl.includes('YOUR_')) {
-    throw new Error('Please replace the placeholder Google Apps Script URL in public/config.js before submitting data.');
+/* ─────────────────────────────────────────────────
+   Submit
+───────────────────────────────────────────────── */
+function setSubmitting(isSubmitting) {
+  submitBtn.disabled = isSubmitting;
+  if (isSubmitting) {
+    btnText.textContent = 'Submitting…';
+    btnSpinner.classList.add('is-visible');
+  } else {
+    btnText.textContent = 'Submit Registration';
+    btnSpinner.classList.remove('is-visible');
   }
-
-  const response = await fetch(googleScriptUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    throw new Error('The registration request failed. Please try again.');
-  }
-
-  return response.json();
 }
-
-modeButtons.forEach((button) => {
-  button.addEventListener('click', () => setMode(button.dataset.mode));
-});
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  setStatus('Submitting registration...', 'info');
+  clearStatus();
+
+  const formData = new FormData(form);
+  if (!validateForm(formData)) {
+    setStatus('Please fill in all required fields correctly before submitting.', 'error');
+    // Scroll to first error
+    const firstError = form.querySelector('.is-invalid');
+    if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const googleScriptUrl = getGoogleScriptUrl();
+  if (!googleScriptUrl || googleScriptUrl.includes('YOUR_')) {
+    setStatus(
+      'Registration endpoint is not configured. Please contact the event organiser.',
+      'error'
+    );
+    return;
+  }
+
+  setSubmitting(true);
+  setStatus('Uploading and submitting your registration…', 'info');
 
   try {
-    const formData = new FormData(form);
-    const payload = normalizePayload(formData);
-    const result = await submitRegistration(payload);
+    const file = paymentProofInput.files[0];
+    const fileBase64 = await fileToBase64(file);
+
+    const payload = {
+      fullName:          formData.get('fullName')?.trim(),
+      emailAddress:      formData.get('emailAddress')?.trim(),
+      phoneNumber:       formData.get('phoneNumber')?.trim(),
+      ageRange:          formData.get('ageRange'),
+      maritalStatus:     formData.get('maritalStatus'),
+      churchPlant:       formData.get('churchPlant') === 'Others'
+                           ? formData.get('churchPlantOther')?.trim()
+                           : formData.get('churchPlant'),
+      churchPlantRaw:    formData.get('churchPlant'),
+      homesCode:         formData.get('homesCode')?.trim() || '',
+      workshop:          formData.get('workshop'),
+      firstBloom:        formData.get('firstBloom'),
+      remarks:           formData.get('remarks')?.trim() || '',
+      // File as base64
+      fileName:          file.name,
+      fileType:          file.type,
+      fileData:          fileBase64,
+    };
+
+    const response = await fetch(googleScriptUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+
+    const result = await response.json();
 
     if (result && result.result === 'success') {
-      setStatus('Registration submitted successfully.', 'success');
-      form.reset();
-      setMode('adult');
+      showSuccessScreen();
       return;
     }
 
-    throw new Error(result && result.error ? result.error : 'The backend rejected the request.');
-  } catch (error) {
-    setStatus(error.message || 'Something went wrong. Please check your setup.', 'error');
+    throw new Error(result?.error || 'The server rejected the submission. Please try again.');
+
+  } catch (err) {
+    setStatus(
+      err.message || 'Something went wrong. Please try again or contact the organiser.',
+      'error'
+    );
+  } finally {
+    setSubmitting(false);
   }
 });
 
-setMode('adult');
+/* ─────────────────────────────────────────────────
+   Success screen
+───────────────────────────────────────────────── */
+function showSuccessScreen() {
+  form.closest('.panel').style.display = 'none';
+  successScreen.style.display = 'flex';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+registerAnotherBtn.addEventListener('click', () => {
+  form.reset();
+  clearFilePreview();
+  clearStatus();
+  churchPlantOtherGroup.style.display = 'none';
+  form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+  form.querySelectorAll('.field-error').forEach(el => {
+    el.textContent = '';
+    el.classList.remove('is-shown');
+  });
+  successScreen.style.display = 'none';
+  form.closest('.panel').style.display = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ─────────────────────────────────────────────────
+   Inline validation on blur
+───────────────────────────────────────────────── */
+['fullName', 'emailAddress', 'phoneNumber'].forEach(fieldId => {
+  const input = document.getElementById(fieldId);
+  if (!input) return;
+
+  input.addEventListener('blur', () => {
+    const val = input.value.trim();
+    if (!val) {
+      showFieldError(fieldId, 'This field is required.');
+    } else if (fieldId === 'emailAddress' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      showFieldError(fieldId, 'Please enter a valid email address.');
+    } else if (fieldId === 'phoneNumber' && !/^\+?[\d\s\-()]{7,20}$/.test(val)) {
+      showFieldError(fieldId, 'Please enter a valid phone number.');
+    } else {
+      clearFieldError(fieldId);
+    }
+  });
+
+  input.addEventListener('input', () => {
+    if (input.classList.contains('is-invalid')) {
+      clearFieldError(fieldId);
+    }
+  });
+});
+
+['ageRange', 'maritalStatus', 'churchPlant', 'workshop'].forEach(fieldId => {
+  const select = document.getElementById(fieldId);
+  if (!select) return;
+  select.addEventListener('change', () => {
+    if (select.value) clearFieldError(fieldId);
+  });
+});

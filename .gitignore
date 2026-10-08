@@ -1,7 +1,13 @@
-.gitignore
-node_modules/
+# Secrets & local config — NEVER commit these
+public/config.js
 .env
-.env.*
-!.env.example
+
+# Node
+node_modules/
+
+# macOS
 .DS_Store
-*.log
+
+# IDE
+.vscode/
+.idea/

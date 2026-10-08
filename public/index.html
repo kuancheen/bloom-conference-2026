@@ -6,172 +6,354 @@
     <title>Bloom Conference 2026 Registration</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <!-- Decorative background petals -->
+    <div class="bg-petals" aria-hidden="true">
+      <div class="petal petal--1"></div>
+      <div class="petal petal--2"></div>
+      <div class="petal petal--3"></div>
+      <div class="petal petal--4"></div>
+    </div>
+
     <div class="page-shell">
+      <!-- Header -->
       <header class="topbar">
-        <div>
-          <p class="eyebrow">Bloom Conference 2026</p>
-          <h1>Registration</h1>
+        <div class="topbar-inner">
+          <div class="brand">
+            <div class="brand-icon">🌸</div>
+            <div>
+              <p class="eyebrow">Bloom Conference 2026</p>
+              <h1>Registration / 注册 / Pendaftaran</h1>
+            </div>
+          </div>
         </div>
       </header>
 
       <main class="layout">
+        <!-- Registration Form Panel -->
         <section class="panel panel--primary">
           <div class="panel-header">
-            <h2>Choose your registration</h2>
-          </div>
-
-          <div class="mode-toggle" role="tablist" aria-label="Registration type">
-            <button class="mode-btn is-active" type="button" data-mode="adult">Adult 13+</button>
-            <button class="mode-btn" type="button" data-mode="kids">Kids 5-12</button>
+            <h2>Register Now</h2>
+            <p class="panel-subtitle">All fields marked <span class="req-star">*</span> are required.</p>
           </div>
 
           <form id="registrationForm" novalidate>
-            <div id="adultFields" class="form-section is-visible">
-              <div class="field-row">
-                <label>
-                  <span>Full name</span>
-                  <input type="text" name="fullName" placeholder="Jane Doe" />
-                </label>
-                <label>
-                  <span>Phone number</span>
-                  <input type="tel" name="phoneNumber" placeholder="+60123456789" />
-                </label>
-              </div>
 
-              <div class="field-row">
-                <label>
-                  <span>Email address</span>
-                  <input type="email" name="emailAddress" placeholder="jane@example.com" />
-                </label>
-                <label>
-                  <span>Church plant</span>
-                  <select name="churchPlant">
-                    <option value="">Select a church plant</option>
-                    <option value="Bloom City">Bloom City</option>
-                    <option value="City Lights">City Lights</option>
-                    <option value="New Horizon">New Horizon</option>
-                  </select>
-                </label>
-              </div>
-
-              <div class="field-row">
-                <label>
-                  <span>Homes code</span>
-                  <input type="text" name="homesCode" placeholder="BC-H01" />
-                </label>
-                <label>
-                  <span>Workshop track</span>
-                  <input type="text" name="workshopTrack" placeholder="Leadership & discipleship" />
-                </label>
-              </div>
-
-              <div class="field-row">
-                <label class="full-width">
-                  <span>Remarks</span>
-                  <textarea name="remarks" rows="3" placeholder="Optional notes"></textarea>
-                </label>
-              </div>
+            <!-- Full Name -->
+            <div class="field-group">
+              <label for="fullName" class="field-label">
+                Full Name <span class="req-star">*</span>
+                <span class="field-label-sub">全名 / Nama Penuh</span>
+              </label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                placeholder="Jane Doe"
+                autocomplete="name"
+                required
+              />
+              <span class="field-error" id="fullName-error"></span>
             </div>
 
-            <div id="kidsFields" class="form-section">
-              <div class="field-row">
-                <label>
-                  <span>Parent / guardian name</span>
-                  <input type="text" name="parentName" placeholder="John Doe" />
-                </label>
-                <label>
-                  <span>Parent phone</span>
-                  <input type="tel" name="parentPhone" placeholder="+60123456789" />
-                </label>
-              </div>
-
-              <div class="field-row">
-                <label>
-                  <span>Parent email</span>
-                  <input type="email" name="parentEmail" placeholder="parent@example.com" />
-                </label>
-                <label>
-                  <span>Parent relationship</span>
-                  <input type="text" name="parentRelationship" placeholder="Father" />
-                </label>
-              </div>
-
-              <div class="field-row">
-                <label>
-                  <span>Parent homes code</span>
-                  <input type="text" name="parentHomesCode" placeholder="BC-H01" />
-                </label>
-                <label>
-                  <span>Payment amount</span>
-                  <input type="number" name="paymentAmount" min="0" step="1" placeholder="30" />
-                </label>
-              </div>
-
-              <div class="child-block">
-                <h3>Child details</h3>
-                <div class="field-row">
-                  <label>
-                    <span>Child name</span>
-                    <input type="text" name="childName" placeholder="John Doe Jr." />
-                  </label>
-                  <label>
-                    <span>Date of birth</span>
-                    <input type="date" name="childDob" />
-                  </label>
-                </div>
-
-                <div class="field-row">
-                  <label>
-                    <span>Gender</span>
-                    <select name="childGender">
-                      <option value="">Select</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>Church plant</span>
-                    <select name="childChurchPlant">
-                      <option value="">Select a church plant</option>
-                      <option value="Bloom City">Bloom City</option>
-                      <option value="City Lights">City Lights</option>
-                      <option value="New Horizon">New Horizon</option>
-                    </select>
-                  </label>
-                </div>
-
-                <label class="full-width">
-                  <span>Allergies / notes</span>
-                  <textarea name="childAllergies" rows="2" placeholder="Optional details"></textarea>
-                </label>
-              </div>
+            <!-- Email -->
+            <div class="field-group">
+              <label for="emailAddress" class="field-label">
+                Email Address <span class="req-star">*</span>
+                <span class="field-label-sub">电子邮箱 / Alamat E-mel</span>
+              </label>
+              <input
+                type="email"
+                id="emailAddress"
+                name="emailAddress"
+                placeholder="jane@example.com"
+                autocomplete="email"
+                required
+              />
+              <span class="field-error" id="emailAddress-error"></span>
             </div>
 
-            <div class="status-box" id="statusBox" aria-live="polite"></div>
+            <!-- Phone -->
+            <div class="field-group">
+              <label for="phoneNumber" class="field-label">
+                Phone Number <span class="req-star">*</span>
+                <span class="field-label-sub">联络号码 / Nombor Telefon</span>
+              </label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                placeholder="+60123456789"
+                autocomplete="tel"
+                required
+              />
+              <span class="field-error" id="phoneNumber-error"></span>
+            </div>
 
+            <!-- Age Range -->
+            <div class="field-group">
+              <label for="ageRange" class="field-label">
+                Age Range <span class="req-star">*</span>
+                <span class="field-label-sub">年龄 / Kumpulan Umur</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="ageRange" name="ageRange" required>
+                  <option value="">Select / 选择 / Pilih</option>
+                  <option value="Below 18">Below 18 / 18岁以下</option>
+                  <option value="18-25">18 – 25</option>
+                  <option value="26-35">26 – 35</option>
+                  <option value="36-45">36 – 45</option>
+                  <option value="46-55">46 – 55</option>
+                  <option value="56+">56 &amp; above / 56岁以上</option>
+                </select>
+              </div>
+              <span class="field-error" id="ageRange-error"></span>
+            </div>
+
+            <!-- Marital Status -->
+            <div class="field-group">
+              <label for="maritalStatus" class="field-label">
+                Marital Status <span class="req-star">*</span>
+                <span class="field-label-sub">婚姻状况 / Status Perkahwinan</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="maritalStatus" name="maritalStatus" required>
+                  <option value="">Select / 选择 / Pilih</option>
+                  <option value="Single">Single / 单身 / Bujang</option>
+                  <option value="Married">Married / 已婚 / Berkahwin</option>
+                  <option value="Widowed">Widowed / 丧偶 / Balu/Duda</option>
+                  <option value="Divorced">Divorced / 离异 / Bercerai</option>
+                </select>
+              </div>
+              <span class="field-error" id="maritalStatus-error"></span>
+            </div>
+
+            <!-- Church Plant -->
+            <div class="field-group">
+              <label for="churchPlant" class="field-label">
+                Church Plant <span class="req-star">*</span>
+                <span class="field-label-sub">植会 / Anak Gereja</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="churchPlant" name="churchPlant" required>
+                  <option value="">Select / 选择 / Pilih</option>
+                  <option value="Acts Church KL">Acts Church KL</option>
+                  <option value="Acts Church Petaling Jaya">Acts Church Petaling Jaya</option>
+                  <option value="Acts Church Subang">Acts Church Subang</option>
+                  <option value="Acts Church Setapak">Acts Church Setapak</option>
+                  <option value="Acts Church Kepong">Acts Church Kepong</option>
+                  <option value="Acts Church Cheras">Acts Church Cheras</option>
+                  <option value="Acts Church Klang">Acts Church Klang</option>
+                  <option value="Acts Church Cyberjaya">Acts Church Cyberjaya</option>
+                  <option value="Acts Church Ipoh">Acts Church Ipoh</option>
+                  <option value="Acts Church Penang">Acts Church Penang</option>
+                  <option value="Acts Church JB">Acts Church Johor Bahru</option>
+                  <option value="Others">Others / 其他 / Lain-Lain</option>
+                </select>
+              </div>
+              <span class="field-error" id="churchPlant-error"></span>
+            </div>
+
+            <!-- Church Plant Others -->
+            <div class="field-group" id="churchPlantOtherGroup" style="display:none;">
+              <label for="churchPlantOther" class="field-label">
+                Please specify your church / 请注明你的教会 / Sila nyatakan gereja anda
+                <span class="req-star">*</span>
+              </label>
+              <input
+                type="text"
+                id="churchPlantOther"
+                name="churchPlantOther"
+                placeholder="Church name / 教会名称 / Nama Gereja"
+              />
+              <span class="field-error" id="churchPlantOther-error"></span>
+            </div>
+
+            <!-- Homes Code -->
+            <div class="field-group">
+              <label for="homesCode" class="field-label">
+                Homes Code
+                <span class="field-label-sub">编号 / Kod Homes</span>
+                <span class="field-hint">e.g. KL-H01 (leave blank if not in a Homes)</span>
+              </label>
+              <input
+                type="text"
+                id="homesCode"
+                name="homesCode"
+                placeholder="KL-H01"
+              />
+            </div>
+
+            <!-- Workshop -->
+            <div class="field-group">
+              <label for="workshop" class="field-label">
+                Workshop <span class="req-star">*</span>
+                <span class="field-label-sub">工作坊 / Bengkel</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="workshop" name="workshop" required>
+                  <option value="">Select a workshop / 选择工作坊 / Pilih Bengkel</option>
+                  <!-- Organisers: add your workshop options here -->
+                  <option value="W1">Workshop 1 — TBC</option>
+                  <option value="W2">Workshop 2 — TBC</option>
+                  <option value="W3">Workshop 3 — TBC</option>
+                </select>
+              </div>
+              <span class="field-error" id="workshop-error"></span>
+            </div>
+
+            <!-- First-time Bloom -->
+            <div class="field-group">
+              <label class="field-label">
+                Is This Your First Bloom Conference? <span class="req-star">*</span>
+                <span class="field-label-sub">这是你第一次参与 Bloom Conference 吗？ / Adakah ini Persidangan Bloom pertama anda?</span>
+              </label>
+              <div class="radio-group" role="radiogroup" aria-label="First Bloom Conference">
+                <label class="radio-label">
+                  <input type="radio" name="firstBloom" value="Yes" required />
+                  <span>Yes / 是 / Ya</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="firstBloom" value="No" />
+                  <span>No / 否 / Tidak</span>
+                </label>
+              </div>
+              <span class="field-error" id="firstBloom-error"></span>
+            </div>
+
+            <!-- Proof of Payment -->
+            <div class="field-group">
+              <label for="paymentProof" class="field-label">
+                Proof of Payment <span class="req-star">*</span>
+                <span class="field-label-sub">付款凭证 / Bukti Pembayaran</span>
+                <span class="field-hint">Upload a screenshot or photo of your payment receipt (JPG, PNG, PDF, max 5MB)</span>
+              </label>
+              <div class="file-upload-zone" id="fileUploadZone">
+                <input
+                  type="file"
+                  id="paymentProof"
+                  name="paymentProof"
+                  accept="image/jpeg,image/png,image/gif,application/pdf"
+                  class="file-input"
+                  required
+                />
+                <div class="file-upload-ui">
+                  <span class="file-upload-icon">📎</span>
+                  <p class="file-upload-prompt">Click to choose file or drag &amp; drop here</p>
+                  <p class="file-upload-hint">JPG, PNG, PDF up to 5MB</p>
+                </div>
+                <div class="file-preview" id="filePreview" style="display:none;">
+                  <span class="file-preview-icon">✅</span>
+                  <span class="file-preview-name" id="filePreviewName"></span>
+                  <button type="button" class="file-remove-btn" id="fileRemoveBtn" aria-label="Remove file">✕</button>
+                </div>
+              </div>
+              <span class="field-error" id="paymentProof-error"></span>
+            </div>
+
+            <!-- Additional Remarks -->
+            <div class="field-group">
+              <label for="remarks" class="field-label">
+                Additional Remarks
+                <span class="field-label-sub">备注 / Catatan</span>
+                <span class="field-hint">Optional — dietary needs, accessibility requirements, etc.</span>
+              </label>
+              <textarea
+                id="remarks"
+                name="remarks"
+                rows="3"
+                placeholder="Optional notes / 可选备注 / Catatan Pilihan"
+              ></textarea>
+            </div>
+
+            <!-- Status Message -->
+            <div class="status-box" id="statusBox" role="alert" aria-live="polite"></div>
+
+            <!-- Submit -->
             <div class="submit-row">
-              <button type="submit" class="primary-btn">Submit registration</button>
+              <button type="submit" class="primary-btn" id="submitBtn">
+                <span class="btn-text">Submit Registration</span>
+                <span class="btn-spinner" id="btnSpinner" aria-hidden="true"></span>
+              </button>
             </div>
           </form>
         </section>
 
+        <!-- Info Panel -->
         <aside class="panel panel--secondary">
           <div class="panel-header">
-            <h2>Event information</h2>
+            <h2>Event Info / 活动信息</h2>
           </div>
 
-          <ul class="info-list">
-            <li><strong>Date:</strong> 12–14 September 2026</li>
-            <li><strong>Venue:</strong> Bloom Convention Centre</li>
-            <li><strong>Theme:</strong> Generations in Grace</li>
-            <li><strong>Access:</strong> Registration closes 7 days before the event</li>
-          </ul>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-icon">📅</span>
+              <div>
+                <strong>Date / 日期</strong>
+                <p>TBC 2026</p>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">📍</span>
+              <div>
+                <strong>Venue / 地点</strong>
+                <p>TBC</p>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">✨</span>
+              <div>
+                <strong>Theme / 主题</strong>
+                <p>Bloom 2026</p>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">💰</span>
+              <div>
+                <strong>Registration Fee / 报名费</strong>
+                <p>TBC</p>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">⏰</span>
+              <div>
+                <strong>Registration closes</strong>
+                <p>TBC</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-note">
+            <p>🌸 This conference is for <strong>ladies only</strong>.</p>
+            <p>After submitting, you will receive a confirmation email.</p>
+            <p>For enquiries, contact your church Homes leader.</p>
+          </div>
         </aside>
       </main>
+
+      <!-- Success Screen (hidden by default) -->
+      <div class="success-screen" id="successScreen" style="display:none;" role="main" aria-live="polite">
+        <div class="success-card">
+          <div class="success-icon">🌸</div>
+          <h2>You're registered!</h2>
+          <p>Thank you for registering for <strong>Bloom Conference 2026</strong>.<br />
+          A confirmation will be sent to your email.</p>
+          <p class="success-sub">If you have any questions, reach out to your Homes leader.</p>
+          <button type="button" class="primary-btn" id="registerAnotherBtn">
+            Register Another Person
+          </button>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <p>&copy; 2026 Bloom Conference. All rights reserved.</p>
+      </footer>
     </div>
 
     <script src="config.js"></script>
