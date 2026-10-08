@@ -46,7 +46,10 @@ var HEADERS = [
   'First Bloom?',
   'Payment URL',
   'Remarks',
-  'Submission ID'
+  'Submission ID',
+  'Admin Notes',
+  'Email Sent Timestamp',
+  'Email Error Note'
 ];
 
 /**
@@ -109,6 +112,17 @@ function doPost(e) {
     // Upload payment proof to Drive
     var fileUrl = uploadPaymentProof(data);
 
+    var emailTimestamp = '';
+    var emailError = '';
+
+    try {
+      sendConfirmationEmail(data);
+      emailTimestamp = new Date();
+    } catch (err) {
+      Logger.log('Email failed: ' + err.toString());
+      emailError = err.toString();
+    }
+
     // Write to sheet
     var sheet = getOrCreateSheet('Registration');
     var submissionId = Utilities.getUuid();
@@ -129,6 +143,9 @@ function doPost(e) {
       fileUrl,
       data.remarks       || '',
       submissionId,
+      '',             // Column O: Admin Notes
+      emailTimestamp, // Column P: Email Sent Timestamp
+      emailError      // Column Q: Email Error Note
     ]);
 
     return successResponse({ submissionId: submissionId, fileUrl: fileUrl });
@@ -189,4 +206,61 @@ function errorResponse(message) {
   return ContentService
     .createTextOutput(JSON.stringify({ result: 'error', error: message }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Sends a stylized HTML confirmation email.
+ */
+function sendConfirmationEmail(data) {
+  var subject = "Registration Received - Bloom Conference 2026 / 报名已收到 / Pendaftaran Diterima";
+  var churchDisplay = (data.churchPlant === 'Others') ? data.churchPlantOther : data.churchPlant;
+  
+  var htmlBody = `
+<div style="font-family: 'Inter', system-ui, sans-serif; color: #3C2B35; max-width: 600px; margin: 0 auto; background-color: #FDF6F0; border-radius: 12px; overflow: hidden; border: 1px solid #E8D0D8;">
+  <div style="background-color: #C9556E; color: white; padding: 30px 20px; text-align: center;">
+    <h1 style="font-family: 'Playfair Display', Georgia, serif; margin: 0; font-size: 24px; font-weight: 700;">🌸 Bloom Conference 2026</h1>
+    <p style="margin: 10px 0 0; font-size: 16px; opacity: 0.9;">Registration Received / 报名已收到 / Pendaftaran Diterima</p>
+  </div>
+  
+  <div style="padding: 30px;">
+    <p>Hi <strong>${data.fullName}</strong>,</p>
+    <p>Thank you for registering for the <strong>Bloom Conference 2026</strong>! We have received your registration details and payment proof.</p>
+    <p style="color: #7A5F6F; font-size: 14px;">谢谢你的报名！我们已收到你的报名资料及转账凭证。<br>Terima kasih kerana mendaftar! Kami telah menerima butiran pendaftaran dan bukti pembayaran anda.</p>
+    
+    <div style="background-color: #FFF0F0; border-left: 4px solid #C9556E; padding: 15px; margin: 25px 0; border-radius: 4px;">
+      <p style="margin: 0; font-weight: 600; color: #C9556E;">Important Note / 重要提示 / Nota Penting:</p>
+      <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.5;">Your registration is currently pending payment verification. We will contact you if there are any issues with your payment. / 你的报名目前正在等待付款验证。如果转账有任何问题，我们将与你联系。 / Pendaftaran anda sedang menunggu pengesahan pembayaran. Kami akan menghubungi anda sekiranya terdapat sebarang isu.</p>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #E8D0D8;">
+      <tr>
+        <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F; width: 35%;">Name</td>
+        <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8;">${data.fullName}</td>
+      </tr>
+      <tr>
+        <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F;">Church Plant</td>
+        <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8;">${churchDisplay}</td>
+      </tr>
+      <tr>
+        <td style="padding: 12px 15px; font-weight: 600; color: #7A5F6F;">Workshop</td>
+        <td style="padding: 12px 15px;">${data.workshop}</td>
+      </tr>
+    </table>
+
+    <h3 style="color: #C9556E; margin-top: 30px;">Event Details / 活动详情 / Butiran Acara</h3>
+    <p style="margin: 5px 0;"><strong>Date:</strong> 14 November 2026</p>
+    <p style="margin: 5px 0;"><strong>Time:</strong> 9.30am – 5.00pm</p>
+    <p style="margin: 5px 0;"><strong>Venue:</strong> Bible College of Malaysia, Petaling Jaya</p>
+
+    <p style="margin-top: 30px; font-size: 14px; color: #7A5F6F; border-top: 1px solid #E8D0D8; padding-top: 20px;">
+      If you have any questions, feel free to reply to this email. / 若有任何疑问，请回复此邮件。 / Sekiranya ada sebarang pertanyaan, sila balas e-mel ini.
+    </p>
+  </div>
+</div>
+  `;
+
+  GmailApp.sendEmail(data.emailAddress, subject, '', {
+    htmlBody: htmlBody,
+    name: "🌸 Bloom Conference 2026"
+  });
 }
