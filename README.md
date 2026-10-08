@@ -56,6 +56,28 @@ Upload the following files from the `public/` folder to your web server (e.g. in
 
 It runs independently as a standalone HTML page.
 
+### 4. Apache `.htaccess` Setup (Clean URLs)
+
+If you are hosting this alongside WordPress and want to use a clean URL like `/register` that invisibly serves from the `/bloom2026/` folder, place the following rules in your `.htaccess` file **before** the `# BEGIN WordPress` block:
+
+```apache
+# Acts Church Conference — Custom Rewrite Rules
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# 1. Page Routes
+RewriteRule ^register/?$ /bloom2026/index.html [L,QSA]
+RewriteRule ^dashboard/?$ /dashboard.html [L,QSA]
+RewriteRule ^registrants/?$ /registrants.html [L,QSA]
+
+# 2. Asset Routes (CSS & JS for Bloom 2026)
+# This catches requests for styles.css, app.js, and config.js and routes them correctly
+RewriteRule ^(?:register/)?(styles\.css|app\.js|config\.js)$ /bloom2026/$1 [L,QSA]
+</IfModule>
+```
+
+> **Note on Asset Routing:** The second rule is critical. Because the form files use relative paths (`<link href="styles.css">`), a visitor on `/register` will cause their browser to request `/styles.css`. This rule intercepts that request and correctly serves the asset from `/bloom2026/`.
+
 ---
 
 ## Security

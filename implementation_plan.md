@@ -1,3 +1,7 @@
+> **NOTE:** This document represents the initial phase built with GitHub Copilot and is now **ARCHIVED/OUTDATED**. The project was completely rebuilt and finalized using Google Antigravity. Please refer to `README.md` for the current, accurate documentation (including the `.htaccess` deployment routing).
+
+> **NOTE:** This document represents the initial phase built with GitHub Copilot and is now **ARCHIVED/OUTDATED**. The project was completely rebuilt and finalized using Google Antigravity. Please refer to `README.md` for the current, accurate documentation (including the  deployment routing).
+
 # Bloom Conference 2026 — Implementation Plan
 
 ## Mission
