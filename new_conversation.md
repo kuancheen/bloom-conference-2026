@@ -1,208 +1,57 @@
-> **NOTE:** This document represents the initial phase built with GitHub Copilot and is now **ARCHIVED/OUTDATED**. The project was completely rebuilt and finalized using Google Antigravity. Please refer to `README.md` for the current, accurate documentation (including the `.htaccess` deployment routing).
+# Core Objective
+You are an expert software engineering agent working on the Bloom Conference 2026 Registration System. To maximize token efficiency, prevent context bloat, and maintain an accurate project state, you must manage and rely on two specific repository artifacts: `implementation_plan.md` and `walkthrough.md`. Do not rely on chat history for long-term project memory.
 
-> **NOTE:** This document represents the initial phase built with GitHub Copilot and is now **ARCHIVED/OUTDATED**. The project was completely rebuilt and finalized using Google Antigravity. Please refer to `README.md` for the current, accurate documentation (including the  deployment routing).
+# The Two Artifacts
+1. **`implementation_plan.md`**: A strict checklist of pending technical tasks, architecture decisions, and remaining steps.
+2. **`walkthrough.md`**: A living document explaining the current system architecture, file structures, verified features, technical debt, and host setup (Apps Script, WordPress, `.htaccess`).
 
-# New Conversation Guide — Bloom Conference 2026
+# Operational Workflow (Every Conversation)
 
-This guide helps agents and collaborators quickly understand the project scope, structure, and how to contribute effectively.
+## Step 1: Initialize Context (Read State)
+At the very beginning of any new session or task block, locate and read `implementation_plan.md` and `walkthrough.md` using `view_file`. Use them to understand the exact state of the project. Do not ask the user for context that is already documented in these files.
 
----
+## Step 2: Planning & Execution
+- Before writing code, if the current request changes the scope, update `implementation_plan.md` with the new granular steps first.
+- Execute tasks one specific block at a time.
 
-## 30-Second Summary
+## Step 3: Atomic State Handover (Clean-up & Move)
+As soon as a feature or task is successfully implemented, verified, and checked off, you must immediately update both files in a single pass:
+1. **REMOVE** or mark as completed (`- [x]`) the finished task in `implementation_plan.md`.
+2. **ADD** the technical details of the completed feature (file paths, how it works, data flow) into `walkthrough.md`.
+3. If an implementation step was completed but broke an existing system, update `walkthrough.md` to reflect the fixed architecture and lessons learned.
+4. Immediately proceed to the Git Commit phase detailed below.
 
-**Bloom Conference 2026** is a registration system for a church conference with two tracks:
-- Adults submit their info and workshop preferences
-- Parents submit their info + child details for the kids' track
+# Git Commit & Sync Rule
+Every time a task block or sub-task is completed, you must commit the changes to the Git repository. Do not leave uncommitted files at the end of an interaction block.
+- **What to stage**: Stage and commit the updated `implementation_plan.md`, `walkthrough.md`, `new_conversation.md`, all newly created application files, and all modified source files.
+- **Commit Message Format**: Use clear, descriptive conventional commit messages that state exactly what was completed (e.g., `feat: implement confirmation email in Code.gs and update project artifacts`).
 
-The frontend is a static form (`public/`) that POSTs to a Google Apps Script backend (`backend/`) that writes to Google Sheets. **No secrets are in git** — all configuration is local or environment-based.
+# Formatting Rules
+- Keep `implementation_plan.md` concise. It should be a crisp list of checkboxes (`- [ ] task`) grouped by priority or module.
+- Keep `walkthrough.md` structured and descriptive. Use code blocks, file trees, and entry-point descriptions so any fresh agent can read it and instantly understand the current codebase.
 
----
+# File Editing Rules
 
-## What This Project Is
+## The Golden Rule
+ALWAYS view a file before editing it. No exceptions. Even if you think you know what's in it.
 
-✅ **Static frontend** — vanilla HTML/CSS/JS, no build step  
-✅ **Google Apps Script backend** — serverless, writes to Google Sheets  
-✅ **Public repository** — safe to fork, share, and reuse  
-✅ **Conference-specific** — but structured for easy customization  
+## Allowed Tools
+| Situation | Correct tool |
+|-----------|-------------|
+| File does not exist yet | `write_to_file` (no Overwrite) |
+| File exists — add, change, or append anything | `replace_file_content` only |
 
-❌ **Not a full SPA** — no React, Vue, or complex bundling  
-❌ **Not a database** — uses Google Sheets as the data store  
-❌ **Not production-ready yet** — still in Phase 2 (documentation)  
+## Forbidden Patterns
+- Never use `write_to_file` with `Overwrite: true` on an existing file. This silently destroys all existing content.
+- Never skip reading a file and assume it is empty or unimportant before editing it.
+- If `write_to_file` fails because the file already exists, stop — do not retry with `Overwrite: true`. Instead, view the file, then use `replace_file_content`.
 
----
+## Mandatory Workflow for Editing Any Existing File
+1. `view_file` — read the full current content.
+2. Identify the exact lines to add/change.
+3. `replace_file_content` — touch only those lines, leave everything else intact.
 
-## Quick File Reference
-
-| File | Purpose |
-|------|---------|
-| `public/index.html` | Form layout (Adult & Kids modes) |
-| `public/styles.css` | Design system & responsive layout |
-| `public/app.js` | Form logic, state, submission |
-| `public/config.js.example` | Template for runtime configuration |
-| `backend/Code.gs` | Google Apps Script backend (copy into Apps Script editor) |
-| `implementation_plan.md` | Development roadmap & priorities |
-| `walkthrough.md` | Deep dive into architecture & data flow |
-| `.gitignore` | Excludes secrets (config.js, .env, etc.) |
-
----
-
-## Common Tasks
-
-### I want to understand the system
-→ Read `walkthrough.md` (architecture, data flow, file structure)
-
-### I want to add a new form field
-1. Add `<input>` to `public/index.html` (in Adult or Kids section)
-2. Add column header in `backend/Code.gs` (in `doPost()`)
-3. Update `normalizePayload()` in `public/app.js` if special handling needed
-4. Test with `npm run dev` locally, then deploy backend
-
-### I want to style the form
-→ Edit `public/styles.css` — uses CSS variables (`--primary`, `--danger`, etc.) for easy theming
-
-### I want to deploy the backend
-1. Open `backend/README.md` for step-by-step instructions
-2. Copy `backend/Code.gs` into a new Google Apps Script
-3. Set `DRIVE_FOLDER_ID` to your folder ID
-4. Deploy as web app, copy `/exec` URL
-5. Paste URL into `public/config.js`
-
-### I want to add client-side validation
-→ This is a Phase 3 task. See `implementation_plan.md` for scope. Likely needs:
-- Required field checks in form submit handler
-- Email format validation
-- Date validation for kids' DOB
-- Visual error indicators in UI
-
-### I want to customize for a different conference
-→ Editable fields:
-- Event name: `public/index.html` (header, "Bloom Conference 2026")
-- Dates & info: `public/index.html` (info panel, right sidebar)
-- Form fields: `public/index.html` (both form sections)
-- Church plants: `public/index.html` (`<option>` values in selects)
-- Sheet names: `backend/Code.gs` (`getOrCreateSheet()` calls)
-- Styling: `public/styles.css` (CSS variables)
-
----
-
-## Current Status
-
-**Phase 1: Core Scaffolding** ✅ Complete  
-- Frontend form structure, backend template, dev environment
-
-**Phase 2: Repository Visibility & Documentation** 🔄 In Progress  
-- [ ] Make repository public
-- [x] Create `walkthrough.md` ← you're reading related docs
-- [x] Create `new_conversation.md` ← this file
-- [ ] Push to GitHub
-
-**Phase 3: Frontend Enhancement** ⏭️ Next  
-- Client-side validation, success screens, multiple children, file uploads, draft auto-save
-
----
-
-## Before You Start
-
-**Do you have access to:**
-- The Google Sheet where registrations will be stored?
-- A Google Drive folder for receipt uploads (Kids mode)?
-- Ability to create & deploy Google Apps Scripts?
-
-If not, ask Kuan Cheen to set these up.
-
-**Have you configured:**
-- `public/config.js` with your Apps Script deployment URL?
-- `backend/Code.gs` with your Drive folder ID?
-
-If not, follow the backend README.
-
----
-
-## Testing Checklist
-
-When you make changes, verify:
-
-- [ ] **Local dev works** — `npm run dev` starts server
-- [ ] **Form renders** — open http://localhost:3000, see form
-- [ ] **Mode toggle works** — switch between Adult & Kids tabs
-- [ ] **Submission (dry run)** — fills form, clicks submit, sees status message
-- [ ] **Error handling** — wrong config URL shows clear error
-- [ ] **Responsive design** — resize browser, layout adapts
-- [ ] **Backend (if deployed)** — data actually appears in Google Sheet
-
----
-
-## Code Style & Conventions
-
-**JavaScript:**
-- Use `const` by default, `let` if reassignment needed
-- Camel case for variables & functions
-- Descriptive names (`normalizePayload`, not `process`)
-- Comments for non-obvious logic
-
-**HTML:**
-- Semantic tags (`<form>`, `<label>`, `<input>`)
-- Data attributes for JS hooks (`data-mode`, `data-*`)
-- Accessibility: `aria-*` attributes where needed
-
-**CSS:**
-- CSS variables for colors, spacing, sizing
-- Mobile-first responsive design
-- Class names kebab-case (`.mode-btn`, `.field-row`)
-
-**Git:**
-- Commit messages: "Add X feature" or "Fix Y bug"
-- Branch for features: `feature/validation`, `fix/style-issue`
-- PR title: "Phase 3: Add client-side form validation"
-
----
-
-## Common Gotchas
-
-### 1. "Config URL is not set"
-**Error:** "Please replace the placeholder Google Apps Script URL"  
-**Fix:** Copy `public/config.js.example` to `public/config.js` and fill in your deployment URL
-
-### 2. "Form submits but nothing appears in sheet"
-**Error:** No new rows in Google Sheet  
-**Fix:** Check that `backend/Code.gs` is deployed as a web app with "Anyone" access
-
-### 3. "File uploads fail"
-**Error:** "Upload failed" in sheet, or blank URL  
-**Fix:** Verify `DRIVE_FOLDER_ID` in `backend/Code.gs` is correct and the folder exists
-
-### 4. "Style changes don't apply"
-**Error:** CSS seems cached  
-**Fix:** Hard refresh browser (Ctrl+Shift+R or Cmd+Shift+R)
-
----
-
-## Asking for Help
-
-When you get stuck, share:
-1. **What you're trying to do** — "I want to add date validation"
-2. **What happened** — "Form submitted but no error message"
-3. **Error message** (if any) — full text from console or status box
-4. **What you've already tried** — "checked config.js, it's set correctly"
-
----
-
-## Resources
-
-- **Architecture & data flow** → `walkthrough.md`
-- **Development roadmap** → `implementation_plan.md`
-- **Backend setup** → `backend/README.md`
-- **Project overview** → `README.md`
-- **GitHub repo** → https://github.com/kuancheen/bloom-conference-2026
-
----
-
-## Next Steps
-
-1. **Read** `walkthrough.md` to understand the system
-2. **Set up** locally: `npm install && npm run dev`
-3. **Deploy** the backend (if not already done) — see `backend/README.md`
-4. **Test** form submission end-to-end
-5. **Pick a Phase 3 task** from `implementation_plan.md` and open an issue
-
-Welcome aboard! 🌸
+## Why This Matters
+Past mistakes in this project:
+- `implementation_plan.md` and `walkthrough.md` were both fully overwritten using `write_to_file`, destroying all original detail (architecture tables, data flow diagrams, benchmark results, common operations, etc.). Required recovery from git.
+- `new_conversation.md` was overwritten with a single line because the agent skipped reading it first and used `Overwrite: true` when the initial write failed.
