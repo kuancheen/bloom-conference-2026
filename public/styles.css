@@ -607,7 +607,7 @@ select option[value=""] {
   box-shadow: var(--shadow-lg);
   padding: 52px 44px;
   text-align: center;
-  max-width: 480px;
+  max-width: 600px;
   width: 100%;
   animation: successIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
