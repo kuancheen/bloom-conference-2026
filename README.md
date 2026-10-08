@@ -46,18 +46,10 @@ window.APP_CONFIG = {
 
 > ⚠️ **NEVER commit `config.js` to git.** It is gitignored. Upload it to your server manually.
 
-### 3. WordPress Deployment
+### 3. Deployment
 
-Upload the `public/` folder contents to your WordPress server:
-
-**Option A — Standalone page at a subdirectory:**
-- Upload to `/wp-content/uploads/bloom-2026/` (or a custom directory outside WP content)
-- Point a page with a redirect, or embed via iframe/shortcode
-
-**Option B — WordPress Page Template (recommended):**
-- Copy `index.html` content into a custom page template
-- Enqueue `styles.css` and `app.js` via `functions.php`
-- Add `config.js` to the same directory as the enqueued scripts
+Upload the `public/` folder contents to your web server (e.g. `/bloom2026/`).
+It runs independently as a standalone HTML page.
 
 ---
 

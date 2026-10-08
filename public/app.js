@@ -338,10 +338,8 @@ form.addEventListener('submit', async (event) => {
       phoneNumber:       formData.get('phoneNumber')?.trim(),
       ageRange:          formData.get('ageRange'),
       maritalStatus:     formData.get('maritalStatus'),
-      churchPlant:       formData.get('churchPlant') === 'Others'
-                           ? formData.get('churchPlantOther')?.trim()
-                           : formData.get('churchPlant'),
-      churchPlantRaw:    formData.get('churchPlant'),
+      churchPlant:       formData.get('churchPlant'),
+      churchPlantOther:  formData.get('churchPlant') === 'Others' ? formData.get('churchPlantOther')?.trim() : '',
       homesCode:         formData.get('homesCode')?.trim() || '',
       workshop:          formData.get('workshop'),
       firstBloom:        formData.get('firstBloom'),

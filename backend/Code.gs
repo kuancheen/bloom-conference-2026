@@ -35,17 +35,18 @@ var DRIVE_FOLDER_ID = 'YOUR_DRIVE_FOLDER_ID';
 var HEADERS = [
   'Timestamp',
   'Full Name',
-  'Email Address',
-  'Phone Number',
+  'Email',
+  'Phone',
   'Age Range',
   'Marital Status',
   'Church Plant',
+  'Others',
   'Homes Code',
   'Workshop',
-  'First Bloom Conference?',
-  'Proof of Payment URL',
-  'Additional Remarks',
-  'Submission ID',
+  'First Bloom?',
+  'Payment URL',
+  'Remarks',
+  'Submission ID'
 ];
 
 /**
@@ -69,7 +70,7 @@ function getOrCreateSheet(name) {
     sheet.setColumnWidth(2, 180);   // Full Name
     sheet.setColumnWidth(3, 200);   // Email
     sheet.setColumnWidth(4, 140);   // Phone
-    sheet.setColumnWidth(13, 250);  // Payment URL
+    sheet.setColumnWidth(12, 250);  // Payment URL
   }
 
   return sheet;
@@ -109,7 +110,7 @@ function doPost(e) {
     var fileUrl = uploadPaymentProof(data);
 
     // Write to sheet
-    var sheet = getOrCreateSheet('Registrations');
+    var sheet = getOrCreateSheet('Registration');
     var submissionId = Utilities.getUuid();
     var timestamp = new Date();
 
@@ -121,6 +122,7 @@ function doPost(e) {
       data.ageRange      || '',
       data.maritalStatus || '',
       data.churchPlant   || '',
+      data.churchPlantOther || '',
       data.homesCode     || '',
       data.workshop      || '',
       data.firstBloom    || '',
