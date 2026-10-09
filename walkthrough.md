@@ -30,13 +30,14 @@ bloom-conference-2026/
 *(Note: `.env`, `public/config.js`, and `node_modules` are excluded via `.gitignore`)*
 
 ## 4. Completed Features
-*   **Trilingual UI:** Form fields, labels, error messages, and success screens are fully localized in EN, ZH, and BM.
+*   **Trilingual UI:** Form fields, labels, error messages, success screens, section headers, upload prompts, and the submit button are all fully localized in EN, ZH, and BM.
+*   **Dynamic Dropdown Config:** Dropdown options (Age Range, Marital Status, Church Plant with optgroups, Workshop) are loaded at runtime via `GET {scriptUrl}?action=config` from the Google Sheet's "Config" tab. The Config sheet schema is: Column A=Category, B=Display Label, C=Stored Value, D=Group (for Church Plant optgroups). Static placeholder options remain in the HTML as a skeleton.
 *   **Dynamic Form Logic:** Includes conditional rendering (e.g., "Others" text field appears when "Others" is selected in the Church Plant dropdown).
 *   **File Upload System:** Custom drag-and-drop zone that accepts JPG, PNG, and PDF (max 5MB). Files are converted to Base64 strings client-side to bypass Google Apps Script CORS limitations with standard multipart forms.
 *   **Secure Configuration Architecture:** The Google Apps Script URL is loaded from an external, gitignored `config.js` file, ensuring the GitHub repo contains no live endpoints.
 *   **Google Drive Integration:** The backend decodes the Base64 payload and saves it to a specified Drive folder. The file name is auto-generated using the registrant's name and a UUID (e.g., `Bloom2026_Payment_Jane_Doe_abc123.jpg`), and its permission is automatically set to `VIEW` for shareable access.
-*   **Google Sheets Integration:** Automatically generates the "Registration" sheet with formatted headers on the first run, and correctly handles separate column logic (e.g., mapping the "Others" church plant selection to its own dedicated column).
-*   **Automated Confirmation Email:** Trilingual HTML email powered by `GmailApp`, styled to match the frontend UI. Includes a notice that registration is pending payment verification. Tracks success timestamps and dispatch errors directly in the spreadsheet.
+*   **Google Sheets Integration:** Automatically generates the "Registration" sheet with formatted headers on the first run. Handles "Others" church plant in a separate column. Columns O/P/Q reserved for Admin Notes, Email Sent Timestamp, and Email Error Note.
+*   **Automated Confirmation Email:** Trilingual HTML email powered by `MailApp` (not `GmailApp`), styled to match the frontend UI. Includes a pending payment verification notice. Tracks dispatch timestamp (Col P) and errors (Col Q) in the sheet. Sender name: "🌸 Bloom Conference 2026". Subject: "Registration Received - Bloom Conference 2026".
 *   **Asset Routing Resilience:** The frontend uses relative paths, but the Apache `.htaccess` is configured to intercept asset requests made from the `/register` vanity URL and securely route them to the `/bloom2026/` directory.
 
 ## 5. Environment & Setup Details
