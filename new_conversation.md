@@ -26,6 +26,11 @@ Every time a task block or sub-task is completed, you must commit the changes to
 - **What to stage**: Stage and commit the updated `implementation_plan.md`, `walkthrough.md`, `new_conversation.md`, all newly created application files, and all modified source files.
 - **Commit Message Format**: Use clear, descriptive conventional commit messages that state exactly what was completed (e.g., `feat: implement confirmation email in Code.gs and update project artifacts`).
 
+# Frontend Asset Cache Busting Rule
+Whenever CSS (`styles.css`), JavaScript (`app.js`, `config.js`), or `index.html` are modified, you MUST update the cache busting query parameter in `public/index.html` for all linked asset tags (`styles.css`, `config.js`, `app.js`).
+- **Format**: Use a datetime string accurate to the second in `YYYYMMDDHHMMSS` format (e.g. `href="styles.css?20261009113350"`), **WITHOUT** `v=`.
+- Do not use generic version numbers like `?v=1.0` or `?v=2`. Always use the current second-accurate datetime string.
+
 # Formatting Rules
 - Keep `implementation_plan.md` concise. It should be a crisp list of checkboxes (`- [ ] task`) grouped by priority or module.
 - Keep `walkthrough.md` structured and descriptive. Use code blocks, file trees, and entry-point descriptions so any fresh agent can read it and instantly understand the current codebase.

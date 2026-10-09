@@ -29,3 +29,8 @@ This document serves as the active checklist for all remaining features, bug fix
   - Verify the data populates the Google Sheet (including the separate "Others" column).
   - Verify the confirmation email arrives in the inbox (check spam/promotions).
   - Verify UI elements (validation, dropdowns, success screen) render correctly on mobile and desktop.
+
+## Phase 4: Maintenance & Asset Cache Busting
+- [x] **Datetime-based Cache Busting:**
+  - Enforce `YYYYMMDDHHMMSS` timestamp query strings on all CSS and JS asset links in `index.html` on every modification (without `v=`).
+  - Ensures immediate client refresh on WordPress/Apache reverse proxy setups.
