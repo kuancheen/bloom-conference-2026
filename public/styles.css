@@ -140,6 +140,11 @@ body {
   border-bottom: 1px solid var(--bloom-border);
 }
 
+.panel--primary .panel-header {
+  background: linear-gradient(135deg, var(--bloom-rose) 0%, #A6395A 100%);
+  border-bottom: none;
+}
+
 .panel-header h2 {
   font-family: var(--font-display);
   font-size: 1.4rem;
@@ -147,10 +152,22 @@ body {
   color: var(--bloom-text);
 }
 
+.panel--primary .panel-header h2 {
+  color: #ffffff;
+}
+
 .panel-subtitle {
   font-size: 0.85rem;
   color: var(--bloom-text-light);
   margin-top: 6px;
+}
+
+.panel--primary .panel-header .panel-subtitle {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.panel--primary .panel-header .req-star {
+  color: #ffd6e0;
 }
 
 /* ---------- Form ---------- */
