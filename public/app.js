@@ -401,10 +401,10 @@ function clearStatus() {
 function setSubmitting(isSubmitting) {
   submitBtn.disabled = isSubmitting;
   if (isSubmitting) {
-    btnText.textContent = 'Submitting… / 提交中… / Menghantar…';
+    btnText.innerHTML = 'Submitting…<br>提交中…<br>Menghantar…';
     btnSpinner.classList.add('is-visible');
   } else {
-    btnText.textContent = 'Submit Registration / 提交报名 / Hantar Pendaftaran';
+    btnText.innerHTML = 'Submit Registration<br>提交报名<br>Hantar Pendaftaran';
     btnSpinner.classList.remove('is-visible');
   }
 }
@@ -415,7 +415,7 @@ form.addEventListener('submit', async (event) => {
 
   const formData = new FormData(form);
   if (!validateForm(formData)) {
-    setStatus('Please fill in all required fields correctly before submitting. / 请在提交前完整且正确地填写所有必填项。 / Sila isi semua ruangan yang diperlukan dengan betul sebelum menghantar.', 'error');
+    setStatus('Please fill in all required fields correctly before submitting.\n请在提交前完整且正确地填写所有必填项。\nSila isi semua ruangan yang diperlukan dengan betul sebelum menghantar.', 'error');
     // Scroll to first error
     const firstError = form.querySelector('.is-invalid');
     if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
