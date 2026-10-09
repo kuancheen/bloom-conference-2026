@@ -359,7 +359,7 @@ function sendConfirmationEmail(data, fileUrl) {
       ${paymentRowHtml}
     </table>
 
-    <div style="background-color: #FFF0F0; border-left: 4px solid #D03A19; padding: 15px; margin: 25px 0; border-radius: 4px;">
+    <div style="background-color: #FDEEEA; border-left: 4px solid #D03A19; padding: 15px; margin: 25px 0; border-radius: 4px;">
       <p style="margin: 0; font-weight: 600; color: #D03A19;">Important Note / 重要提示 / Nota Penting:</p>
       <p style="margin: 8px 0 4px; font-size: 14px; line-height: 1.5;">Your registration is currently pending payment verification. We will contact you if there are any issues with your payment.</p>
       <p style="margin: 4px 0; font-size: 14px; line-height: 1.5;">你的报名目前正在等待付款验证。如果转账有任何问题，我们将与你联系。</p>
