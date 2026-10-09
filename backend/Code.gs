@@ -80,12 +80,50 @@ function getOrCreateSheet(name) {
 }
 
 /**
- * GET — health check
+ * GET — health check or config fetch
  */
 function doGet(e) {
+  var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : '';
+  if (action === 'config') {
+    return getConfigResponse();
+  }
   return ContentService
     .createTextOutput(JSON.stringify({ status: 'ok', service: 'Bloom Conference 2026' }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Reads dropdown options from the 'Config' sheet.
+ * Expected columns: A=Category, B=Display Label, C=Stored Value, D=Group
+ */
+function getConfigResponse() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var configSheet = ss.getSheetByName('Config');
+    if (!configSheet) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ result: 'error', error: 'Config sheet not found' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var data = configSheet.getDataRange().getValues();
+    var config = {};
+    for (var i = 1; i < data.length; i++) {
+      var category    = (data[i][0] || '').toString().trim();
+      var displayLabel = (data[i][1] || '').toString().trim();
+      var storedValue  = (data[i][2] || '').toString().trim();
+      var group        = (data[i][3] || '').toString().trim();
+      if (!category || !displayLabel) continue;
+      if (!config[category]) config[category] = [];
+      config[category].push({ label: displayLabel, value: storedValue || displayLabel, group: group });
+    }
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'success', config: config }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'error', error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 /**

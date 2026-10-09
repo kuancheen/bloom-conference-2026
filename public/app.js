@@ -46,6 +46,93 @@ function getGoogleScriptUrl() {
 }
 
 /* ─────────────────────────────────────────────────
+   Dynamic Config Loading — populate dropdowns from
+   the 'Config' sheet via GET ?action=config
+───────────────────────────────────────────────── */
+async function loadConfig() {
+  const url = getGoogleScriptUrl();
+  if (!url || url.includes('YOUR_')) return;
+
+  try {
+    const response = await fetch(`${url}?action=config`);
+    if (!response.ok) return;
+    const result = await response.json();
+    if (result.result !== 'success' || !result.config) return;
+
+    const cfg = result.config;
+
+    // Populate flat selects (no grouping)
+    ['Age Range', 'Marital Status', 'Workshop'].forEach(key => {
+      const fieldId = { 'Age Range': 'ageRange', 'Marital Status': 'maritalStatus', 'Workshop': 'workshop' }[key];
+      if (cfg[key] && cfg[key].length) populateSelect(fieldId, cfg[key]);
+    });
+
+    // Church Plant needs optgroup support
+    if (cfg['Church Plant'] && cfg['Church Plant'].length) {
+      populateSelectWithGroups('churchPlant', cfg['Church Plant']);
+    }
+
+  } catch (err) {
+    console.warn('Config load failed, using static options as fallback:', err);
+  }
+}
+
+function populateSelect(fieldId, options) {
+  const select = document.getElementById(fieldId);
+  if (!select) return;
+  const placeholder = select.options[0]; // keep first placeholder option
+  select.innerHTML = '';
+  select.appendChild(placeholder);
+  options.forEach(opt => {
+    const el = document.createElement('option');
+    el.value = opt.value;
+    el.textContent = opt.label;
+    select.appendChild(el);
+  });
+}
+
+function populateSelectWithGroups(fieldId, options) {
+  const select = document.getElementById(fieldId);
+  if (!select) return;
+  const placeholder = select.options[0];
+  select.innerHTML = '';
+  select.appendChild(placeholder);
+
+  const groups = {};
+  const ungrouped = [];
+  options.forEach(opt => {
+    if (opt.group) {
+      if (!groups[opt.group]) groups[opt.group] = [];
+      groups[opt.group].push(opt);
+    } else {
+      ungrouped.push(opt);
+    }
+  });
+
+  Object.keys(groups).forEach(groupName => {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = groupName;
+    groups[groupName].forEach(opt => {
+      const el = document.createElement('option');
+      el.value = opt.value;
+      el.textContent = opt.label;
+      optgroup.appendChild(el);
+    });
+    select.appendChild(optgroup);
+  });
+
+  ungrouped.forEach(opt => {
+    const el = document.createElement('option');
+    el.value = opt.value;
+    el.textContent = opt.label;
+    select.appendChild(el);
+  });
+}
+
+// Kick off on page load
+loadConfig();
+
+/* ─────────────────────────────────────────────────
    Church Plant — show/hide "Other" field
 ───────────────────────────────────────────────── */
 churchPlantSelect.addEventListener('change', () => {
@@ -234,6 +321,12 @@ function validateForm(formData) {
     isValid = false;
   }
 
+  // Homes Code (mandatory — type NONE if not applicable)
+  if (!formData.get('homesCode')?.trim()) {
+    showFieldError('homesCode', 'Please enter your Homes Code, or type NONE if you are not part of one yet.');
+    isValid = false;
+  }
+
   // First Bloom
   if (!formData.get('firstBloom')) {
     showFieldError('firstBloom', 'Please indicate if this is your first Bloom Conference.');
@@ -295,10 +388,10 @@ function clearStatus() {
 function setSubmitting(isSubmitting) {
   submitBtn.disabled = isSubmitting;
   if (isSubmitting) {
-    btnText.textContent = 'Submitting…';
+    btnText.textContent = 'Submitting… / 提交中… / Menghantar…';
     btnSpinner.classList.add('is-visible');
   } else {
-    btnText.textContent = 'Submit Registration';
+    btnText.textContent = 'Submit Registration / 提交报名 / Hantar Pendaftaran';
     btnSpinner.classList.remove('is-visible');
   }
 }
@@ -326,7 +419,12 @@ form.addEventListener('submit', async (event) => {
   }
 
   setSubmitting(true);
-  setStatus('Uploading and submitting your registration…', 'info');
+  setStatus(
+    '⏳ Submitting your registration…\n\n' +
+    '📋 Please keep a copy of your bank-in slip and screenshot this page for your records. / 请保留你的转账凭证并截图保存此页面。 / Sila simpan salinan slip bank anda dan ambil tangkapan skrin halaman ini.\n\n' +
+    '📧 Look out for a confirmation email from info@actschurchconference.com within 15 minutes — check your spam/junk/promotions tabs too. / 请留意来自 info@actschurchconference.com 的确认邮件（约15分钟内），也查看垃圾邮件栏。 / Nantikan e-mel pengesahan dari info@actschurchconference.com dalam tempoh 15 minit — semak juga folder spam/junk anda.',
+    'info'
+  );
 
   try {
     const file = paymentProofInput.files[0];

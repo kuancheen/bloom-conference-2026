@@ -39,8 +39,8 @@
         <!-- Registration Form Panel -->
         <section class="panel panel--primary">
           <div class="panel-header">
-            <h2>Register Now</h2>
-            <p class="panel-subtitle">All fields marked <span class="req-star">*</span> are required.</p>
+            <h2>Register Now / 立即报名 / Daftar Sekarang</h2>
+            <p class="panel-subtitle">All fields marked <span class="req-star">*</span> are required. / 所有标有 <span class="req-star">*</span> 的字段为必填项 / Semua ruangan bertanda <span class="req-star">*</span> adalah wajib diisi.</p>
           </div>
 
           <form id="registrationForm" novalidate>
@@ -55,7 +55,7 @@
                 type="text"
                 id="fullName"
                 name="fullName"
-                placeholder="Jane Doe"
+                placeholder="Mary Magdalene"
                 autocomplete="name"
                 required
               />
@@ -72,7 +72,7 @@
                 type="email"
                 id="emailAddress"
                 name="emailAddress"
-                placeholder="jane@example.com"
+                placeholder="mary@example.com"
                 autocomplete="email"
                 required
               />
@@ -103,14 +103,8 @@
                 <span class="field-label-sub">年龄 / Kumpulan Umur</span>
               </label>
               <div class="select-wrapper">
-                <select id="ageRange" name="ageRange" required>
+                <select id="ageRange" name="ageRange" data-config-key="Age Range" required>
                   <option value="">Select / 选择 / Pilih</option>
-                  <option value="Below 18">Below 18 / 18岁以下</option>
-                  <option value="18-25">18 – 25</option>
-                  <option value="26-35">26 – 35</option>
-                  <option value="36-45">36 – 45</option>
-                  <option value="46-55">46 – 55</option>
-                  <option value="56+">56 &amp; above / 56岁以上</option>
                 </select>
               </div>
               <span class="field-error" id="ageRange-error"></span>
@@ -123,12 +117,8 @@
                 <span class="field-label-sub">婚姻状况 / Status Perkahwinan</span>
               </label>
               <div class="select-wrapper">
-                <select id="maritalStatus" name="maritalStatus" required>
+                <select id="maritalStatus" name="maritalStatus" data-config-key="Marital Status" required>
                   <option value="">Select / 选择 / Pilih</option>
-                  <option value="Single">Single / 单身 / Bujang</option>
-                  <option value="Married">Married / 已婚 / Berkahwin</option>
-                  <option value="Widowed">Widowed / 丧偶 / Balu/Duda</option>
-                  <option value="Divorced">Divorced / 离异 / Bercerai</option>
                 </select>
               </div>
               <span class="field-error" id="maritalStatus-error"></span>
@@ -141,55 +131,8 @@
                 <span class="field-label-sub">植会 / Anak Gereja</span>
               </label>
               <div class="select-wrapper">
-                <select id="churchPlant" name="churchPlant" required>
+                <select id="churchPlant" name="churchPlant" data-config-key="Church Plant" required>
                   <option value="">Select / 选择 / Pilih</option>
-                  <optgroup label="Malaysia">
-                    <option value="Acts Subang Jaya 0800">Acts Subang Jaya 0800</option>
-                    <option value="Acts Subang Jaya 1000">Acts Subang Jaya 1000</option>
-                    <option value="Acts Subang Jaya 1330">Acts Subang Jaya 1330</option>
-                    <option value="Acts Ampang">Acts Ampang</option>
-                    <option value="Acts Bandar Utama">Acts Bandar Utama</option>
-                    <option value="Acts Brickfields">Acts Brickfields</option>
-                    <option value="Acts Cheras">Acts Cheras</option>
-                    <option value="Acts Cyberjaya">Acts Cyberjaya</option>
-                    <option value="Acts Iskandar, Johor">Acts Iskandar, Johor</option>
-                    <option value="Acts Klang">Acts Klang</option>
-                    <option value="Acts Kota Kemuning 0815">Acts Kota Kemuning 0815</option>
-                    <option value="Acts Kota Kemuning 1045">Acts Kota Kemuning 1045</option>
-                    <option value="Acts Mandarin Subang Jaya">Acts Mandarin Subang Jaya</option>
-                    <option value="Acts Nilai">Acts Nilai</option>
-                    <option value="Acts Petaling Jaya">Acts Petaling Jaya</option>
-                    <option value="Acts Semenyih">Acts Semenyih</option>
-                    <option value="Acts Seri Kembangan 1100 (Eng)">Acts Seri Kembangan 1100 (Eng)</option>
-                    <option value="Acts Seri Kembangan 0930 (BM)">Acts Seri Kembangan 0930 (BM)</option>
-                  </optgroup>
-                  <optgroup label="Singapore">
-                    <option value="Acts Singapore">Acts Singapore</option>
-                  </optgroup>
-                  <optgroup label="Indonesia">
-                    <option value="Acts Bekasi">Acts Bekasi</option>
-                    <option value="Acts Serpong">Acts Serpong</option>
-                  </optgroup>
-                  <optgroup label="Thailand">
-                    <option value="Acts Chiang Mai">Acts Chiang Mai</option>
-                  </optgroup>
-                  <optgroup label="Myanmar">
-                    <option value="Acts Myanmar">Acts Myanmar</option>
-                  </optgroup>
-                  <optgroup label="Japan">
-                    <option value="Acts Osaka">Acts Osaka</option>
-                  </optgroup>
-                  <optgroup label="Australia">
-                    <option value="Acts Melbourne">Acts Melbourne</option>
-                  </optgroup>
-                  <optgroup label="Europe">
-                    <option value="Acts Germany">Acts Germany</option>
-                    <option value="Acts United Kingdom">Acts United Kingdom</option>
-                  </optgroup>
-                  <optgroup label="Africa">
-                    <option value="Acts Botswana">Acts Botswana</option>
-                  </optgroup>
-                  <option value="Others">Others / 其他 / Lain-Lain</option>
                 </select>
               </div>
               <span class="field-error" id="churchPlant-error"></span>
@@ -213,16 +156,18 @@
             <!-- Homes Code -->
             <div class="field-group">
               <label for="homesCode" class="field-label">
-                Homes Code
+                Homes Code <span class="req-star">*</span>
                 <span class="field-label-sub">编号 / Kod Homes</span>
-                <span class="field-hint">e.g. KL-H01 (leave blank if not in a Homes)</span>
+                <span class="field-hint">e.g. SJA01, KK03, KG02, East London (type NONE if you are not part of one yet) / 若还未加入Homes，请注明 "NONE" / Taip NONE jika anda belum lagi sebahagian daripada satu)</span>
               </label>
               <input
                 type="text"
                 id="homesCode"
                 name="homesCode"
-                placeholder="KL-H01"
+                placeholder="e.g. SJA01"
+                required
               />
+              <span class="field-error" id="homesCode-error"></span>
             </div>
 
             <!-- Workshop -->
@@ -232,13 +177,8 @@
                 <span class="field-label-sub">工作坊 / Bengkel</span>
               </label>
               <div class="select-wrapper">
-                <select id="workshop" name="workshop" required>
+                <select id="workshop" name="workshop" data-config-key="Workshop" required>
                   <option value="">Select a workshop / 选择工作坊 / Pilih Bengkel</option>
-                  <option value="Beautiful Inside Out">Beautiful Inside Out / 由内而外的美丽 / Cantik dari Dalam ke Luar</option>
-                  <option value="Cars 101">Cars 101 / 车辆的基本维护 / Asas Penjagaan Kereta</option>
-                  <option value="Creative Bible Journalling">Creative Bible Journalling / 创意圣经灵修日记 + 手帐 / Jurnal Alkitab Kreatif</option>
-                  <option value="Preparing For Menopause">Preparing For Menopause / 为更年期做预备 / Persediaan Menghadapi Menopaus</option>
-                  <option value="Scam Prevention Awareness">Scam Prevention Awareness / 提升反诈骗意识 / Kesedaran Pencegahan Penipuan</option>
                 </select>
               </div>
               <span class="field-error" id="workshop-error"></span>
@@ -268,7 +208,7 @@
               <label for="paymentProof" class="field-label">
                 Proof of Payment <span class="req-star">*</span>
                 <span class="field-label-sub">付款凭证 / Bukti Pembayaran</span>
-                <span class="field-hint">Upload a screenshot or photo of your payment receipt (JPG, PNG, PDF, max 5MB)</span>
+                <span class="field-hint">Upload a screenshot or photo of your payment receipt (JPG, PNG, PDF, max 5MB) / 请上传付款截图或照片 / Muat naik tangkapan skrin atau foto resit pembayaran anda (JPG, PNG, PDF, maks 5MB)</span>
               </label>
               <div class="file-upload-zone" id="fileUploadZone">
                 <input
@@ -281,8 +221,8 @@
                 />
                 <div class="file-upload-ui">
                   <span class="file-upload-icon">📎</span>
-                  <p class="file-upload-prompt">Click to choose file or drag &amp; drop here</p>
-                  <p class="file-upload-hint">JPG, PNG, PDF up to 5MB</p>
+                  <p class="file-upload-prompt">Click to choose file or drag &amp; drop here / 点击选择文件或拖放到此处 / Klik untuk pilih fail atau seret &amp; lepas di sini</p>
+                  <p class="file-upload-hint">JPG, PNG, PDF up to 5MB / 最大 5MB / maks 5MB</p>
                 </div>
                 <div class="file-preview" id="filePreview" style="display:none;">
                   <span class="file-preview-icon">✅</span>
@@ -291,6 +231,11 @@
                 </div>
               </div>
               <span class="field-error" id="paymentProof-error"></span>
+              <p class="field-hint" style="margin-top: 8px; line-height: 1.6;">
+                📋 Please keep a copy of your bank-in slip and screenshot your registration submission for your reference.<br>
+                请保留一份你的转账凭证，也截图保存你的报名资料。<br>
+                Sila simpan salinan slip deposit bank anda dan ambil tangkapan skrin penyerahan pendaftaran anda untuk rujukan.
+              </p>
             </div>
 
             <!-- Additional Remarks -->
@@ -298,7 +243,6 @@
               <label for="remarks" class="field-label">
                 Additional Remarks
                 <span class="field-label-sub">备注 / Catatan</span>
-                <span class="field-hint">Optional — dietary needs, accessibility requirements, etc.</span>
               </label>
               <textarea
                 id="remarks"
@@ -314,7 +258,7 @@
             <!-- Submit -->
             <div class="submit-row">
               <button type="submit" class="primary-btn" id="submitBtn">
-                <span class="btn-text">Submit Registration</span>
+                <span class="btn-text">Submit Registration / 提交报名 / Hantar Pendaftaran</span>
                 <span class="btn-spinner" id="btnSpinner" aria-hidden="true"></span>
               </button>
             </div>
@@ -324,7 +268,7 @@
         <!-- Info Panel -->
         <aside class="panel panel--secondary">
           <div class="panel-header">
-            <h2>Event Info / 活动信息</h2>
+            <h2>Event Info / 活动信息 / Maklumat Acara</h2>
           </div>
 
           <div class="info-card">
@@ -359,23 +303,23 @@
             <div class="info-row" style="margin-top: 24px; padding-top: 24px; border-top: 1px dashed rgba(60, 43, 53, 0.15);">
               <span class="info-icon">🏦</span>
               <div>
-                <strong>Banking Details<br><span style="font-size:0.75rem; font-weight:normal; text-transform:none;">银行转账资料 / Maklumat Perbankan</span></strong>
-                <p style="margin-top: 8px;"><strong>Bank:</strong> Public Bank</p>
-                <p><strong>Account No:</strong> 3116737405</p>
-                <p><strong>Account Name:</strong> Acts Church</p>
-                <p><strong>Reference:</strong> BLOOM26</p>
+                <strong>Banking Details / 银行转账资料 / Maklumat Perbankan</strong>
+                <p style="margin-top: 8px;"><strong>Bank / 银行 / Bank:</strong> Public Bank</p>
+                <p><strong>Account Number / 银行账户 / No Akaun:</strong> 3116737405</p>
+                <p><strong>Account Name / 银行账户名 / Nama Akaun:</strong> Acts Church</p>
+                <p><strong>Reference / 备注 / Rujukan:</strong> BLOOM26</p>
               </div>
             </div>
           </div>
 
           <div class="info-note">
-            <p>🌸 *Open to ladies aged 16 years and above.*</p>
-            <p>🌸 *报名开放给 16 岁和以上的女士们*</p>
-            <p>🌸 *Terbuka kepada wanita berumur 16 tahun dan ke atas.*</p>
+            <p>🌸 Open to ladies aged 16 years and above / 报名开放给 16 岁和以上的女士们 / Terbuka kepada wanita berumur 16 tahun dan ke atas.</p>
             <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(60, 43, 53, 0.1);" />
-            <p><strong>Please keep a copy of your bank in slip and screenshot your registration submission for your reference.</strong></p>
-            <p>请保留一份你的转账凭证，也截图保存你的报名资料。</p>
-            <p>Sila simpan salinan slip deposit bank anda dan ambil tangkapan skrin penyerahan pendaftaran anda untuk rujukan.</p>
+            <p><strong>📧 Please be on a look out for a confirmation email from us in the next 15 minutes via our info@actschurchconference.com email address. Do check your spam/junk/all mail/promotion tabs too.</strong></p>
+            <p style="margin-top: 8px;">敬请留意在接下来15分钟左右的时间 — 我们（info@actschurchconference.com）将发一封确认的邮件给你。若你没有收到，那请先查看你邮件里的 Spam（垃圾邮件栏） / Junk（删除邮件栏）/ All Mail（所有邮件栏）/ Promotion（推销邮件栏）里哦～</p>
+            <p style="margin-top: 8px;">Sila nantikan e-mel pengesahan daripada kami dalam tempoh 15 minit akan datang melalui alamat e-mel info@actschurchconference.com. Sila semak juga folder spam/junk/all mail/promotions anda.</p>
+            <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(60, 43, 53, 0.1);" />
+            <p><em>If you did not receive the confirmation email, kindly write in to info@actschurchconference.com for more enquiries. / 若你没有收到邮件确认你的报名，请发邮件给 info@actschurchconference.com 询问详情。 / Jika anda tidak menerima e-mel pengesahan, sila hubungi info@actschurchconference.com untuk pertanyaan lanjut.</em></p>
           </div>
         </aside>
       </main>
@@ -402,7 +346,7 @@
       </div>
 
       <footer class="site-footer">
-        <p>&copy; 2026 Bloom Conference. All rights reserved.</p>
+        <p><a href="https://actschurch.org" style="color: inherit; text-decoration: none;">actschurch.org</a></p>
       </footer>
     </div>
 
