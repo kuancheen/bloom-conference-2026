@@ -1,0 +1,31 @@
+# Acts Church Conference — Custom Rewrite Rules
+# Place BEFORE the WordPress block so /register is handled first
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# 1. Page Routes
+RewriteRule ^register/?$ /bloom2026/index.html [L,QSA]
+RewriteRule ^dashboard/?$ /dashboard.html [L,QSA]
+RewriteRule ^registrants/?$ /registrants.html [L,QSA]
+
+# 2. Asset Routes (CSS & JS for Bloom 2026)
+# This catches requests for styles.css, app.js, and config.js and routes them correctly
+RewriteRule ^(?:register/)?(styles\.css|app\.js|config\.js)$ /bloom2026/$1 [L,QSA]
+</IfModule>
+
+
+# BEGIN WordPress
+# The directives (lines) between "BEGIN WordPress" and "END WordPress" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress
