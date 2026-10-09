@@ -307,7 +307,17 @@ function errorResponse(message) {
  */
 function sendConfirmationEmail(data) {
   var subject = "Registration Received - Bloom Conference 2026 / 报名已收到 / Pendaftaran Diterima";
-  var churchDisplay = (data.churchPlant === 'Others') ? data.churchPlantOther : data.churchPlant;
+  
+  var workshopMap = {
+    'beautiful': 'Beautiful Inside Out / 由内而外的美丽 / Cantik dari Dalam ke Luar',
+    'cars': 'Cars 101 / 车辆的基本维护 / Asas Penjagaan Kereta',
+    'journalling': 'Creative Bible Journalling / 创意圣经灵修日记 + 手帐 / Jurnal Alkitab Kreatif',
+    'menopause': 'Preparing For Menopause / 为更年期做预备 / Persediaan Menghadapi Menopaus',
+    'scam': 'Scam Prevention Awareness / 提升反诈骗意识 / Kesedaran Pencegahan Penipuan',
+    'none': "[I'm not able to attend] | [抱歉，不能参与] | [Maaf, saya tidak dapat hadir]"
+  };
+  var workshopDisplay = workshopMap[data.workshop] || data.workshop || '';
+  var churchDisplay = (data.churchPlant === 'Others' && data.churchPlantOther) ? data.churchPlantOther : (data.churchPlant || '');
   
   var htmlBody = `
 <div style="font-family: 'Inter', system-ui, sans-serif; color: #3C2B35; max-width: 600px; margin: 0 auto; background-color: #FDF6F0; border-radius: 12px; overflow: hidden; border: 1px solid #E8D0D8;">
@@ -337,7 +347,7 @@ function sendConfirmationEmail(data) {
       </tr>
       <tr>
         <td style="padding: 12px 15px; font-weight: 600; color: #7A5F6F;">Workshop</td>
-        <td style="padding: 12px 15px;">${data.workshop}</td>
+        <td style="padding: 12px 15px;">${workshopDisplay}</td>
       </tr>
     </table>
 
@@ -353,9 +363,23 @@ function sendConfirmationEmail(data) {
 </div>
   `;
 
+  var plainBody = "Hi " + (data.fullName || '') + ",\n\n" +
+    "Thank you for registering for the Bloom Conference 2026! We have received your registration details and payment proof.\n\n" +
+    "Important Note: Your registration is currently pending payment verification. We will contact you if there are any issues with your payment.\n\n" +
+    "Registration Summary:\n" +
+    "- Name: " + (data.fullName || '') + "\n" +
+    "- Church Plant: " + churchDisplay + "\n" +
+    "- Workshop: " + workshopDisplay + "\n\n" +
+    "Event Details:\n" +
+    "- Date: 14 November 2026\n" +
+    "- Time: 9.30am - 5.00pm\n" +
+    "- Venue: Bible College of Malaysia, Petaling Jaya\n\n" +
+    "If you have any questions, feel free to reply to this email.";
+
   MailApp.sendEmail({
     to: data.emailAddress,
     subject: subject,
+    body: plainBody,
     htmlBody: htmlBody,
     name: "🌸 Bloom Conference 2026"
   });

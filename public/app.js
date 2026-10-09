@@ -101,7 +101,7 @@ function populateSelectWithGroups(fieldId, options) {
   const groups = {};
   const ungrouped = [];
   options.forEach(opt => {
-    if (opt.group && opt.group !== 'Others') {
+    if (opt.group) {
       if (!groups[opt.group]) groups[opt.group] = [];
       groups[opt.group].push(opt);
     } else {
