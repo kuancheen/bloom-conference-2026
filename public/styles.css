@@ -5,10 +5,11 @@
 
 /* ---------- CSS Variables ---------- */
 :root {
-  --bloom-rose:       #C9556E;   /* Primary rose */
-  --bloom-blush:      #F2A7BA;   /* Light blush */
-  --bloom-lavender:   #9B7FB6;   /* Soft lavender accent */
-  --bloom-lavender-lt:#EDE5F5;   /* Lavender tint */
+  --bloom-rose:       #D03A19;   /* Primary terracotta/red (Pic 3) */
+  --bloom-rose-dk:    #AD2A0E;   /* Darker terracotta for gradient stop */
+  --bloom-blush:      #F8755D;   /* Coral / peach accent (Pic 5) */
+  --bloom-lavender:   #F8755D;   /* Coral accent */
+  --bloom-lavender-lt:#FDEEEA;   /* Soft coral/peach tint for notes & tags */
   --bloom-cream:      #FDF6F0;   /* Page background */
   --bloom-cream-dk:   #F5EBE0;   /* Card background */
   --bloom-gold:       #C4973A;   /* Warm gold detail */
@@ -141,7 +142,7 @@ body {
 }
 
 .panel--primary .panel-header {
-  background: linear-gradient(135deg, var(--bloom-rose) 0%, #A6395A 100%);
+  background: linear-gradient(135deg, var(--bloom-rose) 0%, var(--bloom-rose-dk) 100%);
   border-bottom: none;
 }
 
@@ -167,7 +168,7 @@ body {
 }
 
 .panel--primary .panel-header .req-star {
-  color: #ffd6e0;
+  color: #ffe0db;
 }
 
 /* ---------- Form ---------- */
@@ -234,7 +235,7 @@ input[type="tel"]:focus,
 textarea:focus {
   border-color: var(--bloom-rose);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(201, 85, 110, 0.12);
+  box-shadow: 0 0 0 3px rgba(208, 58, 25, 0.12);
 }
 
 input[type="text"].is-invalid,
@@ -291,7 +292,7 @@ select {
 select:focus {
   border-color: var(--bloom-rose);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(201, 85, 110, 0.12);
+  box-shadow: 0 0 0 3px rgba(208, 58, 25, 0.12);
 }
 
 select option[value=""] {
@@ -322,7 +323,7 @@ select option[value=""] {
 
 .radio-label:has(input:checked) {
   border-color: var(--bloom-rose);
-  background: rgba(201, 85, 110, 0.07);
+  background: rgba(208, 58, 25, 0.07);
   color: var(--bloom-rose);
   font-weight: 600;
 }
@@ -360,7 +361,7 @@ select option[value=""] {
 .file-upload-zone:hover,
 .file-upload-zone.is-drag-over {
   border-color: var(--bloom-rose);
-  background: rgba(201, 85, 110, 0.04);
+  background: rgba(208, 58, 25, 0.04);
 }
 
 .file-upload-zone.is-invalid {
@@ -439,7 +440,7 @@ select option[value=""] {
 }
 
 .file-remove-btn:hover {
-  background: rgba(201, 85, 110, 0.1);
+  background: rgba(208, 58, 25, 0.1);
   color: var(--bloom-rose);
 }
 
@@ -486,7 +487,7 @@ select option[value=""] {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(135deg, var(--bloom-rose) 0%, #A6395A 100%);
+  background: linear-gradient(135deg, var(--bloom-rose) 0%, var(--bloom-rose-dk) 100%);
   color: #fff;
   border: none;
   border-radius: 100px;
@@ -497,12 +498,12 @@ select option[value=""] {
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: all var(--transition);
-  box-shadow: 0 4px 16px rgba(201, 85, 110, 0.35);
+  box-shadow: 0 4px 16px rgba(208, 58, 25, 0.35);
 }
 
 .primary-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(201, 85, 110, 0.45);
+  box-shadow: 0 6px 24px rgba(208, 58, 25, 0.45);
 }
 
 .primary-btn:active {
