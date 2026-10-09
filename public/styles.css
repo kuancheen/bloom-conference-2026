@@ -568,6 +568,23 @@ select option[value=""] {
   color: var(--bloom-text);
 }
 
+.info-row--age-requirement {
+  align-items: flex-start;
+  padding-top: 4px;
+}
+
+.info-row--age-requirement .age-requirement-text p {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--bloom-text);
+  line-height: 1.5;
+  margin: 0 0 4px 0;
+}
+
+.info-row--age-requirement .age-requirement-text p:last-child {
+  margin-bottom: 0;
+}
+
 /* ---------- Banking Details Card ---------- */
 .bank-details-card {
   margin-top: 22px;
