@@ -569,8 +569,13 @@ select option[value=""] {
 }
 
 .info-row--age-requirement {
-  align-items: flex-start;
+  align-items: center;
   padding-top: 4px;
+}
+
+.info-row--age-requirement .info-icon {
+  font-size: 1.4rem;
+  line-height: 1;
 }
 
 .info-row--age-requirement .age-requirement-text p {
