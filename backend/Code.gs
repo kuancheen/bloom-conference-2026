@@ -299,19 +299,12 @@ function doPost(e) {
     if (data.workshop) {
       var availability = isWorkshopAvailable(ss, data.workshop);
       if (!availability.available) {
-        var workshopMap = {
-          'beautiful': 'Beautiful Inside Out / 由内而外的美丽 / Cantik dari Dalam ke Luar',
-          'cars': 'Cars 101 / 车辆的基本维护 / Asas Penjagaan Kereta',
-          'journalling': 'Creative Bible Journalling / 创意圣经灵修日记 + 手帐 / Jurnal Alkitab Kreatif',
-          'menopause': 'Preparing For Menopause / 为更年期做预备 / Persediaan Menghadapi Menopaus',
-          'scam': 'Scam Prevention Awareness / 提升反诈骗意识 / Kesedaran Pencegahan Penipuan',
-          'none': "[I'm not able to attend] | [抱歉，不能参与] | [Maaf, saya tidak dapat hadir]"
-        };
-        var wsDisplayName = workshopMap[data.workshop] || availability.workshopName || data.workshop;
+        var wsDisplayName = availability.workshopName || data.workshop;
         return errorResponse(
-          'The workshop "' + wsDisplayName + '" is full. Please choose another workshop.\n' +
-          '工作坊 "' + wsDisplayName + '" 名额已满，请选择其他工作坊。\n' +
-          'Bengkel "' + wsDisplayName + '" telah penuh. Sila pilih bengkel yang lain.'
+          '[' + wsDisplayName + ']\n' +
+          'The selected workshop is full. Please choose another workshop.\n' +
+          '所选工作坊名额已满，请选择其他工作坊。\n' +
+          'Bengkel yang dipilih telah penuh. Sila pilih bengkel yang lain.'
         );
       }
     }
