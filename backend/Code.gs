@@ -324,11 +324,11 @@ function sendConfirmationEmail(data, fileUrl) {
   if (fileUrl && fileUrl.indexOf('http') === 0) {
     paymentRowHtml = `
       <tr>
-        <td style="padding: 12px 15px; border-top: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F;">Payment Proof</td>
-        <td style="padding: 12px 15px; border-top: 1px solid #E8D0D8;"><a href="${fileUrl}" target="_blank" style="color: #C9556E; font-weight: 600; text-decoration: underline;">View Uploaded Receipt / 查看转账凭证</a></td>
+        <td style="padding: 12px 15px; border-top: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F;">Payment Proof / 付款凭证 / Bukti Pembayaran</td>
+        <td style="padding: 12px 15px; border-top: 1px solid #E8D0D8;"><a href="${fileUrl}" target="_blank" style="color: #C9556E; font-weight: 600; text-decoration: underline;">View Uploaded Receipt / 查看转账凭证 / Lihat Resit</a></td>
       </tr>
     `;
-    paymentRowPlain = "\n- Payment Proof: " + fileUrl;
+    paymentRowPlain = "\n- Payment Proof / 付款凭证 / Bukti Pembayaran: " + fileUrl;
   }
 
   var htmlBody = `
@@ -342,32 +342,32 @@ function sendConfirmationEmail(data, fileUrl) {
     <p>Hi <strong>${data.fullName}</strong>,</p>
     <p>Thank you for registering for the <strong>Bloom Conference 2026</strong>! We have received your registration details and payment proof.</p>
     <p style="color: #7A5F6F; font-size: 14px;">谢谢你的报名！我们已收到你的报名资料及转账凭证。<br>Terima kasih kerana mendaftar! Kami telah menerima butiran pendaftaran dan bukti pembayaran anda.</p>
-    
-    <div style="background-color: #FFF0F0; border-left: 4px solid #C9556E; padding: 15px; margin: 25px 0; border-radius: 4px;">
-      <p style="margin: 0; font-weight: 600; color: #C9556E;">Important Note / 重要提示 / Nota Penting:</p>
-      <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.5;">Your registration is currently pending payment verification. We will contact you if there are any issues with your payment. / 你的报名目前正在等待付款验证。如果转账有任何问题，我们将与你联系。 / Pendaftaran anda sedang menunggu pengesahan pembayaran. Kami akan menghubungi anda sekiranya terdapat sebarang isu.</p>
-    </div>
 
     <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #E8D0D8;">
       <tr>
-        <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F; width: 35%;">Name</td>
+        <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F; width: 40%;">Name / 姓名 / Nama</td>
         <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8;">${data.fullName}</td>
       </tr>
       <tr>
-        <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F;">Church Plant</td>
+        <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F;">Church Plant / 植会 / Anak Gereja</td>
         <td style="padding: 12px 15px; border-bottom: 1px solid #E8D0D8;">${churchDisplay}</td>
       </tr>
       <tr>
-        <td style="padding: 12px 15px; font-weight: 600; color: #7A5F6F;">Workshop</td>
+        <td style="padding: 12px 15px; font-weight: 600; color: #7A5F6F;">Workshop / 工作坊 / Bengkel</td>
         <td style="padding: 12px 15px;">${workshopDisplay}</td>
       </tr>
       ${paymentRowHtml}
     </table>
 
+    <div style="background-color: #FFF0F0; border-left: 4px solid #C9556E; padding: 15px; margin: 25px 0; border-radius: 4px;">
+      <p style="margin: 0; font-weight: 600; color: #C9556E;">Important Note / 重要提示 / Nota Penting:</p>
+      <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.5;">Your registration is currently pending payment verification. We will contact you if there are any issues with your payment. / 你的报名目前正在等待付款验证。如果转账有任何问题，我们将与你联系。 / Pendaftaran anda sedang menunggu pengesahan pembayaran. Kami akan menghubungi anda sekiranya terdapat sebarang isu.</p>
+    </div>
+
     <h3 style="color: #C9556E; margin-top: 30px;">Event Details / 活动详情 / Butiran Acara</h3>
-    <p style="margin: 5px 0;"><strong>Date:</strong> 14 November 2026</p>
-    <p style="margin: 5px 0;"><strong>Time:</strong> 9.30am – 5.00pm</p>
-    <p style="margin: 5px 0;"><strong>Venue:</strong> Bible College of Malaysia, Petaling Jaya</p>
+    <p style="margin: 6px 0;"><strong>Date / 日期 / Tarikh:</strong> 14 November 2026</p>
+    <p style="margin: 6px 0;"><strong>Time / 时间 / Masa:</strong> 9.30am – 5.00pm</p>
+    <p style="margin: 6px 0;"><strong>Venue / 地点 / Lokasi:</strong> Bible College of Malaysia, Petaling Jaya</p>
 
     <p style="margin-top: 30px; font-size: 14px; color: #7A5F6F; border-top: 1px solid #E8D0D8; padding-top: 20px;">
       If you have any questions, feel free to reply to this email. / 若有任何疑问，请回复此邮件。 / Sekiranya ada sebarang pertanyaan, sila balas e-mel ini.
@@ -378,16 +378,17 @@ function sendConfirmationEmail(data, fileUrl) {
 
   var plainBody = "Hi " + (data.fullName || '') + ",\n\n" +
     "Thank you for registering for the Bloom Conference 2026! We have received your registration details and payment proof.\n\n" +
-    "Important Note: Your registration is currently pending payment verification. We will contact you if there are any issues with your payment.\n\n" +
-    "Registration Summary:\n" +
-    "- Name: " + (data.fullName || '') + "\n" +
-    "- Church Plant: " + churchDisplay + "\n" +
-    "- Workshop: " + workshopDisplay +
+    "Registration Summary / 报名资料 / Ringkasan Pendaftaran:\n" +
+    "- Name / 姓名 / Nama: " + (data.fullName || '') + "\n" +
+    "- Church Plant / 植会 / Anak Gereja: " + churchDisplay + "\n" +
+    "- Workshop / 工作坊 / Bengkel: " + workshopDisplay +
     paymentRowPlain + "\n\n" +
-    "Event Details:\n" +
-    "- Date: 14 November 2026\n" +
-    "- Time: 9.30am - 5.00pm\n" +
-    "- Venue: Bible College of Malaysia, Petaling Jaya\n\n" +
+    "Important Note / 重要提示 / Nota Penting:\n" +
+    "Your registration is currently pending payment verification. We will contact you if there are any issues with your payment. / 你的报名目前正在等待付款验证。如果转账有任何问题，我们将与你联系。 / Pendaftaran anda sedang menunggu pengesahan pembayaran. Kami akan menghubungi anda sekiranya terdapat sebarang isu.\n\n" +
+    "Event Details / 活动详情 / Butiran Acara:\n" +
+    "- Date / 日期 / Tarikh: 14 November 2026\n" +
+    "- Time / 时间 / Masa: 9.30am - 5.00pm\n" +
+    "- Venue / 地点 / Lokasi: Bible College of Malaysia, Petaling Jaya\n\n" +
     "If you have any questions, feel free to reply to this email.";
 
   MailApp.sendEmail({
