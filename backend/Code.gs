@@ -93,7 +93,7 @@ function doGet(e) {
 }
 
 /**
- * Reads dropdown options from the 'Config' sheet.
+ * Reads dropdown options and workshop limits.
  * Dynamically detects column positions by scanning row 0 headers.
  */
 function getConfigResponse() {
@@ -109,7 +109,7 @@ function getConfigResponse() {
     var data = configSheet.getDataRange().getValues();
     if (!data || data.length < 2) {
       return ContentService
-        .createTextOutput(JSON.stringify({ result: 'success', config: {} }))
+        .createTextOutput(JSON.stringify({ result: 'success', config: {}, limits: {} }))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -171,8 +171,24 @@ function getConfigResponse() {
       if (cpLabel) config['Church Plant'].push({ label: cpLabel, value: cpValue || cpLabel, group: cpGroup });
     }
 
+    // Read Workshop Limits
+    var limitsMap = getWorkshopLimitsMap(ss);
+
+    // Annotate workshop options with limit and availability info
+    for (var w = 0; w < config['Workshop'].length; w++) {
+      var wOpt = config['Workshop'][w];
+      var wKey = wOpt.value.toLowerCase();
+      if (limitsMap[wKey]) {
+        wOpt.limit = limitsMap[wKey].limit;
+        wOpt.registered = limitsMap[wKey].registered;
+        wOpt.isFull = limitsMap[wKey].isFull;
+      } else {
+        wOpt.isFull = false;
+      }
+    }
+
     return ContentService
-      .createTextOutput(JSON.stringify({ result: 'success', config: config }))
+      .createTextOutput(JSON.stringify({ result: 'success', config: config, limits: limitsMap }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
@@ -180,6 +196,80 @@ function getConfigResponse() {
       .createTextOutput(JSON.stringify({ result: 'error', error: err.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+/**
+ * Helper to parse the Limits sheet and calculate workshop limits / counts.
+ */
+function getWorkshopLimitsMap(ss) {
+  var limitsMap = {};
+  var limitsSheet = ss.getSheetByName('Limits');
+  if (!limitsSheet) return limitsMap;
+
+  var limitData = limitsSheet.getDataRange().getValues();
+  if (!limitData || limitData.length < 2) return limitsMap;
+
+  var header = limitData[0];
+  var codeCol = -1, limitCol = -1, registeredCol = -1, statusCol = -1;
+
+  for (var c = 0; c < header.length; c++) {
+    var colName = (header[c] || '').toString().toLowerCase().trim();
+    if (colName === 'workshop' || colName === 'code' || colName === 'workshop code' || colName === 'item' || colName === 'name') {
+      codeCol = c;
+    } else if (colName === 'limit' || colName === 'capacity' || colName === 'max') {
+      limitCol = c;
+    } else if (colName === 'registered' || colName === 'total registered' || colName === 'count') {
+      registeredCol = c;
+    } else if (colName === 'status' || colName === 'is full') {
+      statusCol = c;
+    }
+  }
+
+  // Sensible default column positions if headers are not exact
+  if (codeCol === -1) codeCol = 0;
+  if (limitCol === -1) limitCol = 1;
+  if (registeredCol === -1) registeredCol = 2;
+
+  for (var r = 1; r < limitData.length; r++) {
+    var row = limitData[r];
+    var code = (row[codeCol] || '').toString().trim();
+    if (!code) continue;
+
+    var limitVal = parseInt(row[limitCol], 10);
+    var regVal = registeredCol !== -1 ? parseInt(row[registeredCol], 10) : 0;
+    if (isNaN(limitVal)) limitVal = 0;
+    if (isNaN(regVal)) regVal = 0;
+
+    var statusText = statusCol !== -1 ? (row[statusCol] || '').toString().toLowerCase().trim() : '';
+    var isFull = (limitVal > 0 && regVal >= limitVal) || statusText === 'full' || statusText === 'closed';
+
+    limitsMap[code.toLowerCase()] = {
+      code: code,
+      limit: limitVal,
+      registered: regVal,
+      isFull: isFull
+    };
+  }
+
+  return limitsMap;
+}
+
+/**
+ * Checks if a workshop selection is still available in the Limits sheet.
+ */
+function isWorkshopAvailable(ss, workshopValue) {
+  if (!workshopValue || workshopValue.toLowerCase() === 'none') {
+    return { available: true };
+  }
+  var limitsMap = getWorkshopLimitsMap(ss);
+  var workshopKey = workshopValue.toLowerCase().trim();
+  if (limitsMap[workshopKey] && limitsMap[workshopKey].isFull) {
+    return {
+      available: false,
+      workshopName: limitsMap[workshopKey].code || workshopValue
+    };
+  }
+  return { available: true };
 }
 
 /**
@@ -201,6 +291,20 @@ function doPost(e) {
 
     if (!data.fileData || !data.fileType || !data.fileName) {
       return errorResponse('Proof of payment is required.');
+    }
+
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    // Verify workshop capacity limit before saving
+    if (data.workshop) {
+      var availability = isWorkshopAvailable(ss, data.workshop);
+      if (!availability.available) {
+        return errorResponse(
+          'The selected workshop is full. Please choose another workshop.\n' +
+          '所选工作坊名额已满，请选择其他工作坊。\n' +
+          'Bengkel yang dipilih telah penuh. Sila pilih bengkel lain.'
+        );
+      }
     }
 
     // Upload payment proof to Drive
