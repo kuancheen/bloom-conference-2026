@@ -34,8 +34,8 @@ var DRIVE_FOLDER_ID = 'YOUR_DRIVE_FOLDER_ID';
  */
 var HEADERS = [
   'Timestamp',
-  'Full Name',
   'Email',
+  'Full Name',
   'Phone',
   'Age Range',
   'Marital Status',
@@ -70,8 +70,8 @@ function getOrCreateSheet(name) {
     sheet.setFrozenRows(1);
     // Set column widths
     sheet.setColumnWidth(1, 160);   // Timestamp
-    sheet.setColumnWidth(2, 180);   // Full Name
-    sheet.setColumnWidth(3, 200);   // Email
+    sheet.setColumnWidth(2, 200);   // Email
+    sheet.setColumnWidth(3, 180);   // Full Name
     sheet.setColumnWidth(4, 140);   // Phone
     sheet.setColumnWidth(12, 250);  // Payment URL
   }
@@ -224,8 +224,8 @@ function doPost(e) {
 
     sheet.appendRow([
       timestamp,
-      data.fullName      || '',
       data.emailAddress  || '',
+      data.fullName      || '',
       data.phoneNumber   || '',
       data.ageRange      || '',
       data.maritalStatus || '',
