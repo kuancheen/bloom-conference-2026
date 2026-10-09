@@ -31,7 +31,7 @@ bloom-conference-2026/
 
 ## 4. Completed Features
 *   **Trilingual UI:** Form fields, labels, error messages, success screens, section headers, upload prompts, and the submit button are all fully localized in EN, ZH, and BM.
-*   **Dynamic Dropdown Config:** Dropdown options (Age Range, Marital Status, Church Plant with optgroups, Workshop) are loaded at runtime via `GET {scriptUrl}?action=config` from the Google Sheet's "Config" tab. The Config sheet schema is: Column A=Category, B=Display Label, C=Stored Value, D=Group (for Church Plant optgroups). Static placeholder options remain in the HTML as a skeleton.
+*   **Dynamic Dropdown Config:** Dropdown options (Age Range, Marital Status, Church Plant with optgroups, Workshop) are loaded at runtime via `GET {scriptUrl}?action=config` from the Google Sheet's "Config" tab. The Config sheet layout is structured horizontally: Col B/C (Age Range), Col E/F (Marital Status), Col H/I (Workshop), Col K/L (First Bloom), Col M/N/O (Church Plant with Grouping). Static placeholder options remain in the HTML as a skeleton.
 *   **Dynamic Form Logic:** Includes conditional rendering (e.g., "Others" text field appears when "Others" is selected in the Church Plant dropdown).
 *   **File Upload System:** Custom drag-and-drop zone that accepts JPG, PNG, and PDF (max 5MB). Files are converted to Base64 strings client-side to bypass Google Apps Script CORS limitations with standard multipart forms.
 *   **Secure Configuration Architecture:** The Google Apps Script URL is loaded from an external, gitignored `config.js` file, ensuring the GitHub repo contains no live endpoints.
