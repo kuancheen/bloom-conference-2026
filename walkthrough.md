@@ -21,7 +21,8 @@ bloom-conference-2026/
 │   ├── app.js              # Client logic (Validation, Base64 conversion, Fetch API)
 │   └── config.js.example   # Template for production config
 ├── backend/
-│   └── Code.gs             # Google Apps Script backend logic
+│   ├── Code.gs             # Google Apps Script backend logic
+│   └── appsscript.json     # Apps Script manifest (OAuth scopes, runtime config)
 ├── README.md               # Quickstart and deployment instructions
 ├── implementation_plan.md  # Active checklist of remaining tasks
 └── walkthrough.md          # System architecture and living memory (This file)
@@ -41,6 +42,11 @@ bloom-conference-2026/
 ## 5. Environment & Setup Details
 *   **Local Development:** `npm run dev` uses the `serve` package to host the `public/` directory locally. A local dummy `config.js` is required to prevent errors.
 *   **Production:** Files in `public/` are uploaded to the web server. The Apps Script is deployed natively in the Google Workspace environment as a Web App executing as the script owner.
+*   **OAuth Scopes (`backend/appsscript.json`):** The `appsscript.json` manifest is committed to the repository and must be present in the Apps Script editor (View → Show manifest file). Required scopes:
+    - `auth/gmail.send` — allows `GmailApp.sendEmail()` to dispatch confirmation emails.
+    - `auth/spreadsheets` — allows read/write access to the registration Google Sheet.
+    - `auth/script.send_mail` — legacy send-mail scope required alongside the Gmail scope.
+    - `auth/script.external_request` — allows the script to make outbound HTTP calls.
 
 ## 6. Lessons Learned & Technical Decisions
 *   **Securing Git History:** Committing sensitive IDs (like the Drive Folder ID) into `Code.gs` leaves traces in the git history. We learned to strip these immediately using `git commit --amend` and force pushing to maintain security. Future IDs should only exist in the live Google Script editor.
