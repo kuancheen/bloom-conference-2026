@@ -8,6 +8,11 @@ This document serves as the active checklist for all remaining features, bug fix
   - Add `MailApp` or `GmailApp` logic to `backend/Code.gs` to send a trilingual confirmation email upon successful registration.
   - The email must be triggered automatically inside the `doPost` function.
   - Test email delivery to ensure it doesn't get flagged as spam.
+- [x] **Workshop Capacity Limits Enforcement (`Limits` Sheet):**
+  - Read workshop limits and current registration counts from the `Limits` tab in Google Sheets via `action=config` or a dedicated `limits` helper in `backend/Code.gs`.
+  - In `public/app.js`, disable full workshop options in the dropdown dynamically, appending `(FULL / 已满 / Penuh)` to the label.
+  - In `backend/Code.gs` `doPost`, implement server-side validation against `Limits` before saving to prevent over-registration if capacity is reached.
+  - Update `public/index.html` cache busters upon modification.
 
 ## Phase 2: Production Setup & Deployment
 - [x] **Google Workspace Initialization:**

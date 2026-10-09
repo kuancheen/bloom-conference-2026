@@ -93,7 +93,12 @@ function populateSelect(fieldId, options, placeholderText) {
   options.forEach(opt => {
     const el = document.createElement('option');
     el.value = opt.value;
-    el.textContent = opt.label;
+    if (opt.isFull) {
+      el.textContent = `${opt.label} (FULL / 已满 / Penuh)`;
+      el.disabled = true;
+    } else {
+      el.textContent = opt.label;
+    }
     select.appendChild(el);
   });
 }
