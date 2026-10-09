@@ -94,7 +94,14 @@ function doGet(e) {
 
 /**
  * Reads dropdown options from the 'Config' sheet.
- * Expected columns: A=Category, B=Display Label, C=Stored Value, D=Group
+ *
+ * The sheet is laid out HORIZONTALLY — each category occupies its own pair/triple of columns:
+ *   Col B (idx 1) = Age Range label        Col C (idx 2) = Age Range stored value
+ *   Col E (idx 4) = Marital Status label   Col F (idx 5) = Marital Status stored value
+ *   Col H (idx 7) = Workshop label         Col I (idx 8) = Workshop stored value
+ *   Col K (idx 10) = First Bloom label     Col L (idx 11) = First Bloom stored value
+ *   Col M (idx 12) = Church Plant label    Col N (idx 13) = Church Plant stored value   Col O (idx 14) = group
+ * Row 0 is the header row — skipped.
  */
 function getConfigResponse() {
   try {
@@ -105,20 +112,51 @@ function getConfigResponse() {
         .createTextOutput(JSON.stringify({ result: 'error', error: 'Config sheet not found' }))
         .setMimeType(ContentService.MimeType.JSON);
     }
+
     var data = configSheet.getDataRange().getValues();
-    var config = {};
+    var config = {
+      'Age Range':      [],
+      'Marital Status': [],
+      'Workshop':       [],
+      'First Bloom':    [],
+      'Church Plant':   []
+    };
+
+    // Start from row index 1 (skip header)
     for (var i = 1; i < data.length; i++) {
-      var category    = (data[i][0] || '').toString().trim();
-      var displayLabel = (data[i][1] || '').toString().trim();
-      var storedValue  = (data[i][2] || '').toString().trim();
-      var group        = (data[i][3] || '').toString().trim();
-      if (!category || !displayLabel) continue;
-      if (!config[category]) config[category] = [];
-      config[category].push({ label: displayLabel, value: storedValue || displayLabel, group: group });
+      var row = data[i];
+
+      // Age Range — cols B(1), C(2)
+      var arLabel = (row[1] || '').toString().trim();
+      var arValue = (row[2] || '').toString().trim();
+      if (arLabel) config['Age Range'].push({ label: arLabel, value: arValue || arLabel, group: '' });
+
+      // Marital Status — cols E(4), F(5)
+      var msLabel = (row[4] || '').toString().trim();
+      var msValue = (row[5] || '').toString().trim();
+      if (msLabel) config['Marital Status'].push({ label: msLabel, value: msValue || msLabel, group: '' });
+
+      // Workshop — cols H(7), I(8)
+      var wsLabel = (row[7] || '').toString().trim();
+      var wsValue = (row[8] || '').toString().trim();
+      if (wsLabel) config['Workshop'].push({ label: wsLabel, value: wsValue || wsLabel, group: '' });
+
+      // First Bloom — cols K(10), L(11)
+      var fbLabel = (row[10] || '').toString().trim();
+      var fbValue = (row[11] || '').toString().trim();
+      if (fbLabel) config['First Bloom'].push({ label: fbLabel, value: fbValue || fbLabel, group: '' });
+
+      // Church Plant — cols M(12), N(13), O(14)
+      var cpLabel = (row[12] || '').toString().trim();
+      var cpValue = (row[13] || '').toString().trim();
+      var cpGroup = (row[14] || '').toString().trim();
+      if (cpLabel) config['Church Plant'].push({ label: cpLabel, value: cpValue || cpLabel, group: cpGroup });
     }
+
     return ContentService
       .createTextOutput(JSON.stringify({ result: 'success', config: config }))
       .setMimeType(ContentService.MimeType.JSON);
+
   } catch (err) {
     return ContentService
       .createTextOutput(JSON.stringify({ result: 'error', error: err.toString() }))

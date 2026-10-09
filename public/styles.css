@@ -478,7 +478,7 @@ select option[value=""] {
 /* ---------- Submit Button ---------- */
 .submit-row {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .primary-btn {
