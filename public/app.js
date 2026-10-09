@@ -433,9 +433,7 @@ form.addEventListener('submit', async (event) => {
 
   setSubmitting(true);
   setStatus(
-    '⏳ Submitting your registration…\n\n' +
-    '📋 Please keep a copy of your bank-in slip and screenshot this page for your records. / 请保留你的转账凭证并截图保存此页面。 / Sila simpan salinan slip bank anda dan ambil tangkapan skrin halaman ini.\n\n' +
-    '📧 Look out for a confirmation email from info@actschurchconference.com within 15 minutes — check your spam/junk/promotions tabs too. / 请留意来自 info@actschurchconference.com 的确认邮件（约15分钟内），也查看垃圾邮件栏。 / Nantikan e-mel pengesahan dari info@actschurchconference.com dalam tempoh 15 minit — semak juga folder spam/junk anda.',
+    '⏳ Submitting your registration… / 正在提交报名… / Sedang menghantar pendaftaran anda…',
     'info'
   );
 
