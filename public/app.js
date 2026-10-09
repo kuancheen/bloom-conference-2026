@@ -488,6 +488,8 @@ form.addEventListener('submit', async (event) => {
       err.message || 'Something went wrong. Please try again or contact the organiser.',
       'error'
     );
+    // If workshop was full or rejected, refresh dropdown options and limits in the background
+    loadConfig();
   } finally {
     setSubmitting(false);
   }
