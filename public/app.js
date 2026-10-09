@@ -433,7 +433,7 @@ form.addEventListener('submit', async (event) => {
 
   setSubmitting(true);
   setStatus(
-    '⏳ Submitting your registration… / 正在提交报名… / Sedang menghantar pendaftaran anda…',
+    '⏳ Submitting your registration…\n⏳ 正在提交报名…\n⏳ Sedang menghantar pendaftaran anda…',
     'info'
   );
 
