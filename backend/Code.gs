@@ -119,7 +119,7 @@ function doPost(e) {
       sendConfirmationEmail(data);
       emailTimestamp = new Date();
     } catch (err) {
-      Logger.log('Email failed: ' + err.toString());
+      console.error('Email failed: ' + err.toString());
       emailError = err.toString();
     }
 
@@ -259,7 +259,9 @@ function sendConfirmationEmail(data) {
 </div>
   `;
 
-  GmailApp.sendEmail(data.emailAddress, subject, '', {
+  MailApp.sendEmail({
+    to: data.emailAddress,
+    subject: subject,
     htmlBody: htmlBody,
     name: "🌸 Bloom Conference 2026"
   });
