@@ -434,7 +434,9 @@ select option[value=""] {
   font-size: 0.9rem;
   font-weight: 500;
   margin-bottom: 20px;
-  line-height: 1.5;
+  line-height: 1.6;
+  white-space: pre-line;
+  text-align: center;
 }
 
 .status-box.is-visible { display: block; }
