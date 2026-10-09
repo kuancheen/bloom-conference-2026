@@ -94,14 +94,7 @@ function doGet(e) {
 
 /**
  * Reads dropdown options from the 'Config' sheet.
- *
- * The sheet is laid out HORIZONTALLY — each category occupies its own pair/triple of columns:
- *   Col B (idx 1) = Age Range label        Col C (idx 2) = Age Range stored value
- *   Col E (idx 4) = Marital Status label   Col F (idx 5) = Marital Status stored value
- *   Col H (idx 7) = Workshop label         Col I (idx 8) = Workshop stored value
- *   Col K (idx 10) = First Bloom label     Col L (idx 11) = First Bloom stored value
- *   Col M (idx 12) = Church Plant label    Col N (idx 13) = Church Plant stored value   Col O (idx 14) = group
- * Row 0 is the header row — skipped.
+ * Dynamically detects column positions by scanning row 0 headers.
  */
 function getConfigResponse() {
   try {
@@ -114,6 +107,31 @@ function getConfigResponse() {
     }
 
     var data = configSheet.getDataRange().getValues();
+    if (!data || data.length < 2) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ result: 'success', config: {} }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var headerRow = data[0];
+    var colMap = {};
+
+    for (var c = 0; c < headerRow.length; c++) {
+      var h = (headerRow[c] || '').toString().toLowerCase();
+      if (h.indexOf('age range') !== -1) colMap['Age Range'] = c;
+      else if (h.indexOf('marital status') !== -1) colMap['Marital Status'] = c;
+      else if (h.indexOf('workshop') !== -1) colMap['Workshop'] = c;
+      else if (h.indexOf('first bloom') !== -1) colMap['First Bloom'] = c;
+      else if (h.indexOf('church plant') !== -1) colMap['Church Plant'] = c;
+    }
+
+    // Dynamic columns with reliable fallbacks
+    var arCol = colMap['Age Range'] !== undefined ? colMap['Age Range'] : 1;
+    var msCol = colMap['Marital Status'] !== undefined ? colMap['Marital Status'] : 4;
+    var wsCol = colMap['Workshop'] !== undefined ? colMap['Workshop'] : 7;
+    var fbCol = colMap['First Bloom'] !== undefined ? colMap['First Bloom'] : 10;
+    var cpCol = colMap['Church Plant'] !== undefined ? colMap['Church Plant'] : 13;
+
     var config = {
       'Age Range':      [],
       'Marital Status': [],
@@ -126,30 +144,30 @@ function getConfigResponse() {
     for (var i = 1; i < data.length; i++) {
       var row = data[i];
 
-      // Age Range — cols B(1), C(2)
-      var arLabel = (row[1] || '').toString().trim();
-      var arValue = (row[2] || '').toString().trim();
+      // Age Range
+      var arLabel = (row[arCol] || '').toString().trim();
+      var arValue = (row[arCol + 1] || '').toString().trim();
       if (arLabel) config['Age Range'].push({ label: arLabel, value: arValue || arLabel, group: '' });
 
-      // Marital Status — cols E(4), F(5)
-      var msLabel = (row[4] || '').toString().trim();
-      var msValue = (row[5] || '').toString().trim();
+      // Marital Status
+      var msLabel = (row[msCol] || '').toString().trim();
+      var msValue = (row[msCol + 1] || '').toString().trim();
       if (msLabel) config['Marital Status'].push({ label: msLabel, value: msValue || msLabel, group: '' });
 
-      // Workshop — cols H(7), I(8)
-      var wsLabel = (row[7] || '').toString().trim();
-      var wsValue = (row[8] || '').toString().trim();
+      // Workshop
+      var wsLabel = (row[wsCol] || '').toString().trim();
+      var wsValue = (row[wsCol + 1] || '').toString().trim();
       if (wsLabel) config['Workshop'].push({ label: wsLabel, value: wsValue || wsLabel, group: '' });
 
-      // First Bloom — cols K(10), L(11)
-      var fbLabel = (row[10] || '').toString().trim();
-      var fbValue = (row[11] || '').toString().trim();
+      // First Bloom
+      var fbLabel = (row[fbCol] || '').toString().trim();
+      var fbValue = (row[fbCol + 1] || '').toString().trim();
       if (fbLabel) config['First Bloom'].push({ label: fbLabel, value: fbValue || fbLabel, group: '' });
 
-      // Church Plant — cols M(12), N(13), O(14)
-      var cpLabel = (row[12] || '').toString().trim();
-      var cpValue = (row[13] || '').toString().trim();
-      var cpGroup = (row[14] || '').toString().trim();
+      // Church Plant — Col N(13)=label, Col O(14)=value, Col P(15)=group
+      var cpLabel = (row[cpCol] || '').toString().trim();
+      var cpValue = (row[cpCol + 1] || '').toString().trim();
+      var cpGroup = (row[cpCol + 2] || '').toString().trim();
       if (cpLabel) config['Church Plant'].push({ label: cpLabel, value: cpValue || cpLabel, group: cpGroup });
     }
 
