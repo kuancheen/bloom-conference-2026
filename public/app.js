@@ -62,14 +62,19 @@ async function loadConfig() {
     const cfg = result.config;
 
     // Populate flat selects (no grouping)
-    ['Age Range', 'Marital Status', 'Workshop'].forEach(key => {
-      const fieldId = { 'Age Range': 'ageRange', 'Marital Status': 'maritalStatus', 'Workshop': 'workshop' }[key];
-      if (cfg[key] && cfg[key].length) populateSelect(fieldId, cfg[key]);
-    });
+    if (cfg['Age Range'] && cfg['Age Range'].length) {
+      populateSelect('ageRange', cfg['Age Range'], 'Select / 选择 / Pilih');
+    }
+    if (cfg['Marital Status'] && cfg['Marital Status'].length) {
+      populateSelect('maritalStatus', cfg['Marital Status'], 'Select / 选择 / Pilih');
+    }
+    if (cfg['Workshop'] && cfg['Workshop'].length) {
+      populateSelect('workshop', cfg['Workshop'], 'Select a workshop / 选择工作坊 / Pilih Bengkel');
+    }
 
     // Church Plant needs optgroup support
     if (cfg['Church Plant'] && cfg['Church Plant'].length) {
-      populateSelectWithGroups('churchPlant', cfg['Church Plant']);
+      populateSelectWithGroups('churchPlant', cfg['Church Plant'], 'Select / 选择 / Pilih');
     }
 
   } catch (err) {
@@ -77,11 +82,13 @@ async function loadConfig() {
   }
 }
 
-function populateSelect(fieldId, options) {
+function populateSelect(fieldId, options, placeholderText) {
   const select = document.getElementById(fieldId);
   if (!select) return;
-  const placeholder = select.options[0]; // keep first placeholder option
   select.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderText || 'Select / 选择 / Pilih';
   select.appendChild(placeholder);
   options.forEach(opt => {
     const el = document.createElement('option');
@@ -91,11 +98,13 @@ function populateSelect(fieldId, options) {
   });
 }
 
-function populateSelectWithGroups(fieldId, options) {
+function populateSelectWithGroups(fieldId, options, placeholderText) {
   const select = document.getElementById(fieldId);
   if (!select) return;
-  const placeholder = select.options[0];
   select.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderText || 'Select / 选择 / Pilih';
   select.appendChild(placeholder);
 
   const groups = {};
