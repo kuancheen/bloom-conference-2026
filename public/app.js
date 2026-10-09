@@ -178,12 +178,16 @@ function formatFileSize(bytes) {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
+const MSG_REQUIRED = 'This field is required. / 此栏为必填项。 / Medan ini diperlukan.';
+const MSG_INVALID_EMAIL = 'Please enter a valid email address. / 请输入有效的电子邮箱。 / Sila masukkan alamat e-mel yang sah.';
+const MSG_INVALID_PHONE = 'Please enter a valid phone number. / 请输入有效的联络号码。 / Sila masukkan nombor telefon yang sah.';
+
 function validateFile(file) {
   if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-    return 'Only JPG, PNG, GIF, and PDF files are accepted.';
+    return 'Only JPG, PNG, GIF, and PDF files are accepted. / 仅支持 JPG、PNG、GIF 和 PDF 格式文件。 / Hanya fail JPG, PNG, GIF dan PDF diterima.';
   }
   if (file.size > MAX_FILE_SIZE_BYTES) {
-    return `File is too large. Maximum size is ${MAX_FILE_SIZE_MB}MB.`;
+    return `File is too large. Maximum size is ${MAX_FILE_SIZE_MB}MB. / 文件过大。最大支持 ${MAX_FILE_SIZE_MB}MB。 / Fail terlalu besar. Saiz maksimum ialah ${MAX_FILE_SIZE_MB}MB.`;
   }
   return null; // valid
 }
@@ -276,76 +280,76 @@ function validateForm(formData) {
 
   // Full name
   if (!formData.get('fullName')?.trim()) {
-    showFieldError('fullName', 'Please enter your full name.');
+    showFieldError('fullName', MSG_REQUIRED);
     isValid = false;
   }
 
   // Email
   const email = formData.get('emailAddress')?.trim();
   if (!email) {
-    showFieldError('emailAddress', 'Please enter your email address.');
+    showFieldError('emailAddress', MSG_REQUIRED);
     isValid = false;
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showFieldError('emailAddress', 'Please enter a valid email address.');
+    showFieldError('emailAddress', MSG_INVALID_EMAIL);
     isValid = false;
   }
 
   // Phone
   const phone = formData.get('phoneNumber')?.trim();
   if (!phone) {
-    showFieldError('phoneNumber', 'Please enter your phone number.');
+    showFieldError('phoneNumber', MSG_REQUIRED);
     isValid = false;
   } else if (!/^\+?[\d\s\-()]{7,20}$/.test(phone)) {
-    showFieldError('phoneNumber', 'Please enter a valid phone number (e.g. +60123456789).');
+    showFieldError('phoneNumber', MSG_INVALID_PHONE);
     isValid = false;
   }
 
   // Age Range
   if (!formData.get('ageRange')) {
-    showFieldError('ageRange', 'Please select your age range.');
+    showFieldError('ageRange', MSG_REQUIRED);
     isValid = false;
   }
 
   // Marital Status
   if (!formData.get('maritalStatus')) {
-    showFieldError('maritalStatus', 'Please select your marital status.');
+    showFieldError('maritalStatus', MSG_REQUIRED);
     isValid = false;
   }
 
   // Church Plant
   if (!formData.get('churchPlant')) {
-    showFieldError('churchPlant', 'Please select your church plant.');
+    showFieldError('churchPlant', MSG_REQUIRED);
     isValid = false;
   }
 
   // Church Plant Other
   if (formData.get('churchPlant') === 'Others' && !formData.get('churchPlantOther')?.trim()) {
-    showFieldError('churchPlantOther', 'Please specify your church / organisation.');
+    showFieldError('churchPlantOther', MSG_REQUIRED);
     isValid = false;
   }
 
   // Workshop
   if (!formData.get('workshop')) {
-    showFieldError('workshop', 'Please select a workshop.');
+    showFieldError('workshop', MSG_REQUIRED);
     isValid = false;
   }
 
   // Homes Code (mandatory — type NONE if not applicable)
   if (!formData.get('homesCode')?.trim()) {
-    showFieldError('homesCode', 'Please enter your Homes Code, or type NONE if you are not part of one yet.');
+    showFieldError('homesCode', MSG_REQUIRED);
     isValid = false;
   }
 
   // First Bloom
   if (!formData.get('firstBloom')) {
-    showFieldError('firstBloom', 'Please indicate if this is your first Bloom Conference.');
+    showFieldError('firstBloom', MSG_REQUIRED);
     isValid = false;
   }
 
   // Payment proof
   const file = paymentProofInput.files[0];
   if (!file) {
-    showFieldError('paymentProof', 'Please upload your proof of payment.');
+    showFieldError('paymentProof', MSG_REQUIRED);
     fileUploadZone.classList.add('is-invalid');
     isValid = false;
   } else {
@@ -411,7 +415,7 @@ form.addEventListener('submit', async (event) => {
 
   const formData = new FormData(form);
   if (!validateForm(formData)) {
-    setStatus('Please fill in all required fields correctly before submitting.', 'error');
+    setStatus('Please fill in all required fields correctly before submitting. / 请在提交前完整且正确地填写所有必填项。 / Sila isi semua ruangan yang diperlukan dengan betul sebelum menghantar.', 'error');
     // Scroll to first error
     const firstError = form.querySelector('.is-invalid');
     if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -520,11 +524,11 @@ registerAnotherBtn.addEventListener('click', () => {
   input.addEventListener('blur', () => {
     const val = input.value.trim();
     if (!val) {
-      showFieldError(fieldId, 'This field is required.');
+      showFieldError(fieldId, MSG_REQUIRED);
     } else if (fieldId === 'emailAddress' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
-      showFieldError(fieldId, 'Please enter a valid email address.');
+      showFieldError(fieldId, MSG_INVALID_EMAIL);
     } else if (fieldId === 'phoneNumber' && !/^\+?[\d\s\-()]{7,20}$/.test(val)) {
-      showFieldError(fieldId, 'Please enter a valid phone number.');
+      showFieldError(fieldId, MSG_INVALID_PHONE);
     } else {
       clearFieldError(fieldId);
     }
