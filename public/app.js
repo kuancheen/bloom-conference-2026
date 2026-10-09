@@ -494,6 +494,7 @@ form.addEventListener('submit', async (event) => {
 function showSuccessScreen() {
   form.closest('.panel').style.display = 'none';
   successScreen.style.display = 'flex';
+  successScreen.scrollTop = 0;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 

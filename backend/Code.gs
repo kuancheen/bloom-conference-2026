@@ -333,9 +333,8 @@ function sendConfirmationEmail(data, fileUrl) {
 
   var htmlBody = `
 <div style="font-family: 'Inter', system-ui, sans-serif; color: #3C2B35; max-width: 600px; margin: 0 auto; background-color: #FDF6F0; border-radius: 12px; overflow: hidden; border: 1px solid #E8D0D8;">
-  <div style="background-color: #C9556E; color: white; padding: 30px 20px; text-align: center;">
-    <h1 style="font-family: 'Playfair Display', Georgia, serif; margin: 0; font-size: 24px; font-weight: 700;">🌸 Bloom Conference 2026</h1>
-    <p style="margin: 10px 0 0; font-size: 16px; opacity: 0.9;">Registration Received / 报名已收到 / Pendaftaran Diterima</p>
+  <div style="width: 100%; text-align: center; background-color: #C9556E; line-height: 0;">
+    <img src="https://msyioizqks2uqtsyukulnv4wpjan5ftkjdfy0yqm43k.canva-cdn.email/7d44390f8d265681494d87ac107dedf5.png" alt="Bloom Conference 2026 - Registration Received / 报名已收到 / Pendaftaran Diterima" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto; border: 0;" />
   </div>
   
   <div style="padding: 30px;">
