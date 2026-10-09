@@ -34,3 +34,21 @@ This document serves as the active checklist for all remaining features, bug fix
 - [x] **Datetime-based Cache Busting:**
   - Enforce `YYYYMMDDHHMMSS` timestamp query strings on all CSS and JS asset links in `index.html` on every modification (without `v=`).
   - Ensures immediate client refresh on WordPress/Apache reverse proxy setups.
+
+## Phase 5: Sign Up Dashboard & Registrants List (Upcoming)
+- [ ] **Google Apps Script Backend Endpoints (`backend/Code.gs`):**
+  - Implement `action=stats` / dashboard data calculation (total registered, breakdown by church plant, workshop occupancy, payment status, etc.).
+  - Implement `action=registrants` or secure data retrieval endpoint with pagination, search, and filter options.
+  - Implement verification / admin status toggles (e.g. marking payment as verified).
+  - Reference implementation: [acts-church-conference-2026/Code.gs](https://github.com/kuancheen/acts-church-conference-2026/blob/main/Code.gs)
+- [ ] **Sign Up Dashboard (`public/dashboard.html`):**
+  - Build real-time metrics dashboard (KPI cards, charts, church plant distribution, workshop capacities).
+  - Reference design & structure: [acts-church-conference-2026/dashboard.html](https://github.com/kuancheen/acts-church-conference-2026/blob/main/dashboard.html)
+  - Style to match the Bloom 2026 floral / terracotta design system (`#D03A19`, `#F8755D`, `#FDF6F0`).
+- [ ] **Registrants List Portal (`public/registrants.html`):**
+  - Build searchable, filterable registrants table with quick status updates, receipt image preview modals, and export capabilities.
+  - Reference design & structure: [acts-church-conference-2026/registrants.html](https://github.com/kuancheen/acts-church-conference-2026/blob/main/registrants.html)
+  - Style to match Bloom 2026 design system.
+- [ ] **Apache Routing & Cache Busting:**
+  - Ensure `.htaccess` routes `/dashboard` and `/registrants` properly.
+  - Include datetime cache busters on all linked scripts and stylesheets.
