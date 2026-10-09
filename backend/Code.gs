@@ -292,7 +292,7 @@ function isWorkshopAvailable(ss, workshopValue) {
   if (limitsMap[workshopKey] && limitsMap[workshopKey].isFull) {
     return {
       available: false,
-      workshopName: limitsMap[workshopKey].code || workshopValue
+      workshopName: limitsMap[workshopKey].name || limitsMap[workshopKey].code || workshopValue
     };
   }
   return { available: true };
