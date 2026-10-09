@@ -177,11 +177,14 @@ function getConfigResponse() {
     // Annotate workshop options with limit and availability info
     for (var w = 0; w < config['Workshop'].length; w++) {
       var wOpt = config['Workshop'][w];
-      var wKey = wOpt.value.toLowerCase();
-      if (limitsMap[wKey]) {
-        wOpt.limit = limitsMap[wKey].limit;
-        wOpt.registered = limitsMap[wKey].registered;
-        wOpt.isFull = limitsMap[wKey].isFull;
+      var wValKey = (wOpt.value || '').toLowerCase().trim();
+      var wLabelKey = (wOpt.label || '').toLowerCase().trim();
+      var matchedLimit = limitsMap[wValKey] || limitsMap[wLabelKey];
+
+      if (matchedLimit) {
+        wOpt.limit = matchedLimit.limit;
+        wOpt.registered = matchedLimit.registered;
+        wOpt.isFull = matchedLimit.isFull;
       } else {
         wOpt.isFull = false;
       }
@@ -210,45 +213,68 @@ function getWorkshopLimitsMap(ss) {
   if (!limitData || limitData.length < 2) return limitsMap;
 
   var header = limitData[0];
-  var codeCol = -1, limitCol = -1, registeredCol = -1, statusCol = -1;
+  var codeCol = -1, nameCol = -1, limitCol = -1, registeredCol = -1, statusCol = -1, seatsLeftCol = -1;
 
   for (var c = 0; c < header.length; c++) {
     var colName = (header[c] || '').toString().toLowerCase().trim();
-    if (colName === 'workshop' || colName === 'code' || colName === 'workshop code' || colName === 'item' || colName === 'name') {
+    if (colName === 'code' || colName === 'workshop code') {
       codeCol = c;
+    } else if (colName === 'workshop' || colName === 'item' || colName === 'workshop name' || colName === 'name') {
+      nameCol = c;
     } else if (colName === 'limit' || colName === 'capacity' || colName === 'max') {
       limitCol = c;
-    } else if (colName === 'registered' || colName === 'total registered' || colName === 'count') {
+    } else if (colName === 'current count' || colName === 'registered' || colName === 'total registered' || colName === 'count') {
       registeredCol = c;
+    } else if (colName === 'seats left' || colName === 'remaining' || colName === 'balance') {
+      seatsLeftCol = c;
     } else if (colName === 'status' || colName === 'is full') {
       statusCol = c;
     }
   }
 
-  // Sensible default column positions if headers are not exact
-  if (codeCol === -1) codeCol = 0;
-  if (limitCol === -1) limitCol = 1;
-  if (registeredCol === -1) registeredCol = 2;
+  // Sensible default column positions based on sheet structure (Col B=Code, Col C=Workshop, Col D=Limit, Col E=Current Count)
+  if (codeCol === -1) codeCol = 1; // Col B
+  if (nameCol === -1) nameCol = 2; // Col C
+  if (limitCol === -1) limitCol = 3; // Col D
+  if (registeredCol === -1) registeredCol = 4; // Col E
 
   for (var r = 1; r < limitData.length; r++) {
     var row = limitData[r];
     var code = (row[codeCol] || '').toString().trim();
-    if (!code) continue;
+    var name = nameCol !== -1 ? (row[nameCol] || '').toString().trim() : code;
+    if (!code && !name) continue;
 
     var limitVal = parseInt(row[limitCol], 10);
     var regVal = registeredCol !== -1 ? parseInt(row[registeredCol], 10) : 0;
+    var seatsLeftVal = seatsLeftCol !== -1 ? parseInt(row[seatsLeftCol], 10) : NaN;
     if (isNaN(limitVal)) limitVal = 0;
     if (isNaN(regVal)) regVal = 0;
 
     var statusText = statusCol !== -1 ? (row[statusCol] || '').toString().toLowerCase().trim() : '';
-    var isFull = (limitVal > 0 && regVal >= limitVal) || statusText === 'full' || statusText === 'closed';
+    var isFull = false;
 
-    limitsMap[code.toLowerCase()] = {
-      code: code,
+    if (!isNaN(seatsLeftVal) && limitVal > 0) {
+      isFull = seatsLeftVal <= 0;
+    } else if (limitVal > 0 && regVal >= limitVal) {
+      isFull = true;
+    } else if (statusText === 'full' || statusText === 'closed') {
+      isFull = true;
+    }
+
+    var entry = {
+      code: code || name,
+      name: name || code,
       limit: limitVal,
       registered: regVal,
       isFull: isFull
     };
+
+    if (code) {
+      limitsMap[code.toLowerCase()] = entry;
+    }
+    if (name) {
+      limitsMap[name.toLowerCase()] = entry;
+    }
   }
 
   return limitsMap;
