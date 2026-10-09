@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?20261009160500" />
+    <link rel="stylesheet" href="styles.css?20261009161400" />
   </head>
   <body>
     <!-- Decorative background petals -->
@@ -34,6 +34,69 @@
       </header>
 
       <main class="layout">
+        <!-- Event Info Panel (Left / First on Mobile) -->
+        <aside class="panel panel--secondary">
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-icon">📅</span>
+              <div>
+                <strong>Date / 日期 / Tarikh</strong>
+                <p>14 November 2026</p>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">⏰</span>
+              <div>
+                <strong>Time / 时间 / Masa</strong>
+                <p>9.30am – 5.00pm</p>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">📍</span>
+              <div>
+                <strong>Venue / 地点 / Lokasi</strong>
+                <p>Bible College of Malaysia, Petaling Jaya</p>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">💰</span>
+              <div>
+                <strong>Fee / 费用 / Yuran</strong>
+                <p>RM70.00</p>
+              </div>
+            </div>
+
+            <!-- Banking Details Card -->
+            <div class="bank-details-card">
+              <div class="bank-header">
+                <span class="info-icon">🏦</span>
+                <div>
+                  <h3 class="bank-title">Banking Details</h3>
+                  <span class="bank-subtitle">银行转账资料 / Maklumat Perbankan</span>
+                </div>
+              </div>
+              <div class="bank-grid">
+                <div class="bank-field">
+                  <span class="bank-label">Bank / 银行 / Bank</span>
+                  <span class="bank-value">Public Bank</span>
+                </div>
+                <div class="bank-field">
+                  <span class="bank-label">Account Number / 银行账户 / No Akaun</span>
+                  <span class="bank-value bank-value--highlight">3116737405</span>
+                </div>
+                <div class="bank-field">
+                  <span class="bank-label">Account Name / 银行账户名 / Nama Akaun</span>
+                  <span class="bank-value">Acts Church</span>
+                </div>
+                <div class="bank-field">
+                  <span class="bank-label">Reference / 备注 / Rujukan</span>
+                  <span class="bank-value bank-value--ref">BLOOM26</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
         <!-- Registration Form Panel -->
         <section class="panel panel--primary">
           <div class="panel-header">
@@ -260,85 +323,19 @@
                 <span class="btn-spinner" id="btnSpinner" aria-hidden="true"></span>
               </button>
             </div>
+
+            <!-- Instructions & Support Note (Pic 2) -->
+            <div class="info-note" style="margin: 28px 0 0; background: var(--bloom-cream); border: 1px solid var(--bloom-border);">
+              <p>🌸 Open to ladies aged 16 years and above / 报名开放给 16 岁和以上的女士们 / Terbuka kepada wanita berumur 16 tahun dan ke atas.</p>
+              <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(60, 43, 53, 0.1);" />
+              <p><strong>📧 Please be on a look out for a confirmation email from us in the next 15 minutes via our info@actschurchconference.com email address. Do check your spam/junk/all mail/promotion tabs too.</strong></p>
+              <p style="margin-top: 8px;">敬请留意在接下来15分钟左右的时间 — 我们（info@actschurchconference.com）将发一封确认的邮件给你。若你没有收到，那请先查看你邮件里的 Spam（垃圾邮件栏） / Junk（删除邮件栏）/ All Mail（所有邮件栏）/ Promotion（推销邮件栏）里哦～</p>
+              <p style="margin-top: 8px;">Sila nantikan e-mel pengesahan daripada kami dalam tempoh 15 minit akan datang melalui alamat e-mel info@actschurchconference.com. Sila semak juga folder spam/junk/all mail/promotions anda.</p>
+              <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(60, 43, 53, 0.1);" />
+              <p><em>If you did not receive the confirmation email, kindly write in to info@actschurchconference.com for more enquiries. / 若你没有收到邮件确认你的报名，请发邮件给 info@actschurchconference.com 询问详情。 / Jika anda tidak menerima e-mel pengesahan, sila hubungi info@actschurchconference.com untuk pertanyaan lanjut.</em></p>
+            </div>
           </form>
         </section>
-
-        <!-- Info Panel -->
-        <aside class="panel panel--secondary">
-          <div class="panel-header">
-            <h2>Event Info / 活动信息 / Maklumat Acara</h2>
-          </div>
-
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-icon">📅</span>
-              <div>
-                <strong>Date / 日期 / Tarikh</strong>
-                <p>14 November 2026</p>
-              </div>
-            </div>
-            <div class="info-row">
-              <span class="info-icon">⏰</span>
-              <div>
-                <strong>Time / 时间 / Masa</strong>
-                <p>9.30am – 5.00pm</p>
-              </div>
-            </div>
-            <div class="info-row">
-              <span class="info-icon">📍</span>
-              <div>
-                <strong>Venue / 地点 / Lokasi</strong>
-                <p>Bible College of Malaysia, Petaling Jaya</p>
-              </div>
-            </div>
-            <div class="info-row">
-              <span class="info-icon">💰</span>
-              <div>
-                <strong>Fee / 费用 / Yuran</strong>
-                <p>RM70.00</p>
-              </div>
-            </div>
-
-            <!-- Banking Details Card -->
-            <div class="bank-details-card">
-              <div class="bank-header">
-                <span class="info-icon">🏦</span>
-                <div>
-                  <h3 class="bank-title">Banking Details</h3>
-                  <span class="bank-subtitle">银行转账资料 / Maklumat Perbankan</span>
-                </div>
-              </div>
-              <div class="bank-grid">
-                <div class="bank-field">
-                  <span class="bank-label">Bank / 银行 / Bank</span>
-                  <span class="bank-value">Public Bank</span>
-                </div>
-                <div class="bank-field">
-                  <span class="bank-label">Account Number / 银行账户 / No Akaun</span>
-                  <span class="bank-value bank-value--highlight">3116737405</span>
-                </div>
-                <div class="bank-field">
-                  <span class="bank-label">Account Name / 银行账户名 / Nama Akaun</span>
-                  <span class="bank-value">Acts Church</span>
-                </div>
-                <div class="bank-field">
-                  <span class="bank-label">Reference / 备注 / Rujukan</span>
-                  <span class="bank-value bank-value--ref">BLOOM26</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="info-note">
-            <p>🌸 Open to ladies aged 16 years and above / 报名开放给 16 岁和以上的女士们 / Terbuka kepada wanita berumur 16 tahun dan ke atas.</p>
-            <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(60, 43, 53, 0.1);" />
-            <p><strong>📧 Please be on a look out for a confirmation email from us in the next 15 minutes via our info@actschurchconference.com email address. Do check your spam/junk/all mail/promotion tabs too.</strong></p>
-            <p style="margin-top: 8px;">敬请留意在接下来15分钟左右的时间 — 我们（info@actschurchconference.com）将发一封确认的邮件给你。若你没有收到，那请先查看你邮件里的 Spam（垃圾邮件栏） / Junk（删除邮件栏）/ All Mail（所有邮件栏）/ Promotion（推销邮件栏）里哦～</p>
-            <p style="margin-top: 8px;">Sila nantikan e-mel pengesahan daripada kami dalam tempoh 15 minit akan datang melalui alamat e-mel info@actschurchconference.com. Sila semak juga folder spam/junk/all mail/promotions anda.</p>
-            <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(60, 43, 53, 0.1);" />
-            <p><em>If you did not receive the confirmation email, kindly write in to info@actschurchconference.com for more enquiries. / 若你没有收到邮件确认你的报名，请发邮件给 info@actschurchconference.com 询问详情。 / Jika anda tidak menerima e-mel pengesahan, sila hubungi info@actschurchconference.com untuk pertanyaan lanjut.</em></p>
-          </div>
-        </aside>
       </main>
 
       <!-- Success Screen (hidden by default) -->
@@ -377,7 +374,7 @@
       </footer>
     </div>
 
-    <script src="config.js?20261009160500"></script>
-    <script src="app.js?20261009160500"></script>
+    <script src="config.js?20261009161400"></script>
+    <script src="app.js?20261009161400"></script>
   </body>
 </html>

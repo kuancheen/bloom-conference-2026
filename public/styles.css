@@ -111,7 +111,7 @@ body {
 /* ---------- Layout Grid ---------- */
 .layout {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 340px 1fr;
   gap: 28px;
   align-items: start;
 }
@@ -517,17 +517,8 @@ select option[value=""] {
 }
 
 /* ---------- Info Panel (sidebar) ---------- */
-.panel--secondary .panel-header {
-  background: linear-gradient(135deg, var(--bloom-rose) 0%, var(--bloom-lavender) 100%);
-  border-bottom: none;
-}
-
-.panel--secondary .panel-header h2 {
-  color: #fff;
-}
-
 .info-card {
-  padding: 24px 24px 16px;
+  padding: 28px 24px 24px;
 }
 
 .info-row {
