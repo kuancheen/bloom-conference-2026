@@ -210,7 +210,7 @@ function doPost(e) {
     var emailError = '';
 
     try {
-      sendConfirmationEmail(data);
+      sendConfirmationEmail(data, fileUrl);
       emailTimestamp = new Date();
     } catch (err) {
       console.error('Email failed: ' + err.toString());
@@ -305,7 +305,7 @@ function errorResponse(message) {
 /**
  * Sends a stylized HTML confirmation email.
  */
-function sendConfirmationEmail(data) {
+function sendConfirmationEmail(data, fileUrl) {
   var subject = "Registration Received - Bloom Conference 2026 / 报名已收到 / Pendaftaran Diterima";
   
   var workshopMap = {
@@ -319,6 +319,18 @@ function sendConfirmationEmail(data) {
   var workshopDisplay = workshopMap[data.workshop] || data.workshop || '';
   var churchDisplay = (data.churchPlant === 'Others' && data.churchPlantOther) ? data.churchPlantOther : (data.churchPlant || '');
   
+  var paymentRowHtml = '';
+  var paymentRowPlain = '';
+  if (fileUrl && fileUrl.indexOf('http') === 0) {
+    paymentRowHtml = `
+      <tr>
+        <td style="padding: 12px 15px; border-top: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F;">Payment Proof</td>
+        <td style="padding: 12px 15px; border-top: 1px solid #E8D0D8;"><a href="${fileUrl}" target="_blank" style="color: #C9556E; font-weight: 600; text-decoration: underline;">View Uploaded Receipt / 查看转账凭证</a></td>
+      </tr>
+    `;
+    paymentRowPlain = "\n- Payment Proof: " + fileUrl;
+  }
+
   var htmlBody = `
 <div style="font-family: 'Inter', system-ui, sans-serif; color: #3C2B35; max-width: 600px; margin: 0 auto; background-color: #FDF6F0; border-radius: 12px; overflow: hidden; border: 1px solid #E8D0D8;">
   <div style="background-color: #C9556E; color: white; padding: 30px 20px; text-align: center;">
@@ -349,6 +361,7 @@ function sendConfirmationEmail(data) {
         <td style="padding: 12px 15px; font-weight: 600; color: #7A5F6F;">Workshop</td>
         <td style="padding: 12px 15px;">${workshopDisplay}</td>
       </tr>
+      ${paymentRowHtml}
     </table>
 
     <h3 style="color: #C9556E; margin-top: 30px;">Event Details / 活动详情 / Butiran Acara</h3>
@@ -369,7 +382,8 @@ function sendConfirmationEmail(data) {
     "Registration Summary:\n" +
     "- Name: " + (data.fullName || '') + "\n" +
     "- Church Plant: " + churchDisplay + "\n" +
-    "- Workshop: " + workshopDisplay + "\n\n" +
+    "- Workshop: " + workshopDisplay +
+    paymentRowPlain + "\n\n" +
     "Event Details:\n" +
     "- Date: 14 November 2026\n" +
     "- Time: 9.30am - 5.00pm\n" +
