@@ -65,7 +65,7 @@ function getOrCreateSheet(name) {
     // Format header row
     var headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
     headerRange.setFontWeight('bold');
-    headerRange.setBackground('#C9556E');
+    headerRange.setBackground('#D03A19');
     headerRange.setFontColor('#FFFFFF');
     sheet.setFrozenRows(1);
     // Set column widths
@@ -325,7 +325,7 @@ function sendConfirmationEmail(data, fileUrl) {
     paymentRowHtml = `
       <tr>
         <td style="padding: 12px 15px; border-top: 1px solid #E8D0D8; font-weight: 600; color: #7A5F6F;">Payment Proof / 付款凭证 / Bukti Pembayaran</td>
-        <td style="padding: 12px 15px; border-top: 1px solid #E8D0D8;"><a href="${fileUrl}" target="_blank" style="color: #C9556E; font-weight: 600; text-decoration: underline;">View Receipt / 查看转账凭证 / Lihat Resit</a></td>
+        <td style="padding: 12px 15px; border-top: 1px solid #E8D0D8;"><a href="${fileUrl}" target="_blank" style="color: #D03A19; font-weight: 600; text-decoration: underline;">View Receipt / 查看转账凭证 / Lihat Resit</a></td>
       </tr>
     `;
     paymentRowPlain = "\n- Payment Proof / 付款凭证 / Bukti Pembayaran: " + fileUrl;
@@ -333,7 +333,7 @@ function sendConfirmationEmail(data, fileUrl) {
 
   var htmlBody = `
 <div style="font-family: 'Inter', system-ui, sans-serif; color: #3C2B35; max-width: 600px; margin: 0 auto; background-color: #FDF6F0; border-radius: 12px; overflow: hidden; border: 1px solid #E8D0D8;">
-  <div style="width: 100%; text-align: center; background-color: #C9556E; line-height: 0;">
+  <div style="width: 100%; text-align: center; background-color: #D03A19; line-height: 0;">
     <img src="https://msyioizqks2uqtsyukulnv4wpjan5ftkjdfy0yqm43k.canva-cdn.email/7d44390f8d265681494d87ac107dedf5.png" alt="Bloom Conference 2026 - Registration Received / 报名已收到 / Pendaftaran Diterima" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto; border: 0;" />
   </div>
   
@@ -359,14 +359,14 @@ function sendConfirmationEmail(data, fileUrl) {
       ${paymentRowHtml}
     </table>
 
-    <div style="background-color: #FFF0F0; border-left: 4px solid #C9556E; padding: 15px; margin: 25px 0; border-radius: 4px;">
-      <p style="margin: 0; font-weight: 600; color: #C9556E;">Important Note / 重要提示 / Nota Penting:</p>
+    <div style="background-color: #FFF0F0; border-left: 4px solid #D03A19; padding: 15px; margin: 25px 0; border-radius: 4px;">
+      <p style="margin: 0; font-weight: 600; color: #D03A19;">Important Note / 重要提示 / Nota Penting:</p>
       <p style="margin: 8px 0 4px; font-size: 14px; line-height: 1.5;">Your registration is currently pending payment verification. We will contact you if there are any issues with your payment.</p>
       <p style="margin: 4px 0; font-size: 14px; line-height: 1.5;">你的报名目前正在等待付款验证。如果转账有任何问题，我们将与你联系。</p>
       <p style="margin: 4px 0 0; font-size: 14px; line-height: 1.5;">Pendaftaran anda sedang menunggu pengesahan pembayaran. Kami akan menghubungi anda sekiranya terdapat sebarang isu.</p>
     </div>
 
-    <h3 style="color: #C9556E; margin-top: 30px;">Event Details / 活动详情 / Butiran Acara</h3>
+    <h3 style="color: #D03A19; margin-top: 30px;">Event Details / 活动详情 / Butiran Acara</h3>
     <p style="margin: 6px 0;"><strong>Date / 日期 / Tarikh:</strong> 14 November 2026</p>
     <p style="margin: 6px 0;"><strong>Time / 时间 / Masa:</strong> 9.30am – 5.00pm</p>
     <p style="margin: 6px 0;"><strong>Venue / 地点 / Lokasi:</strong> Bible College of Malaysia, Petaling Jaya</p>
