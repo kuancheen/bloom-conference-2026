@@ -35,10 +35,12 @@ This document serves as the active checklist for all remaining features, bug fix
   - Verify the confirmation email arrives in the inbox (check spam/promotions).
   - Verify UI elements (validation, dropdowns, success screen) render correctly on mobile and desktop.
 
-## Phase 4: Maintenance & Asset Cache Busting
+## Phase 4: Maintenance & UI Polish
 - [x] **Datetime-based Cache Busting:**
   - Enforce `YYYYMMDDHHMMSS` timestamp query strings on all CSS and JS asset links in `index.html` on every modification (without `v=`).
   - Ensures immediate client refresh on WordPress/Apache reverse proxy setups.
+- [x] **Click-to-Copy Banking Transfer Info:**
+  - Provide one-click/touch copy-to-clipboard functionality for Account Number (`3116737405`) and Reference (`BLOOM26`) with visual badges (`📋 Copy` → `✅ Copied!`).
 
 ## Phase 5: Sign Up Dashboard & Registrants List
 - [x] **Google Apps Script Backend Endpoints (`backend/Code.gs`):**
