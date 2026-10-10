@@ -2,15 +2,17 @@
 # Place BEFORE the WordPress block so /register is handled first
 <IfModule mod_rewrite.c>
 RewriteEngine On
+RewriteBase /
 
 # 1. Page Routes
-RewriteRule ^register/?$ /bloom2026/index.html [L,QSA]
-RewriteRule ^dashboard/?$ /bloom2026/dashboard.html [L,QSA]
-RewriteRule ^registrants/?$ /bloom2026/registrants.html [L,QSA]
+RewriteRule ^register/?$ bloom2026/index.html [L,QSA]
+RewriteRule ^dashboard/?$ bloom2026/dashboard.html [L,QSA]
+RewriteRule ^registrants/?$ bloom2026/registrants.html [L,QSA]
 
-# 2. Asset Routes (CSS & JS & PNG for Bloom 2026)
-# This catches requests for assets and routes them correctly
-RewriteRule ^(?:register/|dashboard/|registrants/)?(styles\.css|app\.js|config\.js|dashboard\.js|registrants\.js|acts-logo\.png|registration-form-banner\.png)$ /bloom2026/$1 [L,QSA]
+# 2. Asset Routes (CSS, JS, PNG for Bloom 2026)
+# Prevent rewriting if the file is already being requested directly from bloom2026/
+RewriteCond %{REQUEST_URI} !^/bloom2026/
+RewriteRule ^(?:register/|dashboard/|registrants/)?(styles\.css|app\.js|config\.js|dashboard\.js|registrants\.js|acts-logo\.png|registration-form-banner\.png)$ bloom2026/$1 [L,QSA]
 </IfModule>
 
 
