@@ -554,3 +554,43 @@ registerAnotherBtn.addEventListener('click', () => {
     if (select.value) clearFieldError(fieldId);
   });
 });
+
+/* ─────────────────────────────────────────────────
+   Click to Copy Banking Details
+───────────────────────────────────────────────── */
+document.querySelectorAll('.bank-field.is-copyable').forEach(el => {
+  el.addEventListener('click', async () => {
+    const textToCopy = el.getAttribute('data-copy');
+    if (!textToCopy) return;
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = textToCopy;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+
+      const badge = el.querySelector('.copy-badge');
+      const originalBadgeText = badge ? badge.textContent : '📋 Copy';
+
+      el.classList.add('is-copied');
+      if (badge) badge.textContent = '✅ Copied!';
+
+      setTimeout(() => {
+        el.classList.remove('is-copied');
+        if (badge) badge.textContent = originalBadgeText;
+      }, 2000);
+
+    } catch (err) {
+      console.warn('Failed to copy to clipboard:', err);
+    }
+  });
+});

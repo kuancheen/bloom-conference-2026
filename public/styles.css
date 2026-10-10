@@ -640,6 +640,54 @@ select option[value=""] {
   gap: 2px;
 }
 
+.bank-field.is-copyable {
+  cursor: pointer;
+  padding: 4px 6px;
+  margin: -4px -6px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+  position: relative;
+  user-select: none;
+}
+
+.bank-field.is-copyable:hover,
+.bank-field.is-copyable:active {
+  background: var(--bloom-cream);
+}
+
+.bank-value-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.copy-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--bloom-rose);
+  background: var(--bloom-lavender-lt);
+  padding: 2px 8px;
+  border-radius: 999px;
+  transition: all var(--transition);
+  opacity: 0.85;
+}
+
+.bank-field.is-copyable:hover .copy-badge {
+  opacity: 1;
+  background: var(--bloom-rose);
+  color: #ffffff;
+}
+
+.bank-field.is-copyable.is-copied {
+  background: var(--bloom-success-bg);
+}
+
+.bank-field.is-copyable.is-copied .copy-badge {
+  background: var(--bloom-success);
+  color: #ffffff;
+}
+
 .bank-label {
   font-size: 0.74rem;
   font-weight: 600;
