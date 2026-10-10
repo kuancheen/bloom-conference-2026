@@ -40,20 +40,23 @@ This document serves as the active checklist for all remaining features, bug fix
   - Enforce `YYYYMMDDHHMMSS` timestamp query strings on all CSS and JS asset links in `index.html` on every modification (without `v=`).
   - Ensures immediate client refresh on WordPress/Apache reverse proxy setups.
 
-## Phase 5: Sign Up Dashboard & Registrants List (Upcoming)
-- [ ] **Google Apps Script Backend Endpoints (`backend/Code.gs`):**
-  - Implement `action=stats` / dashboard data calculation (total registered, breakdown by church plant, workshop occupancy, payment status, etc.).
-  - Implement `action=registrants` or secure data retrieval endpoint with pagination, search, and filter options.
-  - Implement verification / admin status toggles (e.g. marking payment as verified).
-  - Reference implementation: [acts-church-conference-2026/Code.gs](https://github.com/kuancheen/acts-church-conference-2026/blob/main/Code.gs)
-- [ ] **Sign Up Dashboard (`public/dashboard.html`):**
-  - Build real-time metrics dashboard (KPI cards, charts, church plant distribution, workshop capacities).
-  - Reference design & structure: [acts-church-conference-2026/dashboard.html](https://github.com/kuancheen/acts-church-conference-2026/blob/main/dashboard.html)
-  - Style to match the Bloom 2026 floral / terracotta design system (`#D03A19`, `#F8755D`, `#FDF6F0`).
-- [ ] **Registrants List Portal (`public/registrants.html`):**
-  - Build searchable, filterable registrants table with quick status updates, receipt image preview modals, and export capabilities.
-  - Reference design & structure: [acts-church-conference-2026/registrants.html](https://github.com/kuancheen/acts-church-conference-2026/blob/main/registrants.html)
-  - Style to match Bloom 2026 design system.
-- [ ] **Apache Routing & Cache Busting:**
-  - Ensure `.htaccess` routes `/dashboard` and `/registrants` properly.
-  - Include datetime cache busters on all linked scripts and stylesheets.
+## Phase 5: Sign Up Dashboard & Registrants List
+- [x] **Google Apps Script Backend Endpoints (`backend/Code.gs`):**
+  - Implement `action=stats`: Total registered, breakdown by church plant, workshop occupancy from `Limits` & `Registration` tabs, age range, marital status, first bloom %, and timeline by date (`dailySignups`).
+  - Implement `action=registrants`: Retrieve registration records returning Full Name, Church Plant (with Others merged), and Homes Code.
+- [x] **Sign Up Dashboard (`public/dashboard.html` & `public/dashboard.js`):**
+  - Build dashboard with Acts logo branding (`Bloom '26 Acts Women's Conference`), navigation link to Registrants list on top right.
+  - KPI Cards: Total Registered Attendees, Top Church Plants, Workshop Occupancy Rate, First-Time Attendees.
+  - Signups Timeline by Date chart/graph (interactive daily trend visualization).
+  - Workshop capacity progress bars and Church Plant distribution breakdown.
+  - Demographic distribution (Age groups & Marital status).
+  - Match Bloom 2026 terracotta design system (`#D03A19`, `#F8755D`, `#FDF6F0`).
+- [x] **Registrants List Portal (`public/registrants.html` & `public/registrants.js`):**
+  - Build attendee list with Acts logo branding, navigation link to Dashboard on top right.
+  - Search: Global text search by Full Name.
+  - Filters: Dropdown filters for Church Plant and Homes Code.
+  - Table: Display 3 core columns: **Full Name**, **Church Plant**, and **Homes Code**.
+  - Match Bloom 2026 terracotta design system.
+- [x] **Apache Routing & Cache Busting:**
+  - Configure `.htaccess` rewrite rules for `/dashboard` and `/registrants`.
+  - Add datetime query strings (`YYYYMMDDHHMMSS`) to all asset links.

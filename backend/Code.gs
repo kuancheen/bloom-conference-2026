@@ -80,16 +80,251 @@ function getOrCreateSheet(name) {
 }
 
 /**
- * GET — health check or config fetch
+ * GET — health check, config, stats, or registrants fetch
  */
 function doGet(e) {
   var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : '';
   if (action === 'config') {
     return getConfigResponse();
+  } else if (action === 'stats') {
+    return getStatsResponse();
+  } else if (action === 'registrants') {
+    return getRegistrantsResponse();
   }
   return ContentService
     .createTextOutput(JSON.stringify({ status: 'ok', service: 'Bloom Conference 2026' }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Reads and computes statistics for the Dashboard.
+ */
+function getStatsResponse() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var regSheet = ss.getSheetByName('Registration');
+    if (!regSheet) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ result: 'error', error: 'Registration sheet not found' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var regData = regSheet.getDataRange().getValues();
+    var totalRegistrations = 0;
+    var churchPlantCounts = {};
+    var ageRangeCounts = {};
+    var maritalStatusCounts = {};
+    var firstBloomCounts = { 'Yes': 0, 'No': 0 };
+    var dailySignups = {};
+    var workshopCounts = {};
+
+    // Header index mapping
+    var headers = regData.length > 0 ? regData[0] : [];
+    var colMap = {};
+    for (var c = 0; c < headers.length; c++) {
+      colMap[headers[c].toString().trim().toLowerCase()] = c;
+    }
+
+    var tsIdx = colMap['timestamp'] !== undefined ? colMap['timestamp'] : 0;
+    var nameIdx = colMap['full name'] !== undefined ? colMap['full name'] : 2;
+    var ageIdx = colMap['age range'] !== undefined ? colMap['age range'] : 4;
+    var maritalIdx = colMap['marital status'] !== undefined ? colMap['marital status'] : 5;
+    var cpIdx = colMap['church plant'] !== undefined ? colMap['church plant'] : 6;
+    var othersIdx = colMap['others'] !== undefined ? colMap['others'] : 7;
+    var wsIdx = colMap['workshop'] !== undefined ? colMap['workshop'] : 9;
+    var fbIdx = colMap['first bloom?'] !== undefined ? colMap['first bloom?'] : 10;
+
+    // Workshop mapping
+    var workshopLabelMap = {
+      'beautiful': 'Beautiful Inside Out',
+      'cars': 'Cars 101',
+      'journalling': 'Creative Bible Journalling',
+      'menopause': 'Preparing For Menopause',
+      'scam': 'Scam Prevention Awareness',
+      'none': 'Unable to Attend'
+    };
+
+    for (var r = 1; r < regData.length; r++) {
+      var row = regData[r];
+      var fullName = (row[nameIdx] || '').toString().trim();
+      if (!fullName) continue; // skip empty rows
+
+      totalRegistrations++;
+
+      // Timeline by Date (YYYY-MM-DD)
+      var rawTs = row[tsIdx];
+      var dateKey = '';
+      if (rawTs instanceof Date) {
+        dateKey = Utilities.formatDate(rawTs, Session.getScriptTimeZone() || 'Asia/Kuala_Lumpur', 'yyyy-MM-dd');
+      } else if (rawTs) {
+        var parsedDate = new Date(rawTs);
+        if (!isNaN(parsedDate.getTime())) {
+          dateKey = Utilities.formatDate(parsedDate, Session.getScriptTimeZone() || 'Asia/Kuala_Lumpur', 'yyyy-MM-dd');
+        }
+      }
+      if (dateKey) {
+        dailySignups[dateKey] = (dailySignups[dateKey] || 0) + 1;
+      }
+
+      // Church Plant (resolve Others)
+      var cp = (row[cpIdx] || '').toString().trim();
+      var otherCp = (row[othersIdx] || '').toString().trim();
+      var finalCp = cp;
+      if (cp === 'Others' && otherCp) {
+        finalCp = 'Others (' + otherCp + ')';
+      } else if (!cp) {
+        finalCp = 'Unspecified';
+      }
+      churchPlantCounts[finalCp] = (churchPlantCounts[finalCp] || 0) + 1;
+
+      // Age Range
+      var age = (row[ageIdx] || '').toString().trim() || 'Unspecified';
+      ageRangeCounts[age] = (ageRangeCounts[age] || 0) + 1;
+
+      // Marital Status
+      var marital = (row[maritalIdx] || '').toString().trim() || 'Unspecified';
+      maritalStatusCounts[marital] = (maritalStatusCounts[marital] || 0) + 1;
+
+      // First Bloom
+      var fb = (row[fbIdx] || '').toString().trim().toLowerCase();
+      if (fb === 'yes' || fb === '是' || fb === 'ya') {
+        firstBloomCounts['Yes']++;
+      } else if (fb === 'no' || fb === '否' || fb === 'tidak') {
+        firstBloomCounts['No']++;
+      }
+
+      // Workshop Count
+      var wsCode = (row[wsIdx] || '').toString().trim().toLowerCase();
+      if (wsCode) {
+        workshopCounts[wsCode] = (workshopCounts[wsCode] || 0) + 1;
+      }
+    }
+
+    // Workshop Capacities & Occupancy from Limits Sheet
+    var limitsMap = getWorkshopLimitsMap(ss);
+    var workshopStats = [];
+    var totalWorkshopCapacity = 0;
+    var totalWorkshopOccupancy = 0;
+
+    Object.keys(limitsMap).forEach(function(key) {
+      var item = limitsMap[key];
+      // Deduplicate alias entries
+      if (item.code && item.code.toLowerCase() === key) {
+        var count = workshopCounts[item.code.toLowerCase()] || item.registered || 0;
+        var limit = item.limit || 0;
+        if (item.code.toLowerCase() !== 'none') {
+          totalWorkshopCapacity += limit;
+          totalWorkshopOccupancy += count;
+        }
+        workshopStats.push({
+          code: item.code,
+          name: item.name || workshopLabelMap[item.code.toLowerCase()] || item.code,
+          limit: limit,
+          registered: count,
+          seatsLeft: Math.max(0, limit - count),
+          isFull: item.isFull || (limit > 0 && count >= limit)
+        });
+      }
+    });
+
+    var payload = {
+      result: 'success',
+      totalRegistrations: totalRegistrations,
+      dailySignups: dailySignups,
+      churchPlantCounts: churchPlantCounts,
+      workshopStats: workshopStats,
+      totalWorkshopCapacity: totalWorkshopCapacity,
+      totalWorkshopOccupancy: totalWorkshopOccupancy,
+      ageRangeCounts: ageRangeCounts,
+      maritalStatusCounts: maritalStatusCounts,
+      firstBloomCounts: firstBloomCounts,
+      lastUpdated: Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Kuala_Lumpur', 'yyyy-MM-dd HH:mm:ss')
+    };
+
+    return ContentService
+      .createTextOutput(JSON.stringify(payload))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'error', error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * Reads registrants list returning only Full Name, Church Plant, and Homes Code.
+ */
+function getRegistrantsResponse() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var regSheet = ss.getSheetByName('Registration');
+    if (!regSheet) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ result: 'error', error: 'Registration sheet not found' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var regData = regSheet.getDataRange().getValues();
+    if (!regData || regData.length < 2) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ result: 'success', registrants: [], total: 0 }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var headers = regData[0];
+    var colMap = {};
+    for (var c = 0; c < headers.length; c++) {
+      colMap[headers[c].toString().trim().toLowerCase()] = c;
+    }
+
+    var nameIdx = colMap['full name'] !== undefined ? colMap['full name'] : 2;
+    var cpIdx = colMap['church plant'] !== undefined ? colMap['church plant'] : 6;
+    var othersIdx = colMap['others'] !== undefined ? colMap['others'] : 7;
+    var homesIdx = colMap['homes code'] !== undefined ? colMap['homes code'] : 8;
+
+    var registrants = [];
+
+    for (var r = 1; r < regData.length; r++) {
+      var row = regData[r];
+      var fullName = (row[nameIdx] || '').toString().trim();
+      if (!fullName) continue; // Skip blank rows
+
+      var cp = (row[cpIdx] || '').toString().trim();
+      var otherCp = (row[othersIdx] || '').toString().trim();
+      var finalCp = cp;
+      if (cp === 'Others' && otherCp) {
+        finalCp = 'Others (' + otherCp + ')';
+      } else if (!cp) {
+        finalCp = '-';
+      }
+
+      var homesCode = (row[homesIdx] || '').toString().trim() || '-';
+
+      registrants.push({
+        id: r,
+        fullName: fullName,
+        churchPlant: finalCp,
+        homesCode: homesCode
+      });
+    }
+
+    var payload = {
+      result: 'success',
+      registrants: registrants,
+      total: registrants.length,
+      lastUpdated: Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Kuala_Lumpur', 'yyyy-MM-dd HH:mm:ss')
+    };
+
+    return ContentService
+      .createTextOutput(JSON.stringify(payload))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'error', error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 /**

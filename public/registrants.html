@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bloom '26 — Registrants List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?20261010180000" />
+  </head>
+  <body>
+    <!-- Decorative background petals -->
+    <div class="bg-petals" aria-hidden="true">
+      <div class="petal petal--1"></div>
+      <div class="petal petal--2"></div>
+      <div class="petal petal--3"></div>
+      <div class="petal petal--4"></div>
+    </div>
+
+    <div class="page-shell">
+      <!-- Portal Header & Navigation -->
+      <header class="portal-header">
+        <a href="registrants.html" class="portal-brand">
+          <img
+            src="acts-logo.png?20261010180000"
+            alt="Acts Church Logo"
+            class="portal-logo"
+          />
+          <div class="portal-title-block">
+            <h1>Bloom '26 (Acts Women's Conference)</h1>
+            <p>Registrants Directory</p>
+          </div>
+        </a>
+
+        <nav class="portal-nav">
+          <a href="dashboard.html" class="portal-nav-link">📊 Dashboard</a>
+          <a href="registrants.html" class="portal-nav-link is-active">📋 Registrants List</a>
+          <a href="index.html" class="portal-nav-link" target="_blank">🌸 Form ↗</a>
+        </nav>
+      </header>
+
+      <!-- Search & Filters Bar -->
+      <div class="filter-bar">
+        <div class="filter-input-group" style="flex: 2;">
+          <input
+            type="text"
+            id="nameSearchInput"
+            class="filter-input"
+            placeholder="🔍 Search by Full Name..."
+            aria-label="Search by Name"
+          />
+        </div>
+        <div class="filter-input-group">
+          <select id="churchPlantFilter" class="filter-input" aria-label="Filter by Church Plant">
+            <option value="">All Church Plants</option>
+          </select>
+        </div>
+        <div class="filter-input-group">
+          <select id="homesCodeFilter" class="filter-input" aria-label="Filter by Homes Code">
+            <option value="">All Homes Codes</option>
+          </select>
+        </div>
+        <button type="button" class="portal-nav-link" id="refreshBtn" style="cursor: pointer;">
+          🔄 Refresh
+        </button>
+      </div>
+
+      <!-- Result Counter -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 4px;">
+        <span style="font-size: 0.86rem; font-weight: 600; color: var(--bloom-text);" id="countText">Showing 0 registrants</span>
+        <span style="font-size: 0.78rem; color: var(--bloom-text-light);" id="lastUpdatedText">Loading...</span>
+      </div>
+
+      <!-- Registrants Data Table -->
+      <div class="data-table-wrapper">
+        <table class="data-table" id="registrantsTable">
+          <thead>
+            <tr>
+              <th style="width: 60px;">#</th>
+              <th>Full Name</th>
+              <th>Church Plant</th>
+              <th>Homes Code</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="4">
+                <div class="state-box">
+                  <div class="state-spinner"></div>
+                  <p>Loading attendee records...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="site-footer">
+        <p><a href="https://actschurch.org/bloom" style="color: inherit; text-decoration: none;">Bloom Conference 2026 — Acts Church</a></p>
+      </footer>
+    </div>
+
+    <script src="config.js?20261010180000"></script>
+    <script src="registrants.js?20261010180000"></script>
+  </body>
+</html>
