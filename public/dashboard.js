@@ -63,12 +63,17 @@ function renderDashboard(data) {
   document.getElementById('kpiTopChurch').textContent = topCp;
   document.getElementById('kpiTopChurchSub').textContent = topCpCount > 0 ? `${topCpCount} registered (${Math.round(topCpCount/total*100)}%)` : 'No signups yet';
 
-  // Workshop Occupancy
+  // Workshop Occupancy (X of 5 workshops filled)
+  const electiveWorkshops = (data.workshopStats || []).filter(ws => ws.code.toLowerCase() !== 'none');
+  const totalWorkshops = electiveWorkshops.length || 5;
+  const fullWorkshopsCount = electiveWorkshops.filter(ws => ws.isFull).length;
   const cap = data.totalWorkshopCapacity || 0;
   const occ = data.totalWorkshopOccupancy || 0;
-  const pct = cap > 0 ? Math.round((occ / cap) * 100) : 0;
-  document.getElementById('kpiWorkshopOccupancy').textContent = `${pct}%`;
-  document.getElementById('kpiWorkshopSub').textContent = `${occ} / ${cap} seats filled`;
+
+  document.getElementById('kpiWorkshopOccupancy').textContent = `${fullWorkshopsCount} / ${totalWorkshops}`;
+  document.getElementById('kpiWorkshopSub').textContent = fullWorkshopsCount > 0 
+    ? `${fullWorkshopsCount} workshop${fullWorkshopsCount > 1 ? 's' : ''} at maximum capacity`
+    : '0 workshops at capacity';
 
   // First Bloom
   const fbYes = (data.firstBloomCounts && data.firstBloomCounts.Yes) || 0;
