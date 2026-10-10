@@ -17,11 +17,16 @@ Build a secure, ladies-only, trilingual (English, 中文, Bahasa Malaysia) confe
 bloom-conference-2026/
 ├── public/
 │   ├── index.html          # Main registration form (Trilingual UI)
-│   ├── styles.css          # Design system (Soft floral palette, responsive layout)
-│   ├── app.js              # Client logic (Validation, Base64 conversion, Fetch API)
+│   ├── dashboard.html      # Sign up metrics & analytics dashboard
+│   ├── dashboard.js        # Dashboard data fetching and chart rendering
+│   ├── registrants.html    # Attendees directory table (Name, Church Plant, Homes Code)
+│   ├── registrants.js      # Registrants table search, filtering, and rendering
+│   ├── styles.css          # Design system (Soft floral palette, responsive layout, portal UI)
+│   ├── app.js              # Registration form logic (Validation, Base64 conversion, Fetch API)
+│   ├── acts-logo.png       # Acts Church branding logo
 │   └── config.js.example   # Template for production config
 ├── backend/
-│   ├── Code.gs             # Google Apps Script backend logic
+│   ├── Code.gs             # Google Apps Script backend logic (config, stats, registrants, doPost)
 │   └── appsscript.json     # Apps Script manifest (OAuth scopes, runtime config)
 ├── README.md               # Quickstart and deployment instructions
 ├── implementation_plan.md  # Active checklist of remaining tasks
@@ -32,6 +37,8 @@ bloom-conference-2026/
 ## 4. Completed Features
 *   **Trilingual UI & Layout:** Form fields, labels, error messages, success screens, section headers, upload prompts, and the submit button are all fully localized in EN, ZH, and BM. Event info and banking details are positioned prominently on the left panel (top on mobile) for optimal attendee onboarding.
 *   **Terracotta & Coral Design System:** Palette mapped with primary Terracotta Red (`#D03A19` → `#AD2A0E`), soft Coral/Peach tints (`#F8755D` / `#FDEEEA`), deep plum typography (`#3C2B35`), and cream backgrounds (`#FDF6F0`).
+*   **Sign Up Metrics Dashboard (`public/dashboard.html`):** Real-time analytics dashboard presenting KPI summary cards (Total Registered, Top Church Plant, Workshop Occupancy Rate, First-Time Attendees), an interactive Chart.js line graph for daily signup volume timeline, workshop capacity progress bars, church plant breakdown, and demographic distributions. Includes unified portal header navigation and Acts logo branding.
+*   **Registrants Directory (`public/registrants.html`):** Lightweight attendee directory displaying 3 core fields: Full Name, Church Plant, and Homes Code. Features instant client-side text search by Name and multi-select dropdown filters for Church Plant and Homes Code.
 *   **Dynamic Dropdown Config:** Dropdown options (Age Range, Marital Status, Church Plant with optgroups, Workshop) are loaded at runtime via `GET {scriptUrl}?action=config` from the Google Sheet's "Config" tab. The Config sheet layout is structured horizontally: Col B/C (Age Range), Col E/F (Marital Status), Col H/I (Workshop), Col K/L (First Bloom), Col M/N/O (Church Plant with Grouping). Static placeholder options remain in the HTML as a skeleton.
 *   **Dynamic Form Logic:** Includes conditional rendering (e.g., "Others" text field appears when "Others" is selected in the Church Plant dropdown).
 *   **File Upload System:** Custom drag-and-drop zone that accepts JPG, PNG, and PDF (max 5MB). Files are converted to Base64 strings client-side to bypass Google Apps Script CORS limitations with standard multipart forms.
@@ -40,8 +47,8 @@ bloom-conference-2026/
 *   **Google Sheets Integration:** Automatically generates the "Registration" sheet with formatted headers on the first run. Column schema: Col A=Timestamp, Col B=Email, Col C=Full Name, Col D=Phone, Col E=Age Range, Col F=Marital Status, Col G=Church Plant, Col H=Others, Col I=Homes Code, Col J=Workshop, Col K=First Bloom?, Col L=Payment URL, Col M=Remarks, Col N=Submission ID, Col O=Payment Verified / Admin Notes, Col P=Email Sent Timestamp, Col Q=Email Error Note.
 *   **Automated Confirmation Email:** Trilingual HTML email powered by `MailApp` (not `GmailApp`), styled with Canva CDN banner header and Terracotta/Coral accents to match frontend UI. Includes a pending payment verification notice and a clickable link to view the uploaded payment proof receipt in Google Drive. Tracks dispatch timestamp (Col P) and errors (Col Q) in the sheet. Sender name: "🌸 Bloom Conference 2026". Subject: "Registration Received - Bloom Conference 2026".
 *   **Workshop Capacity Limits Enforcement:** Workshop capacity and current counts are queried dynamically from the `Limits` tab in Google Sheets via `GET ?action=config`. If a workshop reaches or exceeds its set limit (or status is marked closed/full), the client dropdown disables the `<option>` tag and appends a trilingual label `(FULL / 已满 / Penuh)`. Server-side validation in `backend/Code.gs` `doPost` checks capacity against `Limits` prior to processing payment proofs or appending rows, rejecting over-capacity submissions with dynamic trilingual error notices specifying the exact full workshop name.
-*   **Asset Routing Resilience:** The frontend uses relative paths, but the Apache `.htaccess` is configured to intercept asset requests made from the `/register` vanity URL and securely route them to the `/bloom2026/` directory.
-*   **Datetime-Based Cache Busting:** All CSS (`styles.css`) and JavaScript (`config.js`, `app.js`) tags in `public/index.html` include query parameters with a second-accurate datetime string (`YYYYMMDDHHMMSS` without `v=`) to bypass browser and reverse-proxy caches immediately on deployment.
+*   **Asset Routing Resilience:** The frontend uses relative paths, but the Apache `.htaccess` is configured to intercept asset requests made from `/register`, `/dashboard`, and `/registrants` vanity URLs and securely route them to the `/bloom2026/` directory.
+*   **Datetime-Based Cache Busting:** All CSS (`styles.css`) and JavaScript (`config.js`, `app.js`, `dashboard.js`, `registrants.js`) tags include query parameters with a second-accurate datetime string (`YYYYMMDDHHMMSS` without `v=`) to bypass browser and reverse-proxy caches immediately on deployment.
 
 ## 5. Environment & Setup Details
 *   **Local Development:** `npm run dev` uses the `serve` package to host the `public/` directory locally. A local dummy `config.js` is required to prevent errors.

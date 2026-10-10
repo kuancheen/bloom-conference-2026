@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bloom '26 — Registration Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?20261010180000" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <!-- Decorative background petals -->
+    <div class="bg-petals" aria-hidden="true">
+      <div class="petal petal--1"></div>
+      <div class="petal petal--2"></div>
+      <div class="petal petal--3"></div>
+      <div class="petal petal--4"></div>
+    </div>
+
+    <div class="page-shell">
+      <!-- Portal Header & Navigation -->
+      <header class="portal-header">
+        <a href="dashboard.html" class="portal-brand">
+          <img
+            src="acts-logo.png?20261010180000"
+            alt="Acts Church Logo"
+            class="portal-logo"
+          />
+          <div class="portal-title-block">
+            <h1>Bloom '26 (Acts Women's Conference)</h1>
+            <p>Registration Metrics &amp; Analytics</p>
+          </div>
+        </a>
+
+        <nav class="portal-nav">
+          <a href="dashboard.html" class="portal-nav-link is-active">📊 Dashboard</a>
+          <a href="registrants.html" class="portal-nav-link">📋 Registrants List</a>
+          <a href="index.html" class="portal-nav-link" target="_blank">🌸 Form ↗</a>
+        </nav>
+      </header>
+
+      <!-- Refresh Status Row -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+          <span style="font-size: 0.82rem; color: var(--bloom-text-light);" id="lastUpdatedText">Loading live stats...</span>
+        </div>
+        <button type="button" class="portal-nav-link" id="refreshBtn" style="cursor: pointer;">
+          🔄 Refresh
+        </button>
+      </div>
+
+      <!-- KPI Metrics Row -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-card-title">Total Registered</span>
+            <span class="metric-card-icon">🌸</span>
+          </div>
+          <div class="metric-card-value" id="kpiTotal">-</div>
+          <div class="metric-card-sub">Active attendee signups</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-card-title">Top Church Plant</span>
+            <span class="metric-card-icon">⛪</span>
+          </div>
+          <div class="metric-card-value" id="kpiTopChurch" style="font-size: 1.3rem;">-</div>
+          <div class="metric-card-sub" id="kpiTopChurchSub">Highest representation</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-card-title">Workshop Occupancy</span>
+            <span class="metric-card-icon">🎨</span>
+          </div>
+          <div class="metric-card-value" id="kpiWorkshopOccupancy">-</div>
+          <div class="metric-card-sub" id="kpiWorkshopSub">Across all elective workshops</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-card-title">First-Time Attendees</span>
+            <span class="metric-card-icon">✨</span>
+          </div>
+          <div class="metric-card-value" id="kpiFirstBloom">-</div>
+          <div class="metric-card-sub" id="kpiFirstBloomSub">First time joining Bloom</div>
+        </div>
+      </div>
+
+      <!-- Signups Timeline Graph -->
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <h3>📈 Signups Timeline by Date</h3>
+          <span style="font-size: 0.78rem; color: var(--bloom-text-light);">Daily registration volume</span>
+        </div>
+        <div class="dashboard-card-body" style="height: 280px;">
+          <canvas id="timelineChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Grid: Workshops and Church Plants -->
+      <div class="dashboard-grid">
+        <!-- Workshops Breakdown -->
+        <div class="dashboard-card" style="margin-bottom: 0;">
+          <div class="dashboard-card-header">
+            <h3>🎨 Workshop Capacities &amp; Occupancy</h3>
+          </div>
+          <div class="dashboard-card-body" id="workshopsContainer">
+            <div class="state-box">
+              <div class="state-spinner"></div>
+              <p>Loading workshop capacities...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Church Plants Breakdown -->
+        <div class="dashboard-card" style="margin-bottom: 0;">
+          <div class="dashboard-card-header">
+            <h3>⛪ Church Plants Distribution</h3>
+          </div>
+          <div class="dashboard-card-body" id="churchPlantsContainer">
+            <div class="state-box">
+              <div class="state-spinner"></div>
+              <p>Loading church plants...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid: Demographics -->
+      <div class="dashboard-grid" style="margin-top: 24px;">
+        <!-- Age Groups -->
+        <div class="dashboard-card" style="margin-bottom: 0;">
+          <div class="dashboard-card-header">
+            <h3>👩 Age Groups Distribution</h3>
+          </div>
+          <div class="dashboard-card-body" id="ageRangeContainer">
+            <div class="state-box">
+              <div class="state-spinner"></div>
+              <p>Loading age groups...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Marital Status -->
+        <div class="dashboard-card" style="margin-bottom: 0;">
+          <div class="dashboard-card-header">
+            <h3>💍 Marital Status</h3>
+          </div>
+          <div class="dashboard-card-body" id="maritalStatusContainer">
+            <div class="state-box">
+              <div class="state-spinner"></div>
+              <p>Loading marital status...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <p><a href="https://actschurch.org/bloom" style="color: inherit; text-decoration: none;">Bloom Conference 2026 — Acts Church</a></p>
+      </footer>
+    </div>
+
+    <script src="config.js?20261010180000"></script>
+    <script src="dashboard.js?20261010180000"></script>
+  </body>
+</html>
