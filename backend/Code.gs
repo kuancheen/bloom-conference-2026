@@ -841,25 +841,41 @@ function isEmailInAdminsSheet(email) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var adminSheet = ss.getSheetByName('Admins');
     if (!adminSheet) {
-      // If Admins sheet doesn't exist yet, create it with header
-      adminSheet = ss.insertSheet('Admins');
-      adminSheet.appendRow(['Admin Email', 'Name / Role', 'Date Added']);
-      var hRange = adminSheet.getRange(1, 1, 1, 3);
-      hRange.setFontWeight('bold');
-      hRange.setBackground('#D03A19');
-      hRange.setFontColor('#FFFFFF');
-      adminSheet.setFrozenRows(1);
       return false;
     }
 
     var data = adminSheet.getDataRange().getValues();
     if (data.length < 2) return false;
 
+    // Detect Email column index dynamically from header row
+    var headers = data[0];
+    var emailColIdx = -1;
+    for (var c = 0; c < headers.length; c++) {
+      var h = (headers[c] || '').toString().trim().toLowerCase();
+      if (h.indexOf('email') !== -1) {
+        emailColIdx = c;
+        break;
+      }
+    }
+    // Default fallback: check Column B (idx 1) or Column A (idx 0)
+    if (emailColIdx === -1) {
+      emailColIdx = headers.length > 1 ? 1 : 0;
+    }
+
     var target = email.toLowerCase().trim();
     for (var r = 1; r < data.length; r++) {
-      var adminEmail = (data[r][0] || '').toString().trim().toLowerCase();
+      var row = data[r];
+      // Check detected email column
+      var adminEmail = (row[emailColIdx] || '').toString().trim().toLowerCase();
       if (adminEmail && adminEmail === target) {
         return true;
+      }
+      // Fallback check across all columns in row in case column shifted
+      for (var col = 0; col < row.length; col++) {
+        var cellVal = (row[col] || '').toString().trim().toLowerCase();
+        if (cellVal === target) {
+          return true;
+        }
       }
     }
     return false;
