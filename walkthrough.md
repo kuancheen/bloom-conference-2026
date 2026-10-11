@@ -21,12 +21,14 @@ bloom-conference-2026/
 │   ├── dashboard.js        # Dashboard data fetching and chart rendering
 │   ├── registrants.html    # Attendees directory table (Name, Church Plant, Homes Code)
 │   ├── registrants.js      # Registrants table search, filtering, and rendering
+│   ├── verify-payments.html# Payment verification & approval reviewer portal
+│   ├── verify-payments.js  # Payment verification auth, approval action, and receipt modal logic
 │   ├── styles.css          # Design system (Soft floral palette, responsive layout, portal UI)
 │   ├── app.js              # Registration form logic (Validation, Base64 conversion, Fetch API)
 │   ├── acts-logo.png       # Acts Church branding logo
-│   └── config.js.example   # Template for production config
+│   └── config.js.example   # Template for production config (Script URL + Google Client ID)
 ├── backend/
-│   ├── Code.gs             # Google Apps Script backend logic (config, stats, registrants, doPost)
+│   ├── Code.gs             # Google Apps Script backend logic (config, stats, registrants, get_payments, approve_payment)
 │   └── appsscript.json     # Apps Script manifest (OAuth scopes, runtime config)
 ├── README.md               # Quickstart and deployment instructions
 ├── implementation_plan.md  # Active checklist of remaining tasks
@@ -39,6 +41,8 @@ bloom-conference-2026/
 *   **Terracotta & Coral Design System:** Palette mapped with primary Terracotta Red (`#D03A19` → `#AD2A0E`), soft Coral/Peach tints (`#F8755D` / `#FDEEEA`), deep plum typography (`#3C2B35`), and cream backgrounds (`#FDF6F0`).
 *   **Sign Up Metrics Dashboard (`public/dashboard.html`):** Real-time analytics dashboard presenting KPI summary cards (Total Registered, Top Church Plant, Workshop Occupancy Rate, First-Time Attendees), an interactive Chart.js line graph for daily signup volume timeline, workshop capacity progress bars, church plant breakdown, and demographic distributions. Includes unified portal header navigation and Acts logo branding.
 *   **Registrants Directory (`public/registrants.html`):** Lightweight attendee directory displaying 3 core fields: Full Name, Church Plant, and Homes Code. Features instant client-side text search by Name and multi-select dropdown filters for Church Plant and Homes Code.
+*   **Payment Verification & Approval Portal (`public/verify-payments.html` & `public/verify-payments.js`):** Reviewer interface for conference organizers. Features Google Account authentication gating against an authorized `Admins` sheet tab, tabs for Pending Review / Approved / All, real-time search, Google Drive receipt preview modal, and single-click payment approval.
+*   **Trilingual Payment Verified Confirmation Email:** Upon payment approval via `action=approve_payment`, Google Apps Script stamps Column O (`Payment Verified / Admin Notes`) with `Verified: YYYY-MM-DD HH:mm by admin@email.com` and automatically dispatches a trilingual (`EN`, `ZH`, `BM`) confirmation email via `MailApp` to inform the attendee their payment was approved and their seat is officially confirmed.
 *   **Dynamic Dropdown Config:** Dropdown options (Age Range, Marital Status, Church Plant with optgroups, Workshop) are loaded at runtime via `GET {scriptUrl}?action=config` from the Google Sheet's "Config" tab. The Config sheet layout is structured horizontally: Col B/C (Age Range), Col E/F (Marital Status), Col H/I (Workshop), Col K/L (First Bloom), Col M/N/O (Church Plant with Grouping). Static placeholder options remain in the HTML as a skeleton.
 *   **Dynamic Form Logic:** Includes conditional rendering (e.g., "Others" text field appears when "Others" is selected in the Church Plant dropdown).
 *   **File Upload System:** Custom drag-and-drop zone that accepts JPG, PNG, and PDF (max 5MB). Files are converted to Base64 strings client-side to bypass Google Apps Script CORS limitations with standard multipart forms.

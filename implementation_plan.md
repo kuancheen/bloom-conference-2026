@@ -62,3 +62,22 @@ This document serves as the active checklist for all remaining features, bug fix
 - [x] **Apache Routing & Cache Busting:**
   - Configure `.htaccess` rewrite rules for `/dashboard` and `/registrants`.
   - Add datetime query strings (`YYYYMMDDHHMMSS`) to all asset links.
+
+## Phase 6: Payment Verification & Approval Portal (Admin Protected)
+- [x] **Google OAuth / Identity Protection Architecture:**
+  - Google Sign-In (GIS - Google Identity Services) integration on the frontend.
+  - Whitelisted Admin Google Accounts configuration in Google Sheets / Apps Script backend.
+  - Backend validation on all admin actions (fetching pending verifications, approving/rejecting payments).
+- [x] **Google Apps Script Backend Enhancements (`backend/Code.gs`):**
+  - Implement `action=get_payments` (secured with token/email validation against authorized admins) to retrieve registration list with receipt URLs, verification status, and registrant metadata.
+  - Implement `action=approve_payment` (secured) to update verification status in Column O (`Payment Verified / Admin Notes`) with timestamp and reviewer's email.
+  - Implement trilingual Payment Verified Confirmation Email dispatch (`sendPaymentVerifiedEmail(registrant)`) via `MailApp`.
+- [x] **Payment Verification UI (`public/verify-payments.html` & `public/verify-payments.js`):**
+  - Build responsive reviewer interface matching Bloom 2026 Terracotta branding.
+  - Google Sign-In gate / access restricted modal for non-whitelisted users.
+  - Pending vs Approved/Rejected filter tabs, search by name/email.
+  - Receipt preview drawer/modal (view Drive image/PDF directly) + attendee summary.
+  - One-click "Approve & Send Verification Email" with confirmation prompt and live feedback badge.
+- [x] **Apache Routing & Cache Busting:**
+  - Add `.htaccess` rewrite rules for `/verify-payments` vanity route.
+  - Apply datetime-accurate query parameters (`YYYYMMDDHHMMSS`) to all linked assets.

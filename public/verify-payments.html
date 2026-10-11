@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bloom '26 — Payment Verification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?20261012060500" />
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <!-- Decorative background petals -->
+    <div class="bg-petals" aria-hidden="true">
+      <div class="petal petal--1"></div>
+      <div class="petal petal--2"></div>
+      <div class="petal petal--3"></div>
+      <div class="petal petal--4"></div>
+    </div>
+
+    <div class="page-shell">
+      <!-- Portal Header & Navigation -->
+      <header class="portal-header">
+        <a href="/verify-payments" class="portal-brand">
+          <img
+            src="acts-logo.png?20261012060500"
+            alt="Acts Church Logo"
+            class="portal-logo"
+          />
+          <div class="portal-title-block">
+            <h1>Bloom '26 (Acts Women's Conference)</h1>
+            <p>Payment Verification &amp; Approval Portal</p>
+          </div>
+        </a>
+
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div id="userBadge" style="display: none;"></div>
+          <nav class="portal-nav">
+            <a href="/dashboard" class="portal-nav-link">📊 Dashboard</a>
+            <a href="/registrants" class="portal-nav-link">📋 Registrants List</a>
+            <a href="/verify-payments" class="portal-nav-link is-active">💳 Payment Verification</a>
+            <a href="/register" class="portal-nav-link" target="_blank">🌸 Form ↗</a>
+          </nav>
+        </div>
+      </header>
+
+      <!-- Auth Gate Screen (Shown when not authenticated or unauthorized) -->
+      <div id="authGateSection" style="display: none;">
+        <div class="auth-lock-card">
+          <div class="auth-lock-icon">🔒</div>
+          <h2 style="font-family: var(--font-serif); color: var(--bloom-text); margin-bottom: 8px;">Admin Authentication Required</h2>
+          <p style="color: var(--bloom-text-light); font-size: 0.92rem; line-height: 1.5; margin-bottom: 24px;">
+            Access to review receipts and approve attendee registrations is restricted to authorized Google accounts listed in the organizer whitelist.
+          </p>
+
+          <div id="googleBtnContainer" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
+
+          <!-- Fallback direct sign-in for testing/environments without GIS client ID configured -->
+          <div id="manualAuthFallback" style="border-top: 1px dashed var(--bloom-border); padding-top: 18px; margin-top: 18px;">
+            <p style="font-size: 0.8rem; color: var(--bloom-text-light); margin-bottom: 10px;">
+              Or sign in with approved admin email:
+            </p>
+            <form id="manualAuthForm" style="display: flex; gap: 8px; justify-content: center; padding: 0; background: none; box-shadow: none; border: none;">
+              <input
+                type="email"
+                id="manualEmailInput"
+                class="filter-input"
+                placeholder="admin@example.com"
+                required
+                style="max-width: 250px;"
+              />
+              <button type="submit" class="btn-action btn-action--approve">Verify Email</button>
+            </form>
+          </div>
+
+          <div id="authErrorMessage" style="margin-top: 16px; color: #dc3545; font-size: 0.88rem; font-weight: 500; display: none;"></div>
+        </div>
+      </div>
+
+      <!-- Main Portal Content (Shown once authenticated & authorized) -->
+      <main id="portalMainContent" style="display: none;">
+        <!-- KPI Metrics Row -->
+        <div class="metrics-grid" style="margin-bottom: 24px;">
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span class="metric-card-title">Total Registrations</span>
+              <span class="metric-card-icon">👥</span>
+            </div>
+            <div class="metric-card-value" id="kpiTotal">-</div>
+            <div class="metric-card-subtext">All submitted forms</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span class="metric-card-title">Pending Review</span>
+              <span class="metric-card-icon">⏳</span>
+            </div>
+            <div class="metric-card-value" id="kpiPending" style="color: #e07a1f;">-</div>
+            <div class="metric-card-subtext">Awaiting payment verification</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span class="metric-card-title">Approved &amp; Confirmed</span>
+              <span class="metric-card-icon">✅</span>
+            </div>
+            <div class="metric-card-value" id="kpiVerified" style="color: #28a745;">-</div>
+            <div class="metric-card-subtext">Verification emails sent</div>
+          </div>
+        </div>
+
+        <!-- Filter and Search Bar -->
+        <div class="filter-bar" style="margin-bottom: 16px;">
+          <div class="tab-nav" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">
+            <button type="button" class="tab-btn is-active" data-tab="pending" id="tabPending">
+              ⏳ Pending (<span id="tabPendingCount">0</span>)
+            </button>
+            <button type="button" class="tab-btn" data-tab="verified" id="tabVerified">
+              ✅ Approved (<span id="tabVerifiedCount">0</span>)
+            </button>
+            <button type="button" class="tab-btn" data-tab="all" id="tabAll">
+              📑 All (<span id="tabAllCount">0</span>)
+            </button>
+          </div>
+
+          <div class="filter-input-group" style="flex: 1; max-width: 320px; margin-left: auto;">
+            <input
+              type="text"
+              id="searchInput"
+              class="filter-input"
+              placeholder="🔍 Search name, email, or church..."
+              aria-label="Search attendees"
+            />
+          </div>
+
+          <button type="button" class="portal-nav-link" id="refreshBtn" style="cursor: pointer; height: 38px;">
+            🔄 Refresh
+          </button>
+        </div>
+
+        <!-- Table Container -->
+        <div class="data-table-wrapper">
+          <table class="data-table" id="paymentsTable">
+            <thead>
+              <tr>
+                <th style="width: 50px;">#</th>
+                <th>Status</th>
+                <th>Full Name</th>
+                <th>Email / Phone</th>
+                <th>Church Plant</th>
+                <th>Workshop</th>
+                <th>Receipt Proof</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="paymentsTableBody">
+              <tr>
+                <td colspan="8">
+                  <div class="state-box">
+                    <div class="state-spinner"></div>
+                    <p>Loading registrations for verification...</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+
+      <!-- Approval Confirmation Modal -->
+      <div class="modal-overlay" id="approvalModal" aria-hidden="true">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>Confirm Payment Approval</h3>
+            <button type="button" class="modal-close-btn" id="closeApprovalModalBtn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p style="font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px;">
+              You are about to approve the payment for <strong id="modalAttendeeName">Attendee</strong>.
+            </p>
+            <div style="background: var(--bloom-cream); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--bloom-border); margin-bottom: 16px; font-size: 0.88rem;">
+              <p style="margin: 3px 0;"><strong>Email:</strong> <span id="modalAttendeeEmail">-</span></p>
+              <p style="margin: 3px 0;"><strong>Church:</strong> <span id="modalAttendeeChurch">-</span></p>
+              <p style="margin: 3px 0;"><strong>Workshop:</strong> <span id="modalAttendeeWorkshop">-</span></p>
+            </div>
+            <div style="background: #EBF8EE; border-left: 4px solid #28a745; padding: 12px; margin-bottom: 16px; font-size: 0.84rem; color: #155724;">
+              🌸 Approving this payment will automatically send the official <strong>Trilingual Registration &amp; Payment Confirmed Email</strong> to the attendee.
+            </div>
+            <div class="field-group">
+              <label for="adminNotesInput" style="font-size: 0.82rem; font-weight: 600; color: var(--bloom-text-light);">Optional Note / Reference Code</label>
+              <input
+                type="text"
+                id="adminNotesInput"
+                class="filter-input"
+                placeholder="e.g. Bank slip reference verified / RM80 received"
+                style="margin-top: 6px;"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-action btn-action--view" id="cancelApprovalBtn">Cancel</button>
+            <button type="button" class="btn-action btn-action--approve" id="confirmApprovalBtn">
+              ✅ Approve &amp; Send Email
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Receipt Preview Modal -->
+      <div class="modal-overlay" id="receiptModal" aria-hidden="true">
+        <div class="modal-card" style="max-width: 800px;">
+          <div class="modal-header">
+            <h3 id="receiptModalTitle">Payment Receipt</h3>
+            <button type="button" class="modal-close-btn" id="closeReceiptModalBtn">&times;</button>
+          </div>
+          <div class="modal-body" style="text-align: center; padding: 16px;">
+            <div id="receiptPreviewContainer" style="min-height: 300px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: var(--radius-sm);">
+              <p style="color: var(--bloom-text-light);">Loading receipt...</p>
+            </div>
+          </div>
+          <div class="modal-footer" style="justify-content: space-between;">
+            <a href="#" target="_blank" id="openExternalReceiptBtn" class="btn-action btn-action--view">
+              ↗ Open in Google Drive
+            </a>
+            <button type="button" class="btn-action btn-action--view" id="closeReceiptFooterBtn">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <p><a href="https://actschurch.org/bloom" style="color: inherit; text-decoration: none;">Bloom Conference 2026 — Acts Church</a></p>
+      </footer>
+    </div>
+
+    <script src="config.js?20261012060500"></script>
+    <script src="verify-payments.js?20261012060500"></script>
+  </body>
+</html>
