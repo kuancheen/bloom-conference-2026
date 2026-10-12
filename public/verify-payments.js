@@ -349,6 +349,9 @@
   }
 
   function closeReceiptModal() {
+    if (document.activeElement && receiptModal.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
     receiptModal.classList.remove('is-visible');
     receiptModal.setAttribute('aria-hidden', 'true');
     receiptPreviewContainer.innerHTML = '';
@@ -367,6 +370,9 @@
   }
 
   function closeApprovalModal() {
+    if (document.activeElement && approvalModal.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
     approvalModal.classList.remove('is-visible');
     approvalModal.setAttribute('aria-hidden', 'true');
     activeItemToApprove = null;
@@ -428,7 +434,7 @@
         e.preventDefault();
         const email = manualEmailInput.value.trim();
         if (email) {
-          validateAuth('', email);
+          validateAuth(email);
         }
       });
     }
