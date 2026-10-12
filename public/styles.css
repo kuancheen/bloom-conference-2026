@@ -1115,7 +1115,23 @@ select option[value=""] {
 @media (max-width: 600px) {
   .topbar { padding: 16px 0 16px; margin-bottom: 18px; }
   .portal-header { flex-direction: column; gap: 12px; align-items: flex-start; }
-  .portal-nav { width: 100%; justify-content: flex-start; }
+  .portal-nav {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    padding-bottom: 2px;
+  }
+  .portal-nav::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+  .portal-nav-link {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 7px 10px;
+    font-size: 0.78rem;
+  }
+  /* Hide text, keep emoji on the Form link on mobile to save space */
+  .portal-nav-link.nav-form-link .nav-link-text { display: none; }
   form { padding: 20px 16px 24px; }
   .panel-header { padding: 20px 16px 16px; }
   .submit-row { justify-content: stretch; }
