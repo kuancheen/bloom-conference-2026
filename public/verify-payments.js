@@ -8,6 +8,7 @@
   // State
   let currentAdmin = {
     email: localStorage.getItem('bloom_admin_email') || '',
+    name: localStorage.getItem('bloom_admin_name') || '',
     token: localStorage.getItem('bloom_admin_token') || '',
     isAuthorized: false
   };
@@ -125,6 +126,18 @@
     const token = response.credential;
     currentAdmin.token = token;
     localStorage.setItem('bloom_admin_token', token);
+
+    // Decode the JWT payload (middle section) to extract the user's display name
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      currentAdmin.name = payload.name || payload.given_name || '';
+      if (currentAdmin.name) {
+        localStorage.setItem('bloom_admin_name', currentAdmin.name);
+      }
+    } catch (e) {
+      console.warn('Could not decode Google token payload for name:', e);
+    }
+
     validateAuth(token);
   }
 
@@ -180,9 +193,10 @@
     authGateSection.style.display = 'none';
     portalMainContent.style.display = 'block';
 
+    const displayName = currentAdmin.name || currentAdmin.email;
     userBadge.innerHTML = `
-      <span class="user-profile-badge">
-        <span>👤 ${escapeHtml(currentAdmin.email)}</span>
+      <span class="user-profile-badge" title="${escapeHtml(currentAdmin.email)}">
+        <span>👤 ${escapeHtml(displayName)}</span>
         <button type="button" id="logoutBtn" title="Sign Out">Sign out</button>
       </span>
     `;
@@ -193,8 +207,9 @@
 
   function handleLogout() {
     localStorage.removeItem('bloom_admin_email');
+    localStorage.removeItem('bloom_admin_name');
     localStorage.removeItem('bloom_admin_token');
-    currentAdmin = { email: '', token: '', isAuthorized: false };
+    currentAdmin = { email: '', name: '', token: '', isAuthorized: false };
     if (window.google && window.google.accounts && window.google.accounts.id) {
       google.accounts.id.disableAutoSelect();
     }
@@ -210,7 +225,7 @@
 
     paymentsTableBody.innerHTML = `
       <tr>
-        <td colspan="7">
+        <td colspan="6">
           <div class="state-box">
             <div class="state-spinner"></div>
             <p>Loading registrations for verification...</p>
@@ -231,7 +246,7 @@
         } else {
           paymentsTableBody.innerHTML = `
             <tr>
-              <td colspan="7">
+              <td colspan="6">
                 <div class="state-box" style="color: #dc3545;">
                   <p>⚠️ ${escapeHtml(data.error || 'Failed to load registration records.')}</p>
                 </div>
@@ -243,7 +258,7 @@
       .catch(err => {
         paymentsTableBody.innerHTML = `
           <tr>
-            <td colspan="7">
+            <td colspan="6">
               <div class="state-box" style="color: #dc3545;">
                 <p>⚠️ Connection error: ${escapeHtml(err.message)}</p>
               </div>
@@ -287,7 +302,7 @@
     if (filtered.length === 0) {
       paymentsTableBody.innerHTML = `
         <tr>
-          <td colspan="7">
+          <td colspan="6">
             <div class="state-box">
               <p>No registration records match the current filter.</p>
             </div>
@@ -301,10 +316,6 @@
       const badge = item.isVerified
         ? `<span class="status-badge status-badge--verified" title="${escapeHtml(item.adminNotes)}">✅ Verified</span>`
         : `<span class="status-badge status-badge--pending">⏳ Pending Review</span>`;
-
-      const receiptBtn = item.paymentUrl && item.paymentUrl.startsWith('http')
-        ? `<button type="button" class="btn-action btn-action--view open-modal-btn" data-id="${escapeHtml(item.submissionId)}" data-row="${item.rowIndex}">📄 View Receipt</button>`
-        : `<span style="color: var(--bloom-text-light); font-size: 0.82rem;">None</span>`;
 
       const actionBtn = item.isVerified
         ? `<button type="button" class="btn-action open-modal-btn" data-id="${escapeHtml(item.submissionId)}" data-row="${item.rowIndex}" style="background: #e9ecef; color: #6c757d;">View Details</button>`
@@ -327,7 +338,6 @@
             <div>${escapeHtml(item.churchPlant)}</div>
             ${item.homesCode && item.homesCode !== '-' ? `<div style="font-size: 0.78rem; color: var(--bloom-text-light);">Homes: ${escapeHtml(item.homesCode)}</div>` : ''}
           </td>
-          <td>${receiptBtn}</td>
           <td style="text-align: right;">${actionBtn}</td>
         </tr>
       `;
