@@ -10,9 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?20261012060500" />
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="styles.css?20261012101500" />
   </head>
   <body>
     <!-- Decorative background petals -->
@@ -28,7 +26,7 @@
       <header class="portal-header">
         <a href="/verify-payments" class="portal-brand">
           <img
-            src="acts-logo.png?20261012060500"
+            src="acts-logo.png?20261012101500"
             alt="Acts Church Logo"
             class="portal-logo"
           />
@@ -58,25 +56,19 @@
             Access to review receipts and approve attendee registrations is restricted to authorized Google accounts listed in the organizer whitelist.
           </p>
 
-          <div id="googleBtnContainer" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
-
-          <!-- Fallback direct sign-in for testing/environments without GIS client ID configured -->
-          <div id="manualAuthFallback" style="border-top: 1px dashed var(--bloom-border); padding-top: 18px; margin-top: 18px;">
-            <p style="font-size: 0.8rem; color: var(--bloom-text-light); margin-bottom: 10px;">
-              Or sign in with approved admin email:
-            </p>
-            <form id="manualAuthForm" style="display: flex; gap: 8px; justify-content: center; padding: 0; background: none; box-shadow: none; border: none;">
-              <input
-                type="email"
-                id="manualEmailInput"
-                class="filter-input"
-                placeholder="admin@example.com"
-                required
-                style="max-width: 250px;"
-              />
-              <button type="submit" class="btn-action btn-action--approve">Verify Email</button>
-            </form>
-          </div>
+          <form id="manualAuthForm" style="display: flex; flex-direction: column; gap: 12px; max-width: 340px; margin: 0 auto; padding: 0; background: none; box-shadow: none; border: none;">
+            <input
+              type="email"
+              id="manualEmailInput"
+              class="filter-input"
+              placeholder="Enter your authorized Google email"
+              required
+              style="text-align: center; font-size: 0.95rem;"
+            />
+            <button type="submit" class="primary-btn" id="verifyEmailBtn" style="justify-content: center; width: 100%;">
+              Sign In with Authorized Email
+            </button>
+          </form>
 
           <div id="authErrorMessage" style="margin-top: 16px; color: #dc3545; font-size: 0.88rem; font-weight: 500; display: none;"></div>
         </div>
@@ -189,7 +181,7 @@
               <p style="margin: 3px 0;"><strong>Workshop:</strong> <span id="modalAttendeeWorkshop">-</span></p>
             </div>
             <div style="background: #EBF8EE; border-left: 4px solid #28a745; padding: 12px; margin-bottom: 16px; font-size: 0.84rem; color: #155724;">
-              🌸 Approving this payment will automatically send the official <strong>Trilingual Registration &amp; Payment Confirmed Email</strong> to the attendee.
+              🌸 Approving this payment will automatically send the Payment Confirmed email to the attendee.
             </div>
             <div class="field-group">
               <label for="adminNotesInput" style="font-size: 0.82rem; font-weight: 600; color: var(--bloom-text-light);">Optional Note / Reference Code</label>
@@ -237,7 +229,7 @@
       </footer>
     </div>
 
-    <script src="config.js?20261012060500"></script>
-    <script src="verify-payments.js?20261012060500"></script>
+    <script src="config.js?20261012101500"></script>
+    <script src="verify-payments.js?20261012101500"></script>
   </body>
 </html>

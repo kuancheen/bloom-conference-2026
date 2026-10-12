@@ -21,9 +21,9 @@
   const portalMainContent = document.getElementById('portalMainContent');
   const userBadge = document.getElementById('userBadge');
   const authErrorMessage = document.getElementById('authErrorMessage');
-  const googleBtnContainer = document.getElementById('googleBtnContainer');
   const manualAuthForm = document.getElementById('manualAuthForm');
   const manualEmailInput = document.getElementById('manualEmailInput');
+  const verifyEmailBtn = document.getElementById('verifyEmailBtn');
 
   // KPI elements
   const kpiTotal = document.getElementById('kpiTotal');
@@ -67,56 +67,36 @@
   // Initialization & Auth Flow
   // -------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', function () {
-    setupGoogleIdentity();
     setupEventListeners();
 
-    if (currentAdmin.email || currentAdmin.token) {
-      validateAuth(currentAdmin.token, currentAdmin.email);
+    if (currentAdmin.email) {
+      validateAuth(currentAdmin.email);
     } else {
       showAuthGate();
     }
   });
 
-  function setupGoogleIdentity() {
-    if (window.google && config.googleClientId && config.googleClientId !== 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com') {
-      try {
-        google.accounts.id.initialize({
-          client_id: config.googleClientId,
-          callback: handleGoogleCredentialResponse
-        });
-        google.accounts.id.renderButton(googleBtnContainer, {
-          theme: 'outline',
-          size: 'large',
-          text: 'signin_with',
-          shape: 'rectangular',
-          width: 250
-        });
-      } catch (err) {
-        console.warn('Google Identity initialization failed:', err);
-      }
-    }
-  }
-
-  function handleGoogleCredentialResponse(response) {
-    if (!response || !response.credential) return;
-    const token = response.credential;
-    currentAdmin.token = token;
-    localStorage.setItem('bloom_admin_token', token);
-    validateAuth(token, '');
-  }
-
-  function validateAuth(token, email) {
+  function validateAuth(email) {
     const scriptUrl = config.googleScriptUrl;
     if (!scriptUrl) {
       showAuthError('API URL not configured in config.js');
       return;
     }
 
-    const checkUrl = `${scriptUrl}?action=check_auth&token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`;
+    if (verifyEmailBtn) {
+      verifyEmailBtn.disabled = true;
+      verifyEmailBtn.textContent = 'Verifying...';
+    }
+
+    const checkUrl = `${scriptUrl}?action=check_auth&email=${encodeURIComponent(email)}`;
 
     fetch(checkUrl)
       .then(res => res.json())
       .then(data => {
+        if (verifyEmailBtn) {
+          verifyEmailBtn.disabled = false;
+          verifyEmailBtn.textContent = 'Sign In with Authorized Email';
+        }
         if (data.result === 'success' && data.authorized) {
           currentAdmin.isAuthorized = true;
           currentAdmin.email = data.email;
@@ -130,6 +110,10 @@
         }
       })
       .catch(err => {
+        if (verifyEmailBtn) {
+          verifyEmailBtn.disabled = false;
+          verifyEmailBtn.textContent = 'Sign In with Authorized Email';
+        }
         console.error('Auth verification error:', err);
         showAuthError('Failed to verify admin privileges. Please try again.');
         showAuthGate();
@@ -330,18 +314,35 @@
     receiptModalTitle.textContent = `Payment Receipt — ${attendeeName}`;
     openExternalReceiptBtn.href = url;
 
-    // Direct Google Drive preview / image iframe
-    let embedUrl = url;
+    // Extract Drive File ID if present
+    let fileId = '';
     if (url.includes('drive.google.com/file/d/')) {
       const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) {
-        embedUrl = `https://drive.google.com/file/d/${match[1]}/preview`;
-      }
+      if (match && match[1]) fileId = match[1];
+    } else if (url.includes('id=')) {
+      const match = url.match(/id=([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) fileId = match[1];
     }
 
-    receiptPreviewContainer.innerHTML = `
-      <iframe src="${embedUrl}" style="width: 100%; height: 500px; border: 1px solid var(--bloom-border); border-radius: var(--radius-sm);" allow="autoplay"></iframe>
-    `;
+    if (fileId) {
+      // Use Google Drive direct thumbnail / preview image which doesn't trigger CSP framing blocking
+      const directImgUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+      receiptPreviewContainer.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%;">
+          <div style="max-height: 480px; width: 100%; overflow: auto; display: flex; justify-content: center; background: #fdfdfd; border-radius: var(--radius-sm); border: 1px solid var(--bloom-border); padding: 8px;">
+            <img src="${directImgUrl}" alt="Payment Receipt" style="max-width: 100%; height: auto; object-fit: contain; border-radius: 4px;" onerror="this.style.display='none'; document.getElementById('receiptFallbackNotice').style.display='block';" />
+          </div>
+          <div id="receiptFallbackNotice" style="display: none; padding: 16px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: var(--radius-sm); color: #856404; font-size: 0.88rem; width: 100%;">
+            📄 This document is a PDF or private document that Google Drive protects from in-page preview. Please click the button below to view it directly in Google Drive.
+          </div>
+        </div>
+      `;
+    } else {
+      receiptPreviewContainer.innerHTML = `
+        <p style="color: var(--bloom-text-light); margin-bottom: 12px;">Click below to open payment proof in Google Drive:</p>
+        <a href="${escapeHtml(url)}" target="_blank" class="primary-btn" style="display: inline-flex;">↗ Open Receipt in Drive</a>
+      `;
+    }
 
     receiptModal.classList.add('is-visible');
     receiptModal.setAttribute('aria-hidden', 'false');
