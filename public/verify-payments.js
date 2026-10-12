@@ -420,8 +420,8 @@
       const directImgUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
       modalReceiptContainer.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; min-height: 200px;">
-          <div id="receiptImgWrapper" style="width: 100%; overflow: auto; display: flex; justify-content: center; background: #fff; border-radius: var(--radius-sm); padding: 4px;">
-            <img id="receiptImg" src="${directImgUrl}" alt="Payment Receipt" style="width: 100%; max-width: 100%; object-fit: contain; border-radius: 4px; transform-origin: top center; transition: transform 0.15s ease;" onerror="this.style.display='none'; document.getElementById('modalReceiptPdfNotice').style.display='block';" />
+          <div id="receiptImgWrapper" style="width: 100%; overflow: auto; display: flex; justify-content: center; align-items: flex-start; background: #fff; border-radius: var(--radius-sm); padding: 4px;">
+            <img id="receiptImg" src="${directImgUrl}" alt="Payment Receipt" style="max-width: 100%; max-height: 370px; object-fit: contain; border-radius: 4px; transform-origin: top center; transition: transform 0.15s ease;" onerror="this.style.display='none'; document.getElementById('modalReceiptPdfNotice').style.display='block';" />
           </div>
           <div id="modalReceiptPdfNotice" style="display: none; padding: 12px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: var(--radius-sm); color: #856404; font-size: 0.84rem; width: 100%; text-align: center;">
             📄 PDF or private document detected. Click "Open in Google Drive" above to view.
