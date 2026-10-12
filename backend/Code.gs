@@ -49,7 +49,8 @@ var HEADERS = [
   'Submission ID',
   'Admin Notes',
   'Email Sent Timestamp',
-  'Email Error Note'
+  'Email Error Note',
+  'Payment Verified Email Sent Timestamp'
 ];
 
 /**
@@ -1120,6 +1121,12 @@ function handleApprovePayment(data) {
       try {
         sendPaymentVerifiedEmail(registrant);
         emailSent = true;
+        // Record timestamp in Column R (col index 18, 1-based)
+        var verifiedEmailTsCol = colMap['payment verified email sent timestamp'] !== undefined
+          ? (colMap['payment verified email sent timestamp'] + 1)
+          : 18; // Default Column R
+        var emailSentDate = new Date();
+        regSheet.getRange(targetRow, verifiedEmailTsCol).setValue(emailSentDate);
       } catch (err) {
         console.error('Payment verified email failed: ' + err.toString());
         emailError = err.toString();
