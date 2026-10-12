@@ -16,6 +16,9 @@
   let allPayments = [];
   let activeTab = 'pending'; // 'pending' | 'verified' | 'all'
   let activeItemToApprove = null;
+  let currentFilteredList = []; // Tracks the currently visible (filtered) list for modal nav
+  let currentModalIndex = -1;   // Index of the open item in currentFilteredList
+  let currentZoom = 1;          // Receipt image zoom level
 
   // DOM Elements
   const authGateSection = document.getElementById('authGateSection');
@@ -55,6 +58,13 @@
   const modalReceiptContainer = document.getElementById('modalReceiptContainer');
   const modalExternalReceiptBtn = document.getElementById('modalExternalReceiptBtn');
   const adminNotesInput = document.getElementById('adminNotesInput');
+  const modalPrevBtn = document.getElementById('modalPrevBtn');
+  const modalNextBtn = document.getElementById('modalNextBtn');
+  const modalNavCounter = document.getElementById('modalNavCounter');
+  const zoomInBtn = document.getElementById('zoomInBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
+  const zoomResetBtn = document.getElementById('zoomResetBtn');
+  const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
 
   const config = window.APP_CONFIG || {};
 
@@ -146,6 +156,19 @@
     if (!scriptUrl) {
       showAuthError('API URL not configured in config.js');
       return;
+    }
+
+    // If name not yet known, try to decode it from the JWT payload now
+    if (!currentAdmin.name && token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        currentAdmin.name = payload.name || payload.given_name || '';
+        if (currentAdmin.name) {
+          localStorage.setItem('bloom_admin_name', currentAdmin.name);
+        }
+      } catch (e) {
+        // Non-critical — will fall back to email in the badge
+      }
     }
 
     showAuthError('');
@@ -327,7 +350,6 @@
           <td>${badge}</td>
           <td>
             <strong>${escapeHtml(item.fullName)}</strong>
-            ${item.firstBloom === 'Yes' ? '<span style="font-size:0.75rem; background: var(--bloom-peach-lt); padding:2px 6px; border-radius:4px; margin-left:4px;">🌸 1st Bloom</span>' : ''}
             <div style="font-size: 0.78rem; color: var(--bloom-text-light);">${escapeHtml(item.timestamp)}</div>
           </td>
           <td>
@@ -343,15 +365,13 @@
       `;
     }).join('');
 
+    // Save the current filtered list for modal navigation
+    currentFilteredList = filtered;
+
     // Attach row click listeners (entire row clickable)
-    document.querySelectorAll('.payment-row').forEach(row => {
+    document.querySelectorAll('.payment-row').forEach((row, idx) => {
       row.addEventListener('click', function (e) {
-        const subId = this.getAttribute('data-id');
-        const rowIdx = this.getAttribute('data-row');
-        const item = allPayments.find(p => p.submissionId === subId || String(p.rowIndex) === String(rowIdx));
-        if (item) {
-          openReviewModal(item);
-        }
+        openReviewModal(currentFilteredList[idx], idx);
       });
     });
   }
@@ -359,13 +379,28 @@
   // -------------------------------------------------------------
   // Consolidated Review & Approval Modal
   // -------------------------------------------------------------
-  function openReviewModal(item) {
+  function openReviewModal(item, index) {
+    if (!item) return;
     activeItemToApprove = item;
+    currentModalIndex = (index !== undefined) ? index : currentFilteredList.indexOf(item);
+
     modalAttendeeName.textContent = item.fullName;
     modalAttendeeEmail.textContent = item.email;
     modalAttendeeChurch.textContent = item.churchPlant;
     modalAttendeeHomesCode.textContent = item.homesCode || '-';
     adminNotesInput.value = item.adminNotes || '';
+
+    // Update prev/next navigation
+    const total = currentFilteredList.length;
+    modalNavCounter.textContent = total > 1 ? `${currentModalIndex + 1} / ${total}` : '';
+    modalPrevBtn.disabled = currentModalIndex <= 0;
+    modalNextBtn.disabled = currentModalIndex >= total - 1;
+    modalPrevBtn.style.opacity = currentModalIndex <= 0 ? '0.4' : '1';
+    modalNextBtn.style.opacity = currentModalIndex >= total - 1 ? '0.4' : '1';
+
+    // Reset zoom when navigating to a new record
+    currentZoom = 1;
+    if (zoomLevelDisplay) zoomLevelDisplay.textContent = '100%';
 
     // Receipt preview
     const url = item.paymentUrl || '';
@@ -384,9 +419,9 @@
     if (fileId) {
       const directImgUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
       modalReceiptContainer.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
-          <div style="max-height: 340px; width: 100%; overflow: auto; display: flex; justify-content: center; background: #fff; border-radius: var(--radius-sm); padding: 4px;">
-            <img src="${directImgUrl}" alt="Payment Receipt" style="max-width: 100%; max-height: 320px; object-fit: contain; border-radius: 4px;" onerror="this.style.display='none'; document.getElementById('modalReceiptPdfNotice').style.display='block';" />
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; min-height: 200px;">
+          <div id="receiptImgWrapper" style="width: 100%; overflow: auto; display: flex; justify-content: center; background: #fff; border-radius: var(--radius-sm); padding: 4px;">
+            <img id="receiptImg" src="${directImgUrl}" alt="Payment Receipt" style="width: 100%; max-width: 100%; object-fit: contain; border-radius: 4px; transform-origin: top center; transition: transform 0.15s ease;" onerror="this.style.display='none'; document.getElementById('modalReceiptPdfNotice').style.display='block';" />
           </div>
           <div id="modalReceiptPdfNotice" style="display: none; padding: 12px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: var(--radius-sm); color: #856404; font-size: 0.84rem; width: 100%; text-align: center;">
             📄 PDF or private document detected. Click "Open in Google Drive" above to view.
@@ -429,6 +464,22 @@
     approvalModal.setAttribute('aria-hidden', 'true');
     modalReceiptContainer.innerHTML = '';
     activeItemToApprove = null;
+  }
+
+  function applyZoom() {
+    const img = document.getElementById('receiptImg');
+    if (img) {
+      img.style.transform = `scale(${currentZoom})`;
+      img.style.transformOrigin = 'top center';
+      // When zoomed in, allow overflow scroll; when at/below 1, re-center
+      const wrapper = document.getElementById('receiptImgWrapper');
+      if (wrapper) {
+        wrapper.style.justifyContent = currentZoom > 1 ? 'flex-start' : 'center';
+      }
+    }
+    if (zoomLevelDisplay) {
+      zoomLevelDisplay.textContent = Math.round(currentZoom * 100) + '%';
+    }
   }
 
   function executeApproval() {
@@ -505,10 +556,45 @@
     cancelApprovalBtn.addEventListener('click', closeApprovalModal);
     confirmApprovalBtn.addEventListener('click', executeApproval);
 
-    // Escape key modal close
+    // Modal prev/next navigation
+    modalPrevBtn.addEventListener('click', function () {
+      if (currentModalIndex > 0) {
+        openReviewModal(currentFilteredList[currentModalIndex - 1], currentModalIndex - 1);
+      }
+    });
+    modalNextBtn.addEventListener('click', function () {
+      if (currentModalIndex < currentFilteredList.length - 1) {
+        openReviewModal(currentFilteredList[currentModalIndex + 1], currentModalIndex + 1);
+      }
+    });
+
+    // Zoom controls
+    zoomInBtn.addEventListener('click', function () {
+      currentZoom = Math.min(currentZoom + 0.25, 4);
+      applyZoom();
+    });
+    zoomOutBtn.addEventListener('click', function () {
+      currentZoom = Math.max(currentZoom - 0.25, 0.25);
+      applyZoom();
+    });
+    zoomResetBtn.addEventListener('click', function () {
+      currentZoom = 1;
+      applyZoom();
+    });
+
+    // Escape key modal close; Arrow keys for navigation inside modal
     window.addEventListener('keydown', function (e) {
+      if (!approvalModal.classList.contains('is-visible')) return;
       if (e.key === 'Escape') {
         closeApprovalModal();
+      } else if (e.key === 'ArrowLeft') {
+        if (currentModalIndex > 0) {
+          openReviewModal(currentFilteredList[currentModalIndex - 1], currentModalIndex - 1);
+        }
+      } else if (e.key === 'ArrowRight') {
+        if (currentModalIndex < currentFilteredList.length - 1) {
+          openReviewModal(currentFilteredList[currentModalIndex + 1], currentModalIndex + 1);
+        }
       }
     });
   }
