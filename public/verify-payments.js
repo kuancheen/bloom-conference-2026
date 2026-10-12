@@ -419,11 +419,11 @@
     if (fileId) {
       const directImgUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
       modalReceiptContainer.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; min-height: 200px;">
-          <div id="receiptImgWrapper" style="width: 100%; overflow: auto; display: flex; justify-content: center; align-items: flex-start; background: #fff; border-radius: var(--radius-sm); padding: 4px; cursor: grab;">
-            <img id="receiptImg" src="${directImgUrl}" alt="Payment Receipt" style="max-width: 100%; max-height: 370px; height: auto; object-fit: contain; border-radius: 4px; display: block;" onerror="this.style.display='none'; document.getElementById('modalReceiptPdfNotice').style.display='block';" />
+        <div style="width: 100%; min-height: 200px;">
+          <div id="receiptImgWrapper" style="width: 100%; overflow: auto; background: #fff; border-radius: var(--radius-sm); padding: 4px; text-align: center; max-height: 380px;">
+            <img id="receiptImg" src="${directImgUrl}" alt="Payment Receipt" style="max-width: 100%; max-height: 370px; height: auto; display: inline-block; border-radius: 4px;" onerror="this.style.display='none'; document.getElementById('modalReceiptPdfNotice').style.display='block';" />
           </div>
-          <div id="modalReceiptPdfNotice" style="display: none; padding: 12px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: var(--radius-sm); color: #856404; font-size: 0.84rem; width: 100%; text-align: center;">
+          <div id="modalReceiptPdfNotice" style="display: none; padding: 12px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: var(--radius-sm); color: #856404; font-size: 0.84rem; width: 100%; text-align: center; margin-top: 8px;">
             📄 PDF or private document detected. Click "Open in Google Drive" above to view.
           </div>
         </div>
@@ -469,12 +469,17 @@
   function applyZoom() {
     const img = document.getElementById('receiptImg');
     if (img) {
-      // Scale by changing the image's rendered width — the scrollable wrapper
-      // handles panning naturally via overflow:auto scroll
-      const pct = Math.round(currentZoom * 100) + '%';
-      img.style.width = pct;
-      img.style.maxWidth = 'none'; // allow exceeding container width when zoomed
-      img.style.maxHeight = currentZoom <= 1 ? '370px' : 'none';
+      if (currentZoom <= 1) {
+        // Fit to container — restore natural constrained sizing
+        img.style.width = '';
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '370px';
+      } else {
+        // Zoom: expand width beyond container so wrapper's overflow:auto scrolls
+        img.style.width = Math.round(currentZoom * 100) + '%';
+        img.style.maxWidth = 'none';
+        img.style.maxHeight = 'none';
+      }
     }
     if (zoomLevelDisplay) {
       zoomLevelDisplay.textContent = Math.round(currentZoom * 100) + '%';
@@ -549,6 +554,17 @@
     refreshBtn.addEventListener('click', function () {
       loadPaymentsData();
     });
+
+    // Mobile hamburger menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const portalNav = document.getElementById('portalNav');
+    if (mobileMenuBtn && portalNav) {
+      mobileMenuBtn.addEventListener('click', function () {
+        const isOpen = portalNav.classList.toggle('nav-open');
+        this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        this.textContent = isOpen ? '✕' : '☰';
+      });
+    }
 
     // Modal controls
     closeApprovalModalBtn.addEventListener('click', closeApprovalModal);
