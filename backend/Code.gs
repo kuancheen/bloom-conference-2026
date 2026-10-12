@@ -594,6 +594,9 @@ function doPost(e) {
       emailError = err.toString();
     }
 
+    // Capitalize each word of Full Name
+    var formattedFullName = toTitleCase(data.fullName || '');
+
     // Write to sheet
     var sheet = getOrCreateSheet('Registration');
     var submissionId = Utilities.getUuid();
@@ -602,7 +605,7 @@ function doPost(e) {
     sheet.appendRow([
       timestamp,
       data.emailAddress  || '',
-      data.fullName      || '',
+      formattedFullName,
       data.phoneNumber   || '',
       data.ageRange      || '',
       data.maritalStatus || '',
@@ -658,6 +661,16 @@ function uploadPaymentProof(data) {
     Logger.log('File upload failed: ' + uploadErr.toString());
     return 'Upload failed: ' + uploadErr.message;
   }
+}
+
+/**
+ * Converts a string to Title Case (Each Word Capitalized).
+ */
+function toTitleCase(str) {
+  if (!str) return '';
+  return str.toString().trim().toLowerCase().replace(/(?:^|\s|-)\S/g, function(a) {
+    return a.toUpperCase();
+  });
 }
 
 /**
@@ -1155,10 +1168,13 @@ function sendPaymentVerifiedEmail(data) {
   var workshopMap = {
     'beautiful': 'Beautiful Inside Out / 由内而外的美丽 / Cantik dari Dalam ke Luar',
     'cars': 'Cars 101 / 车辆的基本维护 / Asas Penjagaan Kereta',
-    'none': 'None / 无 / Tiada'
+    'journalling': 'Creative Bible Journalling / 创意圣经灵修日记 + 手帐 / Jurnal Alkitab Kreatif',
+    'menopause': 'Preparing For Menopause / 为更年期做预备 / Persediaan Menghadapi Menopaus',
+    'scam': 'Scam Prevention Awareness / 提升反诈骗意识 / Kesedaran Pencegahan Penipuan',
+    'none': "[I'm not able to attend] | [抱歉，不能参与] | [Maaf, saya tidak dapat hadir]"
   };
 
-  var workshopDisplay = workshopMap[(data.workshop || '').toLowerCase()] || data.workshop || 'None / 无 / Tiada';
+  var workshopDisplay = workshopMap[(data.workshop || '').toLowerCase()] || data.workshop || '-';
   var churchDisplay = data.churchPlant || '-';
   var homesCodeDisplay = data.homesCode || '-';
 
@@ -1210,10 +1226,6 @@ function sendPaymentVerifiedEmail(data) {
       <p style="margin: 5px 0; font-size: 14px;"><strong>Time / 时间 / Masa:</strong> 9.30am – 5.00pm</p>
       <p style="margin: 5px 0; font-size: 14px;"><strong>Venue / 地点 / Lokasi:</strong> Bible College of Malaysia, Petaling Jaya</p>
     </div>
-
-    <p style="font-size: 14px; line-height: 1.6; color: #3C2B35;">We can't wait to see you flourish and bloom together at Bloom Conference 2026!</p>
-    <p style="font-size: 14px; line-height: 1.6; color: #7A5F6F; margin-top: 4px;">期待与你在 Bloom 2026 相见，一同绽放！</p>
-    <p style="font-size: 14px; line-height: 1.6; color: #7A5F6F; margin-top: 4px;">Kami tidak sabar untuk melihat anda mekar bersama di Bloom Conference 2026!</p>
 
     <!-- Footer -->
     <div style="margin-top: 30px; font-size: 13px; color: #7A5F6F; border-top: 1px solid #E8D0D8; padding-top: 20px; text-align: center; line-height: 1.6;">

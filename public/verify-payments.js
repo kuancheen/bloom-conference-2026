@@ -21,9 +21,8 @@
   const portalMainContent = document.getElementById('portalMainContent');
   const userBadge = document.getElementById('userBadge');
   const authErrorMessage = document.getElementById('authErrorMessage');
-  const manualAuthForm = document.getElementById('manualAuthForm');
-  const manualEmailInput = document.getElementById('manualEmailInput');
-  const verifyEmailBtn = document.getElementById('verifyEmailBtn');
+  const googleBtnContainer = document.getElementById('googleBtnContainer');
+  const missingClientIdNotice = document.getElementById('missingClientIdNotice');
 
   // KPI elements
   const kpiTotal = document.getElementById('kpiTotal');
@@ -43,7 +42,7 @@
   // Table
   const paymentsTableBody = document.getElementById('paymentsTableBody');
 
-  // Modals
+  // Consolidated Modal Elements
   const approvalModal = document.getElementById('approvalModal');
   const closeApprovalModalBtn = document.getElementById('closeApprovalModalBtn');
   const cancelApprovalBtn = document.getElementById('cancelApprovalBtn');
@@ -51,15 +50,10 @@
   const modalAttendeeName = document.getElementById('modalAttendeeName');
   const modalAttendeeEmail = document.getElementById('modalAttendeeEmail');
   const modalAttendeeChurch = document.getElementById('modalAttendeeChurch');
-  const modalAttendeeWorkshop = document.getElementById('modalAttendeeWorkshop');
+  const modalAttendeeHomesCode = document.getElementById('modalAttendeeHomesCode');
+  const modalReceiptContainer = document.getElementById('modalReceiptContainer');
+  const modalExternalReceiptBtn = document.getElementById('modalExternalReceiptBtn');
   const adminNotesInput = document.getElementById('adminNotesInput');
-
-  const receiptModal = document.getElementById('receiptModal');
-  const receiptModalTitle = document.getElementById('receiptModalTitle');
-  const receiptPreviewContainer = document.getElementById('receiptPreviewContainer');
-  const closeReceiptModalBtn = document.getElementById('closeReceiptModalBtn');
-  const closeReceiptFooterBtn = document.getElementById('closeReceiptFooterBtn');
-  const openExternalReceiptBtn = document.getElementById('openExternalReceiptBtn');
 
   const config = window.APP_CONFIG || {};
 
@@ -68,35 +62,85 @@
   // -------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', function () {
     setupEventListeners();
+    setupGoogleIdentity();
 
-    if (currentAdmin.email) {
-      validateAuth(currentAdmin.email);
+    if (currentAdmin.token) {
+      validateAuth(currentAdmin.token);
     } else {
       showAuthGate();
     }
   });
 
-  function validateAuth(email) {
+  function setupGoogleIdentity() {
+    const clientId = config.googleClientId;
+
+    if (!clientId || clientId.includes('YOUR_')) {
+      if (missingClientIdNotice) missingClientIdNotice.style.display = 'block';
+      return;
+    }
+
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+      initGsiButton(clientId);
+    } else {
+      // Retry if GIS script is still loading
+      const checkInterval = setInterval(function () {
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+          clearInterval(checkInterval);
+          initGsiButton(clientId);
+        }
+      }, 100);
+      setTimeout(function () { clearInterval(checkInterval); }, 5000);
+    }
+  }
+
+  function initGsiButton(clientId) {
+    try {
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleCredentialResponse,
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+
+      google.accounts.id.renderButton(googleBtnContainer, {
+        theme: 'outline',
+        size: 'large',
+        type: 'standard',
+        text: 'signin_with',
+        shape: 'rectangular',
+        logo_alignment: 'left',
+        width: 280
+      });
+    } catch (err) {
+      console.error('Error initializing Google Identity:', err);
+      showAuthError('Failed to initialize Google Sign-In: ' + err.message);
+    }
+  }
+
+  function handleGoogleCredentialResponse(response) {
+    if (!response || !response.credential) {
+      showAuthError('No Google credential returned. Please try again.');
+      return;
+    }
+    const token = response.credential;
+    currentAdmin.token = token;
+    localStorage.setItem('bloom_admin_token', token);
+    validateAuth(token);
+  }
+
+  function validateAuth(token) {
     const scriptUrl = config.googleScriptUrl;
     if (!scriptUrl) {
       showAuthError('API URL not configured in config.js');
       return;
     }
 
-    if (verifyEmailBtn) {
-      verifyEmailBtn.disabled = true;
-      verifyEmailBtn.textContent = 'Verifying...';
-    }
-
-    const checkUrl = `${scriptUrl}?action=check_auth&email=${encodeURIComponent(email)}`;
+    showAuthError('');
+    const checkUrl = `${scriptUrl}?action=check_auth&token=${encodeURIComponent(token)}`;
 
     fetch(checkUrl)
       .then(res => res.json())
       .then(data => {
-        if (verifyEmailBtn) {
-          verifyEmailBtn.disabled = false;
-          verifyEmailBtn.textContent = 'Sign In with Authorized Email';
-        }
         if (data.result === 'success' && data.authorized) {
           currentAdmin.isAuthorized = true;
           currentAdmin.email = data.email;
@@ -110,10 +154,6 @@
         }
       })
       .catch(err => {
-        if (verifyEmailBtn) {
-          verifyEmailBtn.disabled = false;
-          verifyEmailBtn.textContent = 'Sign In with Authorized Email';
-        }
         console.error('Auth verification error:', err);
         showAuthError('Failed to verify admin privileges. Please try again.');
         showAuthGate();
@@ -127,6 +167,11 @@
   }
 
   function showAuthError(msg) {
+    if (!msg) {
+      authErrorMessage.textContent = '';
+      authErrorMessage.style.display = 'none';
+      return;
+    }
     authErrorMessage.textContent = msg;
     authErrorMessage.style.display = 'block';
   }
@@ -150,6 +195,9 @@
     localStorage.removeItem('bloom_admin_email');
     localStorage.removeItem('bloom_admin_token');
     currentAdmin = { email: '', token: '', isAuthorized: false };
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+      google.accounts.id.disableAutoSelect();
+    }
     showAuthGate();
   }
 
@@ -162,7 +210,7 @@
 
     paymentsTableBody.innerHTML = `
       <tr>
-        <td colspan="8">
+        <td colspan="7">
           <div class="state-box">
             <div class="state-spinner"></div>
             <p>Loading registrations for verification...</p>
@@ -171,7 +219,7 @@
       </tr>
     `;
 
-    const getUrl = `${scriptUrl}?action=get_payments&token=${encodeURIComponent(currentAdmin.token)}&email=${encodeURIComponent(currentAdmin.email)}`;
+    const getUrl = `${scriptUrl}?action=get_payments&token=${encodeURIComponent(currentAdmin.token)}`;
 
     fetch(getUrl)
       .then(res => res.json())
@@ -183,7 +231,7 @@
         } else {
           paymentsTableBody.innerHTML = `
             <tr>
-              <td colspan="8">
+              <td colspan="7">
                 <div class="state-box" style="color: #dc3545;">
                   <p>⚠️ ${escapeHtml(data.error || 'Failed to load registration records.')}</p>
                 </div>
@@ -195,7 +243,7 @@
       .catch(err => {
         paymentsTableBody.innerHTML = `
           <tr>
-            <td colspan="8">
+            <td colspan="7">
               <div class="state-box" style="color: #dc3545;">
                 <p>⚠️ Connection error: ${escapeHtml(err.message)}</p>
               </div>
@@ -232,14 +280,14 @@
 
       // Text search
       if (!query) return true;
-      const haystack = `${item.fullName} ${item.email} ${item.churchPlant} ${item.phone}`.toLowerCase();
+      const haystack = `${item.fullName} ${item.email} ${item.churchPlant} ${item.phone} ${item.homesCode}`.toLowerCase();
       return haystack.includes(query);
     });
 
     if (filtered.length === 0) {
       paymentsTableBody.innerHTML = `
         <tr>
-          <td colspan="8">
+          <td colspan="7">
             <div class="state-box">
               <p>No registration records match the current filter.</p>
             </div>
@@ -255,15 +303,15 @@
         : `<span class="status-badge status-badge--pending">⏳ Pending Review</span>`;
 
       const receiptBtn = item.paymentUrl && item.paymentUrl.startsWith('http')
-        ? `<button type="button" class="btn-action btn-action--view view-receipt-btn" data-url="${escapeHtml(item.paymentUrl)}" data-name="${escapeHtml(item.fullName)}">📄 View Receipt</button>`
+        ? `<button type="button" class="btn-action btn-action--view open-modal-btn" data-id="${escapeHtml(item.submissionId)}" data-row="${item.rowIndex}">📄 View Receipt</button>`
         : `<span style="color: var(--bloom-text-light); font-size: 0.82rem;">None</span>`;
 
       const actionBtn = item.isVerified
-        ? `<button type="button" class="btn-action" disabled style="background: #e9ecef; color: #6c757d;">Approved</button>`
-        : `<button type="button" class="btn-action btn-action--approve approve-payment-btn" data-id="${escapeHtml(item.submissionId)}" data-row="${item.rowIndex}">Approve</button>`;
+        ? `<button type="button" class="btn-action open-modal-btn" data-id="${escapeHtml(item.submissionId)}" data-row="${item.rowIndex}" style="background: #e9ecef; color: #6c757d;">View Details</button>`
+        : `<button type="button" class="btn-action btn-action--approve open-modal-btn" data-id="${escapeHtml(item.submissionId)}" data-row="${item.rowIndex}">Approve</button>`;
 
       return `
-        <tr>
+        <tr class="payment-row clickable-row" data-id="${escapeHtml(item.submissionId)}" data-row="${item.rowIndex}" style="cursor: pointer;" title="Click row to review & approve payment">
           <td><span style="font-size: 0.8rem; color: var(--bloom-text-light);">${index + 1}</span></td>
           <td>${badge}</td>
           <td>
@@ -279,42 +327,41 @@
             <div>${escapeHtml(item.churchPlant)}</div>
             ${item.homesCode && item.homesCode !== '-' ? `<div style="font-size: 0.78rem; color: var(--bloom-text-light);">Homes: ${escapeHtml(item.homesCode)}</div>` : ''}
           </td>
-          <td>
-            <span style="font-size: 0.84rem;">${escapeHtml(item.workshop || 'None')}</span>
-          </td>
           <td>${receiptBtn}</td>
           <td style="text-align: right;">${actionBtn}</td>
         </tr>
       `;
     }).join('');
 
-    // Attach event listeners for row actions
-    document.querySelectorAll('.view-receipt-btn').forEach(btn => {
-      btn.addEventListener('click', function () {
-        openReceiptModal(this.getAttribute('data-url'), this.getAttribute('data-name'));
-      });
-    });
-
-    document.querySelectorAll('.approve-payment-btn').forEach(btn => {
-      btn.addEventListener('click', function () {
+    // Attach row click listeners (entire row clickable)
+    document.querySelectorAll('.payment-row').forEach(row => {
+      row.addEventListener('click', function (e) {
         const subId = this.getAttribute('data-id');
         const rowIdx = this.getAttribute('data-row');
         const item = allPayments.find(p => p.submissionId === subId || String(p.rowIndex) === String(rowIdx));
         if (item) {
-          openApprovalModal(item);
+          openReviewModal(item);
         }
       });
     });
   }
 
   // -------------------------------------------------------------
-  // Modals & Actions
+  // Consolidated Review & Approval Modal
   // -------------------------------------------------------------
-  function openReceiptModal(url, attendeeName) {
-    receiptModalTitle.textContent = `Payment Receipt — ${attendeeName}`;
-    openExternalReceiptBtn.href = url;
+  function openReviewModal(item) {
+    activeItemToApprove = item;
+    modalAttendeeName.textContent = item.fullName;
+    modalAttendeeEmail.textContent = item.email;
+    modalAttendeeChurch.textContent = item.churchPlant;
+    modalAttendeeHomesCode.textContent = item.homesCode || '-';
+    adminNotesInput.value = item.adminNotes || '';
 
-    // Extract Drive File ID if present
+    // Receipt preview
+    const url = item.paymentUrl || '';
+    modalExternalReceiptBtn.href = url || '#';
+    modalExternalReceiptBtn.style.display = url ? 'inline-flex' : 'none';
+
     let fileId = '';
     if (url.includes('drive.google.com/file/d/')) {
       const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -325,45 +372,40 @@
     }
 
     if (fileId) {
-      // Use Google Drive direct thumbnail / preview image which doesn't trigger CSP framing blocking
       const directImgUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
-      receiptPreviewContainer.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%;">
-          <div style="max-height: 480px; width: 100%; overflow: auto; display: flex; justify-content: center; background: #fdfdfd; border-radius: var(--radius-sm); border: 1px solid var(--bloom-border); padding: 8px;">
-            <img src="${directImgUrl}" alt="Payment Receipt" style="max-width: 100%; height: auto; object-fit: contain; border-radius: 4px;" onerror="this.style.display='none'; document.getElementById('receiptFallbackNotice').style.display='block';" />
+      modalReceiptContainer.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
+          <div style="max-height: 340px; width: 100%; overflow: auto; display: flex; justify-content: center; background: #fff; border-radius: var(--radius-sm); padding: 4px;">
+            <img src="${directImgUrl}" alt="Payment Receipt" style="max-width: 100%; max-height: 320px; object-fit: contain; border-radius: 4px;" onerror="this.style.display='none'; document.getElementById('modalReceiptPdfNotice').style.display='block';" />
           </div>
-          <div id="receiptFallbackNotice" style="display: none; padding: 16px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: var(--radius-sm); color: #856404; font-size: 0.88rem; width: 100%;">
-            📄 This document is a PDF or private document that Google Drive protects from in-page preview. Please click the button below to view it directly in Google Drive.
+          <div id="modalReceiptPdfNotice" style="display: none; padding: 12px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: var(--radius-sm); color: #856404; font-size: 0.84rem; width: 100%; text-align: center;">
+            📄 PDF or private document detected. Click "Open in Google Drive" above to view.
           </div>
         </div>
       `;
+    } else if (url) {
+      modalReceiptContainer.innerHTML = `
+        <div style="text-align: center; padding: 16px;">
+          <p style="color: var(--bloom-text-light); margin-bottom: 10px;">Payment link available in Google Drive:</p>
+          <a href="${escapeHtml(url)}" target="_blank" class="btn-action btn-action--view">↗ View Receipt File</a>
+        </div>
+      `;
     } else {
-      receiptPreviewContainer.innerHTML = `
-        <p style="color: var(--bloom-text-light); margin-bottom: 12px;">Click below to open payment proof in Google Drive:</p>
-        <a href="${escapeHtml(url)}" target="_blank" class="primary-btn" style="display: inline-flex;">↗ Open Receipt in Drive</a>
+      modalReceiptContainer.innerHTML = `
+        <p style="color: var(--bloom-text-light); font-size: 0.88rem;">No payment receipt URL provided.</p>
       `;
     }
 
-    receiptModal.classList.add('is-visible');
-    receiptModal.setAttribute('aria-hidden', 'false');
-  }
-
-  function closeReceiptModal() {
-    if (document.activeElement && receiptModal.contains(document.activeElement)) {
-      document.activeElement.blur();
+    // Toggle button state if already verified
+    if (item.isVerified) {
+      confirmApprovalBtn.textContent = '✅ Already Approved';
+      confirmApprovalBtn.disabled = true;
+      confirmApprovalBtn.style.background = '#6c757d';
+    } else {
+      confirmApprovalBtn.textContent = '✅ Approve & Send Email';
+      confirmApprovalBtn.disabled = false;
+      confirmApprovalBtn.style.background = '#28a745';
     }
-    receiptModal.classList.remove('is-visible');
-    receiptModal.setAttribute('aria-hidden', 'true');
-    receiptPreviewContainer.innerHTML = '';
-  }
-
-  function openApprovalModal(item) {
-    activeItemToApprove = item;
-    modalAttendeeName.textContent = item.fullName;
-    modalAttendeeEmail.textContent = item.email;
-    modalAttendeeChurch.textContent = item.churchPlant;
-    modalAttendeeWorkshop.textContent = item.workshop || 'None';
-    adminNotesInput.value = '';
 
     approvalModal.classList.add('is-visible');
     approvalModal.setAttribute('aria-hidden', 'false');
@@ -375,11 +417,12 @@
     }
     approvalModal.classList.remove('is-visible');
     approvalModal.setAttribute('aria-hidden', 'true');
+    modalReceiptContainer.innerHTML = '';
     activeItemToApprove = null;
   }
 
   function executeApproval() {
-    if (!activeItemToApprove) return;
+    if (!activeItemToApprove || activeItemToApprove.isVerified) return;
 
     confirmApprovalBtn.disabled = true;
     confirmApprovalBtn.textContent = 'Processing & Sending Email...';
@@ -387,7 +430,6 @@
     const payload = {
       action: 'approve_payment',
       token: currentAdmin.token,
-      adminEmail: currentAdmin.email,
       submissionId: activeItemToApprove.submissionId,
       rowIndex: activeItemToApprove.rowIndex,
       notes: adminNotesInput.value.trim()
@@ -428,17 +470,6 @@
   // Event Listeners
   // -------------------------------------------------------------
   function setupEventListeners() {
-    // Manual Email Form
-    if (manualAuthForm) {
-      manualAuthForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const email = manualEmailInput.value.trim();
-        if (email) {
-          validateAuth(email);
-        }
-      });
-    }
-
     // Tabs
     [tabPending, tabVerified, tabAll].forEach(btn => {
       btn.addEventListener('click', function () {
@@ -464,14 +495,10 @@
     cancelApprovalBtn.addEventListener('click', closeApprovalModal);
     confirmApprovalBtn.addEventListener('click', executeApproval);
 
-    closeReceiptModalBtn.addEventListener('click', closeReceiptModal);
-    closeReceiptFooterBtn.addEventListener('click', closeReceiptModal);
-
     // Escape key modal close
     window.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
         closeApprovalModal();
-        closeReceiptModal();
       }
     });
   }
