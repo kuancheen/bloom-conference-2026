@@ -594,8 +594,9 @@ function doPost(e) {
       emailError = err.toString();
     }
 
-    // Capitalize each word of Full Name
+    // Format Full Name (Title Case) and Homes Code (All Caps + padded zero)
     var formattedFullName = toTitleCase(data.fullName || '');
+    var formattedHomesCode = formatHomesCode(data.homesCode || '');
 
     // Write to sheet
     var sheet = getOrCreateSheet('Registration');
@@ -611,7 +612,7 @@ function doPost(e) {
       data.maritalStatus || '',
       data.churchPlant   || '',
       data.churchPlantOther || '',
-      data.homesCode     || '',
+      formattedHomesCode,
       data.workshop      || '',
       data.firstBloom    || '',
       fileUrl,
@@ -671,6 +672,15 @@ function toTitleCase(str) {
   return str.toString().trim().toLowerCase().replace(/(?:^|\s|-)\S/g, function(a) {
     return a.toUpperCase();
   });
+}
+
+/**
+ * Normalizes Homes Code to uppercase and pads single-digit suffixes with leading zero (e.g. SK1 -> SK01, KK2 -> KK02).
+ */
+function formatHomesCode(str) {
+  if (!str) return '';
+  var trimmed = str.toString().trim().toUpperCase();
+  return trimmed.replace(/^([A-Z]+)(\d)$/, '$10$2');
 }
 
 /**

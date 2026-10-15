@@ -1117,6 +1117,25 @@ nav.portal-nav#portalNav {
   border-bottom: none;
 }
 
+.badge-homes {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: var(--bloom-lavender-lt);
+  color: var(--bloom-text);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badge-homes--none {
+  background: #F48B96;
+  color: #4A101A;
+  border: 1px solid rgba(173, 42, 14, 0.18);
+  font-weight: 700;
+}
+
 /* ---------- Empty / Loading State ---------- */
 .state-box {
   text-align: center;

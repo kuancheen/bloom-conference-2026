@@ -454,7 +454,7 @@ form.addEventListener('submit', async (event) => {
       maritalStatus:     formData.get('maritalStatus'),
       churchPlant:       formData.get('churchPlant'),
       churchPlantOther:  formData.get('churchPlant') === 'Others' ? formData.get('churchPlantOther')?.trim() : '',
-      homesCode:         formData.get('homesCode')?.trim() || '',
+      homesCode:         formatHomesCode(formData.get('homesCode')?.trim() || ''),
       workshop:          formData.get('workshop'),
       firstBloom:        formData.get('firstBloom'),
       remarks:           formData.get('remarks')?.trim() || '',
@@ -594,3 +594,12 @@ document.querySelectorAll('.bank-field.is-copyable').forEach(el => {
     }
   });
 });
+
+/**
+ * Normalizes Homes Code to uppercase and pads single-digit suffixes with leading zero (e.g. SK1 -> SK01, KK2 -> KK02).
+ */
+function formatHomesCode(str) {
+  if (!str) return '';
+  const trimmed = str.toString().trim().toUpperCase();
+  return trimmed.replace(/^([A-Z]+)(\d)$/, '$10$2');
+}

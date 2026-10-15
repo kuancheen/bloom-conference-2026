@@ -119,12 +119,14 @@ function renderTable() {
 
   let html = '';
   filtered.forEach((r, idx) => {
+    const isNone = (r.homesCode || '').trim().toUpperCase() === 'NONE';
+    const badgeClass = isNone ? 'badge-homes badge-homes--none' : 'badge-homes';
     html += `
       <tr>
         <td style="color: var(--bloom-text-light);">${idx + 1}</td>
         <td><strong>${escapeHtml(r.fullName)}</strong></td>
         <td>${escapeHtml(r.churchPlant)}</td>
-        <td><span style="font-family: ui-monospace, SFMono-Regular, monospace; background: var(--bloom-lavender-lt); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">${escapeHtml(r.homesCode)}</span></td>
+        <td><span class="${badgeClass}">${escapeHtml(r.homesCode)}</span></td>
       </tr>
     `;
   });
