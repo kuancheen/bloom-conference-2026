@@ -81,3 +81,17 @@ This document serves as the active checklist for all remaining features, bug fix
 - [x] **Apache Routing & Cache Busting:**
   - Add `.htaccess` rewrite rules for `/verify-payments` vanity route.
   - Apply datetime-accurate query parameters (`YYYYMMDDHHMMSS`) to all linked assets.
+
+## Phase 7: UI Standardization & Mobile Polish
+- [x] **Standardized Portal Navigation (`dashboard.html`, `registrants.html`, `verify-payments.html`):**
+  - Standardize all 4 navigation items across the 3 admin portals: 📊 Dashboard, 📋 Registrants List, 💳 Payment Verification, and 🌸 Form ↗.
+  - Consistent accordion hamburger toggle (`☰`) on mobile viewports (<= 600px) positioned reliably in the top right of the header card.
+  - Responsive user badge display: badge remains in the desktop header row, and moves cleanly below the header row (`#userBadgeMobile`) on mobile without shifting or displacing the hamburger toggle.
+- [x] **Auth Verification Loading State (`verify-payments.html`, `verify-payments.js`):**
+  - Add dedicated `#authLoadingState` spinner card displayed on initial load to eliminate the blank screen while Google Identity Services (GIS) and backend `action=check_auth` verify credentials.
+  - Automatically transitions cleanly to either the authenticated portal content or the Google Sign-in gate.
+- [x] **Homes Code Formatting & Highlighting:**
+  - Form validation in `public/app.js`: Auto-capitalizes Homes Code input and formats single-digit prefixes (e.g., `SK1` → `SK01`, `KK2` → `KK02`, while leaving multi-digit codes like `BU11` or names like `LONDON` unchanged).
+  - Registrants list in `public/registrants.js` & `public/styles.css`: Darker pink pill highlight for `NONE` Homes Code (`.homes-badge--none`) with high contrast text for maximum readability.
+- [x] **Repository Data Privacy Scrubbing:**
+  - Scrubbed personal test emails from test runner scripts (`test_3_signups.py`, `test_4_signups.py`, `test_5_signups.py`, `test_register.py`) and documentation to protect user privacy.
