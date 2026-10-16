@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?20261016161000" />
+    <link rel="stylesheet" href="styles.css?20261016163000" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   </head>
   <body>
@@ -37,13 +37,19 @@
           </div>
         </a>
 
-        <nav class="portal-nav">
-          <a href="/dashboard" class="portal-nav-link is-active">📊 Dashboard</a>
-          <a href="/registrants" class="portal-nav-link">📋 Registrants List</a>
-          <a href="/verify-payments" class="portal-nav-link">💳 Payment Verification</a>
-          <a href="/register" class="portal-nav-link nav-form-link" target="_blank">🌸 <span class="nav-link-text">Form ↗</span></a>
-        </nav>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <!-- Hamburger toggle — mobile only -->
+          <button type="button" id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        </div>
       </header>
+
+      <!-- Collapsible nav — shown below header on mobile, inline on desktop -->
+      <nav class="portal-nav" id="portalNav">
+        <a href="/dashboard" class="portal-nav-link is-active">📊 Dashboard</a>
+        <a href="/registrants" class="portal-nav-link">📋 Registrants List</a>
+        <a href="/verify-payments" class="portal-nav-link">💳 Payment Verification</a>
+        <a href="/register" class="portal-nav-link nav-form-link" target="_blank">🌸 <span class="nav-link-text">Form ↗</span></a>
+      </nav>
 
       <!-- Refresh Status Row -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -169,6 +175,6 @@
     </div>
 
     <script src="config.js?20261012060500"></script>
-    <script src="dashboard.js?20261012060500"></script>
+    <script src="dashboard.js?20261016163000"></script>
   </body>
 </html>

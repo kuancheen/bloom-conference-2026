@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?20261016161000" />
+    <link rel="stylesheet" href="styles.css?20261016163000" />
     <!-- Google Identity Services for Login by Google -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
@@ -38,16 +38,20 @@
           </div>
         </a>
 
-        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 8px;">
           <div id="userBadge" style="display: none;"></div>
-          <nav class="portal-nav" id="portalNav">
-            <a href="/dashboard" class="portal-nav-link">📊 Dashboard</a>
-            <a href="/registrants" class="portal-nav-link">📋 Registrants List</a>
-            <a href="/verify-payments" class="portal-nav-link is-active">💳 Payment Verification</a>
-            <a href="/register" class="portal-nav-link nav-form-link" target="_blank">🌸 <span class="nav-link-text">Form ↗</span></a>
-          </nav>
+          <!-- Hamburger toggle — mobile only -->
+          <button type="button" id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle navigation" aria-expanded="false">☰</button>
         </div>
       </header>
+
+      <!-- Collapsible nav — shown below header on mobile, inline on desktop -->
+      <nav class="portal-nav" id="portalNav">
+        <a href="/dashboard" class="portal-nav-link">📊 Dashboard</a>
+        <a href="/registrants" class="portal-nav-link">📋 Registrants List</a>
+        <a href="/verify-payments" class="portal-nav-link is-active">💳 Payment Verification</a>
+        <a href="/register" class="portal-nav-link nav-form-link" target="_blank">🌸 <span class="nav-link-text">Form ↗</span></a>
+      </nav>
 
       <!-- Auth Gate Screen (Shown when not authenticated or unauthorized) -->
       <div id="authGateSection" style="display: none;">
@@ -232,6 +236,6 @@
     </div>
 
     <script src="config.js?20261012160400"></script>
-    <script src="verify-payments.js?20261016161000"></script>
+    <script src="verify-payments.js?20261016163000"></script>
   </body>
 </html>

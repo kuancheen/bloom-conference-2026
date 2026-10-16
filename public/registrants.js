@@ -148,4 +148,15 @@ document.getElementById('churchPlantFilter').addEventListener('change', renderTa
 document.getElementById('homesCodeFilter').addEventListener('change', renderTable);
 document.getElementById('refreshBtn').addEventListener('click', fetchRegistrants);
 
+// Mobile hamburger menu toggle
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const portalNav = document.getElementById('portalNav');
+if (mobileMenuBtn && portalNav) {
+  mobileMenuBtn.addEventListener('click', function () {
+    const isOpen = portalNav.classList.toggle('nav-open');
+    this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    this.textContent = isOpen ? '✕' : '☰';
+  });
+}
+
 document.addEventListener('DOMContentLoaded', fetchRegistrants);

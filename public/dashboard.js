@@ -248,4 +248,16 @@ function escapeHtml(str) {
 }
 
 document.getElementById('refreshBtn').addEventListener('click', fetchStats);
+
+// Mobile hamburger menu toggle
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const portalNav = document.getElementById('portalNav');
+if (mobileMenuBtn && portalNav) {
+  mobileMenuBtn.addEventListener('click', function () {
+    const isOpen = portalNav.classList.toggle('nav-open');
+    this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    this.textContent = isOpen ? '✕' : '☰';
+  });
+}
+
 document.addEventListener('DOMContentLoaded', fetchStats);
