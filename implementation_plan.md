@@ -93,5 +93,7 @@ This document serves as the active checklist for all remaining features, bug fix
 - [x] **Homes Code Formatting & Highlighting:**
   - Form validation in `public/app.js`: Auto-capitalizes Homes Code input and formats single-digit prefixes (e.g., `SK1` → `SK01`, `KK2` → `KK02`, while leaving multi-digit codes like `BU11` or names like `LONDON` unchanged).
   - Registrants list in `public/registrants.js` & `public/styles.css`: Darker pink pill highlight for `NONE` Homes Code (`.homes-badge--none`) with high contrast text for maximum readability.
+- [x] **Signups Timeline Loading Indicator (`dashboard.html`, `dashboard.js`):**
+  - Add loading spinner indicator (`#timelineLoadingState`) inside the "📈 Signups Timeline by Date" card while async stats data is being fetched, matching the loading UX pattern of the Workshop and Church Plants cards.
 - [x] **Repository Data Privacy Scrubbing:**
   - Scrubbed personal test emails from test runner scripts (`test_3_signups.py`, `test_4_signups.py`, `test_5_signups.py`, `test_register.py`) and documentation to protect user privacy.
