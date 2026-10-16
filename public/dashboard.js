@@ -98,7 +98,13 @@ function renderDashboard(data) {
 }
 
 function renderTimelineChart(dailySignups) {
-  const ctx = document.getElementById('timelineChart').getContext('2d');
+  const loadingEl = document.getElementById('timelineLoadingState');
+  const canvas = document.getElementById('timelineChart');
+
+  if (loadingEl) loadingEl.style.display = 'none';
+  if (canvas) canvas.style.display = '';
+
+  const ctx = canvas.getContext('2d');
   
   const dates = Object.keys(dailySignups).sort();
   const counts = dates.map(d => dailySignups[d]);

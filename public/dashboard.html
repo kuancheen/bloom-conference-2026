@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?20261016163000" />
+    <link rel="stylesheet" href="styles.css?20261016172000" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   </head>
   <body>
@@ -106,8 +106,12 @@
           <h3>📈 Signups Timeline by Date</h3>
           <span style="font-size: 0.78rem; color: var(--bloom-text-light);">Daily registration volume</span>
         </div>
-        <div class="dashboard-card-body" style="height: 280px;">
-          <canvas id="timelineChart"></canvas>
+        <div class="dashboard-card-body" style="height: 280px; position: relative;">
+          <div id="timelineLoadingState" class="state-box">
+            <div class="state-spinner"></div>
+            <p>Loading signups timeline...</p>
+          </div>
+          <canvas id="timelineChart" style="display: none;"></canvas>
         </div>
       </div>
 
@@ -175,6 +179,6 @@
     </div>
 
     <script src="config.js?20261012060500"></script>
-    <script src="dashboard.js?20261016163000"></script>
+    <script src="dashboard.js?20261016172000"></script>
   </body>
 </html>
