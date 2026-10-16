@@ -884,29 +884,6 @@ select option[value=""] {
   border-color: var(--bloom-rose);
 }
 
-/* Hamburger toggle — only visible on mobile for verify-payments */
-.mobile-menu-btn {
-  display: none; /* hidden on desktop */
-  background: #ffffff;
-  border: 1px solid var(--bloom-border);
-  border-radius: var(--radius-sm);
-  padding: 7px 12px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  line-height: 1;
-  transition: all var(--transition);
-}
-.mobile-menu-btn:hover {
-  background: var(--bloom-lavender-lt);
-  border-color: var(--bloom-blush);
-}
-
-/* Accordion/standalone nav for verify-payments (outside portal-header) */
-nav.portal-nav#portalNav {
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
 /* ---------- KPI Metric Cards Grid ---------- */
 .metrics-grid {
   display: grid;
@@ -1158,7 +1135,7 @@ nav.portal-nav#portalNav {
   .topbar { padding: 16px 0 16px; margin-bottom: 18px; }
   .portal-header { flex-direction: column; gap: 12px; align-items: flex-start; }
 
-  /* Dashboard / Registrants: nav stays in header, scroll horizontally */
+  /* Portal Navigation: horizontal scroll on mobile with hidden scrollbar */
   .portal-nav {
     width: 100%;
     overflow-x: auto;
@@ -1175,34 +1152,6 @@ nav.portal-nav#portalNav {
     font-size: 0.78rem;
   }
   .portal-nav-link.nav-form-link .nav-link-text { display: none; }
-
-  /* Verify-payments: accordion nav (standalone #portalNav outside header) */
-  .mobile-menu-btn { display: inline-flex; align-items: center; }
-
-  nav.portal-nav#portalNav {
-    display: none;         /* hidden by default on mobile */
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-    width: 100%;
-    overflow-x: visible;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-    padding: 10px 0 4px;
-    border-bottom: 1px solid var(--bloom-border);
-  }
-  nav.portal-nav#portalNav.nav-open {
-    display: flex;         /* show when toggled */
-  }
-  nav.portal-nav#portalNav .portal-nav-link {
-    width: 100%;
-    font-size: 0.88rem;
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    white-space: normal;
-  }
-  /* Re-show form link text in accordion since each link has full width */
-  nav.portal-nav#portalNav .portal-nav-link.nav-form-link .nav-link-text { display: inline; }
 
   form { padding: 20px 16px 24px; }
   .panel-header { padding: 20px 16px 16px; }

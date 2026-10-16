@@ -555,17 +555,6 @@
       loadPaymentsData();
     });
 
-    // Mobile hamburger menu toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const portalNav = document.getElementById('portalNav');
-    if (mobileMenuBtn && portalNav) {
-      mobileMenuBtn.addEventListener('click', function () {
-        const isOpen = portalNav.classList.toggle('nav-open');
-        this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        this.textContent = isOpen ? '✕' : '☰';
-      });
-    }
-
     // Modal controls
     closeApprovalModalBtn.addEventListener('click', closeApprovalModal);
     cancelApprovalBtn.addEventListener('click', closeApprovalModal);
