@@ -1334,6 +1334,26 @@ nav.portal-nav#portalNav {
   text-decoration: underline;
 }
 
+.desktop-only-badge {
+  display: inline-flex;
+}
+
+.mobile-user-row {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .desktop-only-badge {
+    display: none !important;
+  }
+
+  .mobile-user-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+}
+
 /* Modal Overlay */
 .modal-overlay {
   position: fixed;

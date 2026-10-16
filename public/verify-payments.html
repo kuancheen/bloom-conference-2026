@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?20261016163000" />
+    <link rel="stylesheet" href="styles.css?20261016170600" />
     <!-- Google Identity Services for Login by Google -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
@@ -39,11 +39,14 @@
         </a>
 
         <div style="display: flex; align-items: center; gap: 8px;">
-          <div id="userBadge" style="display: none;"></div>
+          <div id="userBadge" class="desktop-only-badge" style="display: none;"></div>
           <!-- Hamburger toggle — mobile only -->
           <button type="button" id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle navigation" aria-expanded="false">☰</button>
         </div>
       </header>
+
+      <!-- User badge for mobile — shown below header card so hamburger stays aligned -->
+      <div id="userBadgeMobile" class="mobile-user-row" style="display: none;"></div>
 
       <!-- Collapsible nav — shown below header on mobile, inline on desktop -->
       <nav class="portal-nav" id="portalNav">
@@ -52,6 +55,13 @@
         <a href="/verify-payments" class="portal-nav-link is-active">💳 Payment Verification</a>
         <a href="/register" class="portal-nav-link nav-form-link" target="_blank">🌸 <span class="nav-link-text">Form ↗</span></a>
       </nav>
+
+      <!-- Initial Loading / Verifying Indicator (Prevents blank screen) -->
+      <div id="authLoadingState" class="state-box" style="padding: 60px 20px; background: #ffffff; border-radius: var(--radius-md); border: 1px solid var(--bloom-border); margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+        <div class="state-spinner"></div>
+        <p style="color: var(--bloom-text); font-weight: 600; margin-top: 8px;">Verifying administrator access...</p>
+        <p style="font-size: 0.82rem; color: var(--bloom-text-light); margin-top: 4px;">Checking Google credentials against admin directory</p>
+      </div>
 
       <!-- Auth Gate Screen (Shown when not authenticated or unauthorized) -->
       <div id="authGateSection" style="display: none;">
@@ -236,6 +246,6 @@
     </div>
 
     <script src="config.js?20261012160400"></script>
-    <script src="verify-payments.js?20261016163000"></script>
+    <script src="verify-payments.js?20261016170600"></script>
   </body>
 </html>

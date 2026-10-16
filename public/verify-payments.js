@@ -21,9 +21,11 @@
   let currentZoom = 1;          // Receipt image zoom level
 
   // DOM Elements
+  const authLoadingState = document.getElementById('authLoadingState');
   const authGateSection = document.getElementById('authGateSection');
   const portalMainContent = document.getElementById('portalMainContent');
   const userBadge = document.getElementById('userBadge');
+  const userBadgeMobile = document.getElementById('userBadgeMobile');
   const authErrorMessage = document.getElementById('authErrorMessage');
   const googleBtnContainer = document.getElementById('googleBtnContainer');
   const missingClientIdNotice = document.getElementById('missingClientIdNotice');
@@ -197,9 +199,11 @@
   }
 
   function showAuthGate() {
+    if (authLoadingState) authLoadingState.style.display = 'none';
     authGateSection.style.display = 'block';
     portalMainContent.style.display = 'none';
-    userBadge.style.display = 'none';
+    if (userBadge) userBadge.style.display = 'none';
+    if (userBadgeMobile) userBadgeMobile.style.display = 'none';
   }
 
   function showAuthError(msg) {
@@ -213,19 +217,31 @@
   }
 
   function renderAuthenticatedState() {
+    if (authLoadingState) authLoadingState.style.display = 'none';
     authGateSection.style.display = 'none';
     portalMainContent.style.display = 'block';
 
     const displayName = currentAdmin.name || currentAdmin.email;
-    userBadge.innerHTML = `
+    const badgeHtml = (logoutBtnId) => `
       <span class="user-profile-badge" title="${escapeHtml(currentAdmin.email)}">
         <span>👤 ${escapeHtml(displayName)}</span>
-        <button type="button" id="logoutBtn" title="Sign Out">Sign out</button>
+        <button type="button" id="${logoutBtnId}" title="Sign Out">Sign out</button>
       </span>
     `;
-    userBadge.style.display = 'inline-block';
 
-    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+    if (userBadge) {
+      userBadge.innerHTML = badgeHtml('logoutBtnDesktop');
+      userBadge.style.display = 'inline-flex';
+      const logoutBtnDesktop = document.getElementById('logoutBtnDesktop');
+      if (logoutBtnDesktop) logoutBtnDesktop.addEventListener('click', handleLogout);
+    }
+
+    if (userBadgeMobile) {
+      userBadgeMobile.innerHTML = badgeHtml('logoutBtnMobile');
+      userBadgeMobile.style.display = '';
+      const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+      if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
+    }
   }
 
   function handleLogout() {
