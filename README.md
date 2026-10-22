@@ -48,35 +48,41 @@ window.APP_CONFIG = {
 
 ### 3. Deployment
 
-Upload the following files from the `public/` folder to your web server (e.g. into a `/bloom2026/` directory):
-- `index.html`
-- `styles.css`
-- `app.js`
-- `config.js` (with your real Apps Script URL)
+Use the gitignored `deploy.sh` script to push frontend files directly to the live server via SFTP:
 
-It runs independently as a standalone HTML page.
+```bash
+# Deploy specific files
+./deploy.sh public/dashboard.html public/dashboard.js
+
+# Deploy full suite
+./deploy.sh
+```
+
+Credentials are loaded automatically from the gitignored `.env` file (copy `.env.example` → `.env` and fill in values). See `deployment_checklist.md` for full setup instructions.
 
 ### 4. Apache `.htaccess` Setup (Clean URLs)
 
-If you are hosting this alongside WordPress and want to use a clean URL like `/register` that invisibly serves from the `/bloom2026/` folder, place the following rules in your `.htaccess` file **before** the `# BEGIN WordPress` block:
+If you are hosting this alongside WordPress and want clean vanity URLs, place the following rules in your `.htaccess` file **before** the `# BEGIN WordPress` block:
 
 ```apache
 # Acts Church Conference — Custom Rewrite Rules
 <IfModule mod_rewrite.c>
 RewriteEngine On
+RewriteBase /
 
 # 1. Page Routes
 RewriteRule ^register/?$ /bloom2026/index.html [L,QSA]
-RewriteRule ^dashboard/?$ /dashboard.html [L,QSA]
-RewriteRule ^registrants/?$ /registrants.html [L,QSA]
+RewriteRule ^dashboard/?$ /bloom2026/dashboard.html [L,QSA]
+RewriteRule ^registrants/?$ /bloom2026/registrants.html [L,QSA]
+RewriteRule ^verify-payments/?$ /bloom2026/verify-payments.html [L,QSA]
 
-# 2. Asset Routes (CSS & JS for Bloom 2026)
-# This catches requests for styles.css, app.js, and config.js and routes them correctly
-RewriteRule ^(?:register/)?(styles\.css|app\.js|config\.js)$ /bloom2026/$1 [L,QSA]
+# 2. Asset Routes (Intercept CSS, JS, and images from vanity URLs)
+RewriteCond %{REQUEST_URI} !^/bloom2026/
+RewriteRule ^(?:register/|dashboard/|registrants/|verify-payments/)?(styles\.css|app\.js|dashboard\.js|registrants\.js|verify-payments\.js|config\.js|acts-logo\.png|registration-form-banner\.png)$ /bloom2026/$1 [L,QSA]
 </IfModule>
 ```
 
-> **Note on Asset Routing:** The second rule is critical. Because the form files use relative paths (`<link href="styles.css">`), a visitor on `/register` will cause their browser to request `/styles.css`. This rule intercepts that request and correctly serves the asset from `/bloom2026/`.
+> **Note:** `RewriteBase /` and the `RewriteCond !^/bloom2026/` guard are critical to prevent Apache rewrite loops (`HTTP 500`) when assets are re-requested from vanity URL paths.
 
 ---
 
@@ -130,11 +136,23 @@ bloom-conference-2026/
 ├── backend/
 │   ├── Code.gs             # Google Apps Script backend
 │   └── appsscript.json     # Apps Script manifest (OAuth scopes, runtime config)
+├── deployment_checklist.md # Pre-deployment & new machine setup checklist
 ├── .env.example            # Environment variable template
 ├── .gitignore              # Excludes config.js, .env, deploy.sh, node_modules
 ├── package.json            # Local dev server
 └── README.md               # This file
 ```
+
+---
+
+## Project Documentation Map
+
+| File | Role |
+|------|------|
+| `deployment_checklist.md` | Full reference — new machine setup, secrets, `.htaccess` rules, step-by-step deploy guides |
+| `new_conversation.md` | Agent operating rules — what the AI agent does automatically every task block |
+| `walkthrough.md` | Architecture memory — how the system works, data flow, lessons learned |
+| `implementation_plan.md` | What's done / what's next |
 
 ---
 
