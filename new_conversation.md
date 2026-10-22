@@ -31,6 +31,12 @@ Whenever CSS (`styles.css`), JavaScript (`app.js`, `config.js`), or `index.html`
 - **Format**: Use a datetime string accurate to the second in `YYYYMMDDHHMMSS` format (e.g. `href="styles.css?20261009113350"`), **WITHOUT** `v=`.
 - Do not use generic version numbers like `?v=1.0` or `?v=2`. Always use the current second-accurate datetime string.
 
+# Direct Live Server Deployment Rule
+From Phase 8 onwards, frontend and routing changes must be deployed directly to the production web server via `./deploy.sh`:
+- Credentials and remote paths are managed inside the gitignored `.env` file (`SFTP_USER`, `SFTP_HOST`, `SFTP_PASS`, `SFTP_REMOTE_BLOOM_DIR`, `SFTP_REMOTE_PUBLIC_ROOT`).
+- Run `./deploy.sh <files>` to deploy specific files (e.g., `./deploy.sh public/dashboard.html public/dashboard.js`), or `./deploy.sh` with no arguments to deploy the full public suite.
+- Always execute `./deploy.sh` for modified frontend files before concluding the task block and committing to Git.
+
 # Formatting Rules
 - Keep `implementation_plan.md` concise. It should be a crisp list of checkboxes (`- [ ] task`) grouped by priority or module.
 - Keep `walkthrough.md` structured and descriptive. Use code blocks, file trees, and entry-point descriptions so any fresh agent can read it and instantly understand the current codebase.

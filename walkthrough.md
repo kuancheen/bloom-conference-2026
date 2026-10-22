@@ -64,6 +64,7 @@ bloom-conference-2026/
 
 ## 5. Environment & Setup Details
 *   **Local Development:** `npm run dev` uses the `serve` package to host the `public/` directory locally. A local dummy `config.js` is required to prevent errors.
+*   **Production Deployment Tooling (`deploy.sh` & `.env`):** Frontend files are deployed straight to the production server (`188.166.188.97`) into `/srv/users/actschurchconference-admin/apps/actschurchconference/public/bloom2026` via `./deploy.sh`. Server authentication credentials (`SFTP_USER`, `SFTP_HOST`, `SFTP_PASS`, remote paths) are loaded automatically from the gitignored `.env` file. Accepts file arguments for selective deployments (e.g. `./deploy.sh public/dashboard.html public/dashboard.js`) or deploys the complete suite when called without arguments.
 *   **Production:** Files in `public/` are uploaded to the web server. The Apps Script is deployed natively in the Google Workspace environment as a Web App executing as the script owner.
 *   **OAuth Scopes (`backend/appsscript.json`):** The `appsscript.json` manifest is committed to the repository and must be present in the Apps Script editor (View → Show manifest file). Required scopes:
     - `auth/gmail.send` — allows `GmailApp.sendEmail()` to dispatch confirmation emails.
