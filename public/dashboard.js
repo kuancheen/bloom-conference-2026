@@ -48,7 +48,17 @@ async function fetchStats() {
 
 function renderDashboard(data) {
   const total = data.totalRegistrations || 0;
+  const verified = data.totalVerified !== undefined ? data.totalVerified : 0;
   document.getElementById('kpiTotal').textContent = total.toLocaleString();
+  const kpiVerifiedEl = document.getElementById('kpiVerified');
+  if (kpiVerifiedEl) {
+    kpiVerifiedEl.textContent = verified.toLocaleString();
+  }
+  const kpiVerifiedSubEl = document.getElementById('kpiVerifiedSub');
+  if (kpiVerifiedSubEl) {
+    const verifiedPct = total > 0 ? Math.round((verified / total) * 100) : 0;
+    kpiVerifiedSubEl.textContent = `${verified} verified (${verifiedPct}%) of ${total} signups`;
+  }
 
   // Top church plant
   const cpCounts = data.churchPlantCounts || {};

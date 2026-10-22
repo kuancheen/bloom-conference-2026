@@ -65,11 +65,13 @@
       <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-card-header">
-            <span class="metric-card-title">Total Registered</span>
+            <span class="metric-card-title">Verified vs Registered</span>
             <span class="metric-card-icon">🌸</span>
           </div>
-          <div class="metric-card-value" id="kpiTotal">-</div>
-          <div class="metric-card-sub">Active attendee signups</div>
+          <div class="metric-card-value">
+            <span id="kpiVerified" style="color: #2e7d32;">-</span> <span style="font-size: 1.4rem; color: var(--bloom-text-light); font-weight: 500;">/</span> <span id="kpiTotal">-</span>
+          </div>
+          <div class="metric-card-sub" id="kpiVerifiedSub">Active attendee signups</div>
         </div>
 
         <div class="metric-card">
@@ -178,7 +180,7 @@
       </footer>
     </div>
 
-    <script src="config.js?20261012060500"></script>
-    <script src="dashboard.js?20261016172000"></script>
+    <script src="config.js?20261022095522"></script>
+    <script src="dashboard.js?20261022095522"></script>
   </body>
 </html>

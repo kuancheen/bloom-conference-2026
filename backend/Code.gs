@@ -116,6 +116,7 @@ function getStatsResponse() {
 
     var regData = regSheet.getDataRange().getValues();
     var totalRegistrations = 0;
+    var totalVerified = 0;
     var churchPlantCounts = {};
     var ageRangeCounts = {};
     var maritalStatusCounts = {};
@@ -138,6 +139,7 @@ function getStatsResponse() {
     var othersIdx = colMap['others'] !== undefined ? colMap['others'] : 7;
     var wsIdx = colMap['workshop'] !== undefined ? colMap['workshop'] : 9;
     var fbIdx = colMap['first bloom?'] !== undefined ? colMap['first bloom?'] : 10;
+    var adminNotesIdx = colMap['admin notes'] !== undefined ? colMap['admin notes'] : 14;
 
     // Workshop mapping
     var workshopLabelMap = {
@@ -203,6 +205,12 @@ function getStatsResponse() {
       if (wsCode) {
         workshopCounts[wsCode] = (workshopCounts[wsCode] || 0) + 1;
       }
+
+      // Verification check
+      var adminNote = (row[adminNotesIdx] || '').toString().trim();
+      if (adminNote.toLowerCase().indexOf('verified') !== -1) {
+        totalVerified++;
+      }
     }
 
     // Workshop Capacities & Occupancy from Limits Sheet
@@ -235,6 +243,7 @@ function getStatsResponse() {
     var payload = {
       result: 'success',
       totalRegistrations: totalRegistrations,
+      totalVerified: totalVerified,
       dailySignups: dailySignups,
       churchPlantCounts: churchPlantCounts,
       workshopStats: workshopStats,

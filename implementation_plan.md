@@ -97,3 +97,15 @@ This document serves as the active checklist for all remaining features, bug fix
   - Add loading spinner indicator (`#timelineLoadingState`) inside the "📈 Signups Timeline by Date" card while async stats data is being fetched, matching the loading UX pattern of the Workshop and Church Plants cards.
 - [x] **Repository Data Privacy Scrubbing:**
   - Scrubbed personal test emails from test runner scripts (`test_3_signups.py`, `test_4_signups.py`, `test_5_signups.py`, `test_register.py`) and documentation to protect user privacy.
+
+## Phase 8: Dashboard Verified vs Registered Metric
+- [x] **Backend Stats Enhancement (`backend/Code.gs`):**
+  - Calculate `totalVerified` in `getStatsResponse()` by inspecting `Admin Notes` column for "verified" string.
+  - Return `totalVerified` in the `action=stats` JSON payload alongside `totalRegistrations`.
+- [x] **Dashboard KPI Card UI & Logic (`public/dashboard.html` & `public/dashboard.js`):**
+  - Update first metric card to display Verified vs Registered (e.g. `kpiVerified` / `kpiTotal`).
+  - Update subtitle text to show verification breakdown and percentage.
+  - Update cache buster timestamp on `dashboard.html`.
+- [x] **Verification & Synchronization:**
+  - Verify dashboard rendering locally or against script output.
+  - Update `walkthrough.md` and commit to Git.
