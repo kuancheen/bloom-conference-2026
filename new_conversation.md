@@ -36,7 +36,28 @@ Whenever CSS (`styles.css`), JavaScript (`app.js`, `config.js`), or `index.html`
 From Phase 8 onwards, frontend and routing changes must be deployed directly to the production web server via `./deploy.sh`:
 - Credentials and remote paths are managed inside the gitignored `.env` file (`SFTP_USER`, `SFTP_HOST`, `SFTP_PASS`, `SFTP_REMOTE_BLOOM_DIR`, `SFTP_REMOTE_PUBLIC_ROOT`).
 - Run `./deploy.sh <files>` to deploy specific files (e.g., `./deploy.sh public/dashboard.html public/dashboard.js`), or `./deploy.sh` with no arguments to deploy the full public suite.
-- Always execute `./deploy.sh` for modified frontend files before concluding the task block and committing to Git.
+- Always execute `./deploy.sh` for modified frontend files **before** concluding the task block and committing to Git.
+
+# Backend (Google Apps Script) Deployment Rule
+Whenever `backend/Code.gs` or `backend/appsscript.json` is changed, **the agent cannot deploy this automatically**. Remind the user:
+1. Open the Google Sheet → **Extensions → Apps Script**.
+2. Paste the updated `backend/Code.gs` content into the editor.
+3. Click **Deploy → Manage Deployments → Edit (pencil) → New Version → Deploy**.
+4. ⚠️ Saving the code alone does NOT update the live `/exec` endpoint. A **New Version** deployment is mandatory.
+
+# Post-Deployment Smoke Test Rule
+After any frontend or backend deployment, always run a quick smoke test using `/usr/bin/curl`:
+```bash
+/usr/bin/curl -s -o /dev/null -w "register: %{http_code}\n" https://actschurchconference.com/register
+/usr/bin/curl -s -o /dev/null -w "dashboard: %{http_code}\n" https://actschurchconference.com/dashboard
+/usr/bin/curl -s -o /dev/null -w "registrants: %{http_code}\n" https://actschurchconference.com/registrants
+/usr/bin/curl -s -o /dev/null -w "verify-payments: %{http_code}\n" https://actschurchconference.com/verify-payments
+```
+All four routes must return HTTP 200. Also test the Apps Script endpoint:
+```bash
+/usr/bin/curl -sL "https://script.google.com/macros/s/.../exec?action=stats" | head -c 100
+```
+(The Script URL is in `public/config.js`.)
 
 # Formatting Rules
 - Keep `implementation_plan.md` concise. It should be a crisp list of checkboxes (`- [ ] task`) grouped by priority or module.
