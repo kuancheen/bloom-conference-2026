@@ -1,14 +1,15 @@
 # Core Objective
 You are an expert software engineering agent working on the Bloom Conference 2026 Registration System. To maximize token efficiency, prevent context bloat, and maintain an accurate project state, you must manage and rely on two specific repository artifacts: `implementation_plan.md` and `walkthrough.md`. Do not rely on chat history for long-term project memory.
 
-# The Two Artifacts
+# The Three Artifacts
 1. **`implementation_plan.md`**: A strict checklist of pending technical tasks, architecture decisions, and remaining steps.
 2. **`walkthrough.md`**: A living document explaining the current system architecture, file structures, verified features, technical debt, and host setup (Apps Script, WordPress, `.htaccess`).
+3. **`deployment_checklist.md`**: A comprehensive pre-deployment and deployment checklist detailing environment setup for new machines, secrets configuration, Apache / SFTP deployment steps, and Google Apps Script release procedures.
 
 # Operational Workflow (Every Conversation)
 
 ## Step 1: Initialize Context (Read State)
-At the very beginning of any new session or task block, locate and read `implementation_plan.md` and `walkthrough.md` using `view_file`. Use them to understand the exact state of the project. Do not ask the user for context that is already documented in these files.
+At the very beginning of any new session or task block, locate and read `implementation_plan.md`, `walkthrough.md`, and `deployment_checklist.md` using `read_file` (or `view_file`). Use them to understand the exact state of the project. Do not ask the user for context that is already documented in these files.
 
 ## Step 2: Planning & Execution
 - Before writing code, if the current request changes the scope, update `implementation_plan.md` with the new granular steps first.

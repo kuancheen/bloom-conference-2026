@@ -31,6 +31,7 @@ bloom-conference-2026/
 │   ├── Code.gs             # Google Apps Script backend logic (config, stats, registrants, get_payments, approve_payment)
 │   └── appsscript.json     # Apps Script manifest (OAuth scopes, runtime config)
 ├── README.md               # Quickstart and deployment instructions
+├── deployment_checklist.md # Pre-deployment & deployment checklist for new workstations
 ├── implementation_plan.md  # Active checklist of remaining tasks
 └── walkthrough.md          # System architecture and living memory (This file)
 ```
@@ -86,3 +87,4 @@ bloom-conference-2026/
 *   **Mobile Header Positioning Consistency:** On mobile viewports, placing variable-length UI elements (like dynamic user badges containing names and sign-out links) inside flex header containers alongside hamburger toggle buttons can displace the hamburger off-screen or shift it out of alignment. Splitting the badge into `.desktop-only-badge` and a dedicated sub-row (`#userBadgeMobile` / `.mobile-user-row`) below the header ensures the mobile menu button remains rock-solid in the top right across all portal pages.
 *   **Auth Gate User Experience & Perceived Latency:** When authenticating against OAuth identity providers and backend verification endpoints, defaulting all protected content sections to `display: none` without an active loading indicator leads to perceived blank page freezes. Introducing an explicit `#authLoadingState` card on page load provides immediate feedback while Google Identity Services loads and the backend responds.
 *   **Automated Remote SFTP Deployment via Expect:** On environments lacking `sshpass`, macOS's built-in `/usr/bin/expect` wrapper can automate interactive password authentication over `/usr/bin/sftp`. Keeping credentials isolated inside a local gitignored deployment script (`deploy.sh`) ensures one-command deployment to remote server directories without exposing server credentials to git history.
+*   **New Machine Onboarding & Pre-Deployment Verification:** When cloning the repo on an alternative machine running Antigravity, configuration secrets (`public/config.js`, `.env`) are omitted by design. Referring to `deployment_checklist.md` provides an immediate step-by-step checklist to configure local endpoints, verify cache busters, deploy via SFTP or manual upload, and release Apps Script version increments without leaking sensitive tokens into git.
