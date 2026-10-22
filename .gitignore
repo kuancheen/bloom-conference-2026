@@ -1,6 +1,9 @@
 # Secrets & local config — NEVER commit these
 public/config.js
 .env
+deploy.sh
+*.credentials*
+.deploy*
 
 # Node
 node_modules/
