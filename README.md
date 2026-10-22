@@ -117,14 +117,21 @@ The public repo contains **zero real IDs or secrets**.
 bloom-conference-2026/
 ├── public/
 │   ├── index.html          # Registration form (trilingual EN/中文/BM)
-│   ├── styles.css          # Soft floral design system
+│   ├── dashboard.html      # Sign up metrics & analytics dashboard
+│   ├── dashboard.js        # Dashboard data fetching and chart rendering
+│   ├── registrants.html    # Attendees directory table (Name, Church Plant, Homes Code)
+│   ├── registrants.js      # Registrants table search, filtering, and rendering
+│   ├── verify-payments.html# Payment verification & approval reviewer portal
+│   ├── verify-payments.js  # Payment verification auth, approval action, and receipt modal logic
+│   ├── styles.css          # Design system (Soft floral palette, responsive layout, portal UI)
 │   ├── app.js              # Form logic, validation, submission
+│   ├── acts-logo.png       # Acts Church branding logo
 │   └── config.js.example   # Template — copy to config.js and fill in URL
 ├── backend/
 │   ├── Code.gs             # Google Apps Script backend
-│   └── README.md           # Backend-specific setup instructions
+│   └── appsscript.json     # Apps Script manifest (OAuth scopes, runtime config)
 ├── .env.example            # Environment variable template
-├── .gitignore              # Excludes config.js, .env, node_modules
+├── .gitignore              # Excludes config.js, .env, deploy.sh, node_modules
 ├── package.json            # Local dev server
 └── README.md               # This file
 ```
