@@ -116,8 +116,19 @@ function renderTimelineChart(dailySignups) {
 
   const ctx = canvas.getContext('2d');
   
-  const dates = Object.keys(dailySignups).sort();
-  const counts = dates.map(d => dailySignups[d]);
+  // Fill in all dates between the first and last signup (zero-signup days included)
+  const rawDates = Object.keys(dailySignups).sort();
+  const dates = [];
+  const counts = [];
+  if (rawDates.length > 0) {
+    const start = new Date(rawDates[0]);
+    const end = new Date(rawDates[rawDates.length - 1]);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const key = d.toISOString().slice(0, 10);
+      dates.push(key);
+      counts.push(dailySignups[key] || 0);
+    }
+  }
 
   if (dates.length === 0) {
     dates.push('No data');
