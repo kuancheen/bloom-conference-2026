@@ -59,6 +59,15 @@ async function loadConfig() {
     const result = await response.json();
     if (result.result !== 'success' || !result.config) return;
 
+    // Check registration status — show closed banner if CLOSED
+    if (result.registrationStatus === 'CLOSED') {
+      const closedBanner = document.getElementById('registrationClosed');
+      const formPanel = form ? form.closest('.panel') : null;
+      if (closedBanner) closedBanner.style.display = '';
+      if (formPanel) formPanel.style.display = 'none';
+      return; // stop populating dropdowns
+    }
+
     const cfg = result.config;
 
     // Populate flat selects (no grouping)

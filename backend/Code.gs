@@ -439,8 +439,21 @@ function getConfigResponse() {
       }
     }
 
+    // Read RegistrationStatus toggle (OPEN / CLOSED)
+    var registrationStatus = 'OPEN';
+    var headerRow0 = data[0];
+    for (var hc = 0; hc < headerRow0.length; hc++) {
+      if ((headerRow0[hc] || '').toString().trim().toLowerCase() === 'registrationstatus') {
+        var statusVal = (data.length > 1 ? data[1][hc] : '') || '';
+        if (statusVal.toString().trim().toUpperCase() === 'CLOSED') {
+          registrationStatus = 'CLOSED';
+        }
+        break;
+      }
+    }
+
     return ContentService
-      .createTextOutput(JSON.stringify({ result: 'success', config: config, limits: limitsMap }))
+      .createTextOutput(JSON.stringify({ result: 'success', config: config, limits: limitsMap, registrationStatus: registrationStatus }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
@@ -574,6 +587,26 @@ function doPost(e) {
     }
 
     var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    // Check registration status before processing anything
+    var configSheetCheck = ss.getSheetByName('Config');
+    if (configSheetCheck) {
+      var configDataCheck = configSheetCheck.getDataRange().getValues();
+      if (configDataCheck && configDataCheck.length > 0) {
+        var headerRowCheck = configDataCheck[0];
+        for (var hci = 0; hci < headerRowCheck.length; hci++) {
+          if ((headerRowCheck[hci] || '').toString().trim().toLowerCase() === 'registrationstatus') {
+            var regStatusVal = (configDataCheck.length > 1 ? configDataCheck[1][hci] : '') || '';
+            if (regStatusVal.toString().trim().toUpperCase() === 'CLOSED') {
+              return errorResponse(
+                'Registration is now closed. / 报名已截止。/ Pendaftaran telah ditutup.'
+              );
+            }
+            break;
+          }
+        }
+      }
+    }
 
     // Verify workshop capacity limit before saving
     if (data.workshop) {

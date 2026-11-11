@@ -3,43 +3,6 @@
 This document serves as the active checklist for all remaining features, bug fixes, and deployment steps. 
 **Do not mark items as complete until they are fully verified in the environment.**
 
-## Phase 9: Registration Close (Config-Driven Toggle)
-
-The goal is to allow registration to be closed/reopened instantly by flipping a single cell in the Google Sheet, with no code redeployment required. Both the frontend UI and the backend API must respect the toggle.
-
-- [ ] **Google Sheet `Config` tab — Add `RegistrationStatus` field:**
-  - In the `Config` Google Sheet tab, add a new labeled cell for `RegistrationStatus`.
-  - Valid values: `OPEN` (default) or `CLOSED`.
-  - This is the single source of truth for registration availability.
-
-- [ ] **Backend (`backend/Code.gs`) — Return & enforce `registrationStatus`:**
-  - In `getConfigResponse()`, read the `RegistrationStatus` cell from the `Config` tab and include it in the returned JSON as `registrationStatus: "OPEN"` or `"CLOSED"`.
-  - In `doPost()`, at the top of the handler (before any file upload or sheet write), read `RegistrationStatus` from the Config tab. If `CLOSED`, immediately return a trilingual error JSON: `{ result: "error", error: "Registration is now closed. / 报名已截止。/ Pendaftaran telah ditutup." }` with HTTP 200.
-
-- [ ] **Frontend (`public/app.js`) — Respect `registrationStatus` after config loads:**
-  - After `action=config` returns, check `data.registrationStatus`.
-  - If `"CLOSED"`: hide the `<form>` element and show the `#registrationClosed` banner div.
-  - If `"OPEN"` (or field absent): proceed as normal (existing behaviour, no change).
-
-- [ ] **Frontend (`public/index.html`) — Add trilingual `#registrationClosed` banner:**
-  - Add a hidden `<div id="registrationClosed" style="display:none;">` block below the form with trilingual content:
-    - **EN:** "Registration is now closed. Thank you for your interest in Bloom Conference 2026."
-    - **中文:** "报名已截止。感谢您对 Bloom 2026 大会的关注。"
-    - **BM:** "Pendaftaran telah ditutup. Terima kasih atas minat anda terhadap Konferens Bloom 2026."
-  - Style it to match the Terracotta/Coral design system (prominent card, centered, warm tone).
-  - Update all asset cache-buster timestamps (`styles.css`, `config.js`, `app.js`) to `YYYYMMDDHHMMSS` of the edit time.
-
-- [ ] **Deploy & Verify:**
-  - Deploy `public/index.html` and `public/app.js` via `./deploy.sh public/index.html public/app.js`.
-  - Deploy updated `backend/Code.gs` by pasting into Apps Script editor and publishing a **New Version**.
-  - Set `RegistrationStatus` to `CLOSED` in the Sheet and verify:
-    - `/register` shows the closed banner (not the form).
-    - Submitting a crafted POST to the script `/exec` returns the closed error JSON.
-  - Set `RegistrationStatus` back to `OPEN` and verify the form reappears (rollback test).
-  - Run smoke test: all 4 routes return HTTP 200.
-  - Commit: `feat: add config-driven registration close toggle (Phase 9)`
-  - Push to GitHub.
-
 ## Phase 1: Remaining Features & Backend Enhancements
 - [x] **Automated Confirmation Email:** 
   - Add `MailApp` or `GmailApp` logic to `backend/Code.gs` to send a trilingual confirmation email upon successful registration.
@@ -146,3 +109,37 @@ The goal is to allow registration to be closed/reopened instantly by flipping a 
 - [x] **Verification & Synchronization:**
   - Verify dashboard rendering locally or against script output.
   - Update `walkthrough.md` and commit to Git.
+
+
+## Phase 9: Registration Close (Config-Driven Toggle)
+
+The goal is to allow registration to be closed/reopened instantly by flipping a single cell in the Google Sheet, with no code redeployment required. Both the frontend UI and the backend API must respect the toggle.
+
+- [x] **Google Sheet `Config` tab — Add `RegistrationStatus` field:**
+  - In the `Config` Google Sheet tab, add a new labeled cell for `RegistrationStatus`.
+  - Valid values: `OPEN` (default) or `CLOSED`.
+  - This is the single source of truth for registration availability.
+
+- [x] **Backend (`backend/Code.gs`) — Return & enforce `registrationStatus`:**
+  - In `getConfigResponse()`, read the `RegistrationStatus` cell from the `Config` tab and include it in the returned JSON as `registrationStatus: "OPEN"` or `"CLOSED"`.
+  - In `doPost()`, at the top of the handler (before any file upload or sheet write), read `RegistrationStatus` from the Config tab. If `CLOSED`, immediately return a trilingual error JSON: `{ result: "error", error: "Registration is now closed. / 报名已截止。/ Pendaftaran telah ditutup." }` with HTTP 200.
+
+- [x] **Frontend (`public/app.js`) — Respect `registrationStatus` after config loads:**
+  - After `action=config` returns, check `data.registrationStatus`.
+  - If `"CLOSED"`: hide the `<form>` element and show the `#registrationClosed` banner div.
+  - If `"OPEN"` (or field absent): proceed as normal (existing behaviour, no change).
+
+- [x] **Frontend (`public/index.html`) — Add trilingual `#registrationClosed` banner:**
+  - Add a hidden `<div id="registrationClosed" style="display:none;">` block below the form with trilingual content:
+    - **EN:** "Registration is now closed. Thank you for your interest in Bloom Conference 2026."
+    - **中文:** "报名已截止。感谢您对 Bloom 2026 大会的关注。"
+    - **BM:** "Pendaftaran telah ditutup. Terima kasih atas minat anda terhadap Konferens Bloom 2026."
+  - Style it to match the Terracotta/Coral design system (prominent card, centered, warm tone).
+  - Update all asset cache-buster timestamps (`styles.css`, `config.js`, `app.js`) to `YYYYMMDDHHMMSS` of the edit time.
+
+- [ ] **Deploy & Verify:**
+  - Deploy `public/index.html` and `public/app.js` via `./deploy.sh public/index.html public/app.js`.
+  - Deploy updated `backend/Code.gs` by pasting into Apps Script editor and publishing a **New Version**.
+  - Set `RegistrationStatus` to `CLOSED` in the Sheet and verify the closed banner shows.
+  - Run smoke test: all 4 routes return HTTP 200.
+  - Commit and push to GitHub.

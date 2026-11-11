@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?20261016163000" />
+    <link rel="stylesheet" href="styles.css?20261111161106" />
   </head>
   <body>
     <!-- Decorative background petals -->
@@ -356,6 +356,34 @@
         </section>
       </main>
 
+      <!-- Registration Closed Banner (hidden by default; shown by app.js when RegistrationStatus=CLOSED) -->
+      <div id="registrationClosed" style="display:none;" role="main" aria-live="polite">
+        <div class="success-screen" style="display:flex;">
+          <div class="success-card" style="text-align:center;">
+            <div class="success-icon">🌸</div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 16px; line-height: 1.4; color: var(--bloom-rose-dk);">
+              Registration is Now Closed<br>
+              <span style="font-size: 1.05rem; font-weight: 600; color: var(--bloom-text-light);">报名已截止 / Pendaftaran Telah Ditutup</span>
+            </h2>
+            <div style="background: var(--bloom-cream); border-radius: 10px; padding: 22px; margin-bottom: 20px; border: 1px solid var(--bloom-border);">
+              <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 10px; color: var(--bloom-text);">
+                Thank you for your interest in <strong>Bloom Conference 2026</strong>. Registration has now closed.
+              </p>
+              <p style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 10px; color: var(--bloom-text-light);">
+                感谢您对 <strong>Bloom 2026 大会</strong> 的关注。报名已截止。
+              </p>
+              <p style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 0; color: var(--bloom-text-light);">
+                Terima kasih atas minat anda terhadap <strong>Konferens Bloom 2026</strong>. Pendaftaran telah ditutup.
+              </p>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--bloom-text-light); line-height: 1.5;">
+              For enquiries, please contact us at
+              <a href="mailto:info@actschurchconference.com" style="color: var(--bloom-rose-dk); font-weight: 600;">info@actschurchconference.com</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- Success Screen (hidden by default) -->
       <div class="success-screen" id="successScreen" style="display:none;" role="main" aria-live="polite">
         <div class="success-card">
@@ -394,7 +422,7 @@
       </footer>
     </div>
 
-    <script src="config.js?20261012060500"></script>
-    <script src="app.js?20261015101500"></script>
+    <script src="config.js?20261111161106"></script>
+    <script src="app.js?20261111161106"></script>
   </body>
 </html>
