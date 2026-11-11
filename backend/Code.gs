@@ -440,26 +440,15 @@ function getConfigResponse() {
     }
 
     // Read RegistrationStatus toggle (OPEN / CLOSED)
-    // Scans every cell in the entire Config sheet data for a cell labelled
-    // "RegistrationStatus" (case-insensitive), then reads the value from
-    // either the cell immediately to its right (same-row label:value layout)
-    // or the cell directly below it (header-above-value layout).
     var registrationStatus = 'OPEN';
-    var regStatusFound = false;
-    for (var ri = 0; ri < data.length && !regStatusFound; ri++) {
-      for (var ci = 0; ci < data[ri].length && !regStatusFound; ci++) {
-        var cellText = (data[ri][ci] || '').toString().trim().toLowerCase().replace(/[\s_-]/g, '');
-        if (cellText === 'registrationstatus') {
-          // Try value to the right first (label | value on same row)
-          var rightVal = (data[ri][ci + 1] || '').toString().trim().toUpperCase();
-          // Then try value below (header on row N, value on row N+1)
-          var belowVal = (data[ri + 1] ? (data[ri + 1][ci] || '') : '').toString().trim().toUpperCase();
-          var resolvedVal = rightVal || belowVal;
-          if (resolvedVal === 'CLOSED') {
-            registrationStatus = 'CLOSED';
-          }
-          regStatusFound = true;
+    var headerRow0 = data[0];
+    for (var hc = 0; hc < headerRow0.length; hc++) {
+      if ((headerRow0[hc] || '').toString().trim().toLowerCase() === 'registration status') {
+        var statusVal = (data.length > 1 ? data[1][hc] : '') || '';
+        if (statusVal.toString().trim().toUpperCase() === 'CLOSED') {
+          registrationStatus = 'CLOSED';
         }
+        break;
       }
     }
 
@@ -604,18 +593,14 @@ function doPost(e) {
     if (configSheetCheck) {
       var configDataCheck = configSheetCheck.getDataRange().getValues();
       if (configDataCheck && configDataCheck.length > 0) {
-        var regStatusFoundPost = false;
-        for (var rip = 0; rip < configDataCheck.length && !regStatusFoundPost; rip++) {
-          for (var cip = 0; cip < configDataCheck[rip].length && !regStatusFoundPost; cip++) {
-            var cellCheck = (configDataCheck[rip][cip] || '').toString().trim().toLowerCase().replace(/[\s_-]/g, '');
-            if (cellCheck === 'registrationstatus') {
-              var rightCheck = (configDataCheck[rip][cip + 1] || '').toString().trim().toUpperCase();
-              var belowCheck = (configDataCheck[rip + 1] ? (configDataCheck[rip + 1][cip] || '') : '').toString().trim().toUpperCase();
-              if ((rightCheck || belowCheck) === 'CLOSED') {
-                return errorResponse('Registration is now closed. / 报名已截止。/ Pendaftaran telah ditutup.');
-              }
-              regStatusFoundPost = true;
+        var headerRowCheck = configDataCheck[0];
+        for (var hci = 0; hci < headerRowCheck.length; hci++) {
+          if ((headerRowCheck[hci] || '').toString().trim().toLowerCase() === 'registration status') {
+            var regStatusVal = (configDataCheck.length > 1 ? configDataCheck[1][hci] : '') || '';
+            if (regStatusVal.toString().trim().toUpperCase() === 'CLOSED') {
+              return errorResponse('Registration is now closed. / 报名已截止。/ Pendaftaran telah ditutup.');
             }
+            break;
           }
         }
       }
