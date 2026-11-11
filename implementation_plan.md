@@ -137,7 +137,7 @@ The goal is to allow registration to be closed/reopened instantly by flipping a 
   - Style it to match the Terracotta/Coral design system (prominent card, centered, warm tone).
   - Update all asset cache-buster timestamps (`styles.css`, `config.js`, `app.js`) to `YYYYMMDDHHMMSS` of the edit time.
 
-- [ ] **Deploy & Verify:**
+- [x] **Deploy & Verify:**
   - Deploy `public/index.html` and `public/app.js` via `./deploy.sh public/index.html public/app.js`.
   - Deploy updated `backend/Code.gs` by pasting into Apps Script editor and publishing a **New Version**.
   - Set `RegistrationStatus` to `CLOSED` in the Sheet and verify the closed banner shows.
