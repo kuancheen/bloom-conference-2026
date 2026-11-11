@@ -111,6 +111,7 @@ After deployment, test the live URLs:
   - Verify page loads with current stylesheet and assets.
   - Check dropdown options load dynamically from Google Sheet `Config` tab.
   - Verify workshop capacity badges load correctly.
+  - If `Registration Status` is set to `CLOSED` in the `Config` sheet, verify the trilingual closed banner renders instead of the form.
 - [ ] **Signups Dashboard (`actschurchconference.com/dashboard`):**
   - Verify KPI cards, Timeline chart, and Workshop occupancy render with live data.
 - [ ] **Registrants List (`actschurchconference.com/registrants`):**
