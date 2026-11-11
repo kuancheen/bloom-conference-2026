@@ -443,7 +443,8 @@ function getConfigResponse() {
     var registrationStatus = 'OPEN';
     var headerRow0 = data[0];
     for (var hc = 0; hc < headerRow0.length; hc++) {
-      if ((headerRow0[hc] || '').toString().trim().toLowerCase() === 'registration status') {
+      var hText = (headerRow0[hc] || '').toString().trim().toLowerCase();
+      if (hText === 'registration status' || hText === 'registation status' || hText.replace(/\s+/g, '') === 'registrationstatus' || hText.replace(/\s+/g, '') === 'registationstatus') {
         var statusVal = (data.length > 1 ? data[1][hc] : '') || '';
         if (statusVal.toString().trim().toUpperCase() === 'CLOSED') {
           registrationStatus = 'CLOSED';
@@ -595,7 +596,8 @@ function doPost(e) {
       if (configDataCheck && configDataCheck.length > 0) {
         var headerRowCheck = configDataCheck[0];
         for (var hci = 0; hci < headerRowCheck.length; hci++) {
-          if ((headerRowCheck[hci] || '').toString().trim().toLowerCase() === 'registration status') {
+          var hCheckText = (headerRowCheck[hci] || '').toString().trim().toLowerCase();
+          if (hCheckText === 'registration status' || hCheckText === 'registation status' || hCheckText.replace(/\s+/g, '') === 'registrationstatus' || hCheckText.replace(/\s+/g, '') === 'registationstatus') {
             var regStatusVal = (configDataCheck.length > 1 ? configDataCheck[1][hci] : '') || '';
             if (regStatusVal.toString().trim().toUpperCase() === 'CLOSED') {
               return errorResponse('Registration is now closed. / 报名已截止。/ Pendaftaran telah ditutup.');
